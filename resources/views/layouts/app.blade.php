@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }}</title>
+    <title>{{ $title ?? config('app.name') }}</title>
     <style>
         :root {
             --bg: #f4f1ea;
@@ -13,6 +13,7 @@
             --card: #ffffff;
             --muted: #5d6d72;
             --line: #d8ddd6;
+            --danger: #9f1c1c;
         }
 
         * { box-sizing: border-box; }
@@ -59,8 +60,7 @@
             margin: 0;
         }
 
-        .nav-links a,
-        .footer-links a {
+        .nav-links a {
             text-decoration: none;
             color: var(--ink);
         }
@@ -70,39 +70,75 @@
             color: #fff;
             background: var(--brand);
             padding: 0.55rem 0.9rem;
+            border: 0;
             border-radius: 999px;
             font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
         }
 
-        .hero {
-            padding: 5rem 0 3rem;
-            text-align: center;
+        .auth-wrapper {
+            min-height: calc(100vh - 160px);
+            display: grid;
+            place-items: center;
+            padding: 3rem 0;
         }
 
-        .hero h1 {
-            font-size: clamp(1.8rem, 4vw, 3rem);
-            margin: 0 0 1rem;
+        .auth-card {
+            width: min(560px, 95vw);
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 1.4rem;
         }
 
-        .hero p {
+        h1 {
+            margin: 0 0 0.35rem;
+            font-size: 1.6rem;
+        }
+
+        .subtitle {
+            margin: 0 0 1.4rem;
             color: var(--muted);
-            max-width: 650px;
-            margin: 0 auto 1.5rem;
-            line-height: 1.6;
         }
 
-        .hero-actions {
-            display: flex;
+        label {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+
+        input {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 0.65rem 0.75rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 0.8rem;
-            justify-content: center;
-            flex-wrap: wrap;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 0.5rem;
         }
 
         .btn {
             text-decoration: none;
             border-radius: 10px;
-            padding: 0.75rem 1rem;
+            padding: 0.7rem 1rem;
             font-weight: 600;
+            border: 0;
+            cursor: pointer;
         }
 
         .btn-primary {
@@ -111,27 +147,18 @@
         }
 
         .btn-secondary {
-            border: 1px solid var(--line);
             color: var(--ink);
             background: #fff;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 1rem;
-            padding-bottom: 4rem;
-        }
-
-        .card {
-            background: var(--card);
             border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 1.2rem;
         }
 
-        .card h3 {
-            margin-top: 0;
+        .errors {
+            background: #fff1f1;
+            border: 1px solid #f6d0d0;
+            color: var(--danger);
+            border-radius: 10px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
         }
 
         .site-footer {
@@ -159,44 +186,22 @@
             flex-wrap: wrap;
         }
 
+        .footer-links a {
+            text-decoration: none;
+            color: var(--ink);
+        }
+
         @media (max-width: 800px) {
             .nav-links { display: none; }
-            .grid { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; gap: 0; }
         }
     </style>
 </head>
 <body>
     @include('partials.navigation')
 
-    <main>
-        <section class="hero" id="start">
-            <div class="container">
-                <h1>Sneller professionele opdrachtbevestigingen versturen</h1>
-                <p>
-                    Opdrachtbevestiging.nl helpt je om heldere, juridisch nette opdrachtbevestigingen te maken,
-                    goed te keuren en direct te verzenden vanuit een centrale workflow.
-                </p>
-                <div class="hero-actions">
-                    <a href="{{ route('register') }}" class="btn btn-primary">Gratis proberen</a>
-                    <a href="#features" class="btn btn-secondary">Bekijk features</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="features" class="container grid">
-            <article class="card">
-                <h3>Template bibliotheek</h3>
-                <p>Gebruik slimme templates per dienst, klanttype of branche.</p>
-            </article>
-            <article class="card" id="werkwijze">
-                <h3>Digitale akkoordflow</h3>
-                <p>Stuur direct ter ondertekening en houd realtime status bij.</p>
-            </article>
-            <article class="card">
-                <h3>Volledige historie</h3>
-                <p>Alle versies, wijzigingen en akkoordmomenten op 1 plek.</p>
-            </article>
-        </section>
+    <main class="auth-wrapper">
+        @yield('content')
     </main>
 
     @include('partials.footer')
