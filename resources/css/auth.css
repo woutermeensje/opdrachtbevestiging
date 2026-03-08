@@ -1,0 +1,30 @@
+/* ===============================
+   AUTH
+================================ */
+
+.auth-wrapper {
+    min-height: calc(100vh - 160px);
+    display: grid;
+    place-items: center;
+    padding: 3rem 0;
+}
+
+.auth-card {
+    width: min(560px, 95vw);
+    background: var(--color-card);
+    border: var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: 1.4rem;
+    box-shadow: var(--box-shadow-default);
+}
+
+.auth-card h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.6rem;
+}
+
+.subtitle {
+    margin: 0 0 1.4rem;
+    color: var(--color-text-subtle);
+    font-size: 0.95rem;
+}

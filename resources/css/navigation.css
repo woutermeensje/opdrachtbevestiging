@@ -1,0 +1,218 @@
+/* ===============================
+   NAVIGATION
+================================ */
+
+.site-nav {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg-white);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--color-border);
+    z-index: 100;
+}
+
+.nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.85rem 0;
+}
+
+/* Logo */
+.brand {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.brand:hover {
+    text-decoration: none;
+}
+
+.nav-logo {
+    height: 36px;
+    width: auto;
+    display: block;
+}
+
+/* Nav links — desktop */
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--color-text);
+    font-size: 15px;
+    font-weight: 300;
+    font-family: var(--font-text);
+    padding: 0.35rem 0.6rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s;
+}
+
+.nav-links a:hover {
+    text-decoration: none;
+    color: var(--color-primary);
+}
+
+/* Separator between links and buttons */
+.nav-separator {
+    display: block;
+    width: 1px;
+    height: 1.4rem;
+    background: var(--color-border);
+    flex-shrink: 0;
+}
+
+/* Actions (rechts) */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Smaller buttons in nav */
+.nav-actions .btn {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.9rem;
+}
+
+/* Hamburger — verborgen op desktop */
+.nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--color-text);
+    border-radius: 2px;
+    transition: transform 0.2s;
+}
+
+/* ===============================
+   MOBILE MENU
+================================ */
+
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 280px;
+    height: 100vh;
+    background: var(--color-bg-white);
+    border-right: 1px solid var(--color-border);
+    z-index: 200;
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: left 0.28s ease;
+    overflow-y: auto;
+}
+
+.mobile-menu.is-open {
+    left: 0;
+}
+
+.mobile-menu-close {
+    align-self: flex-end;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--color-text);
+    padding: 0.3rem 0.6rem;
+    line-height: 1;
+}
+
+.mobile-nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.mobile-nav-links a {
+    display: block;
+    text-decoration: none;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 400;
+    font-family: var(--font-text);
+    padding: 0.6rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s, color 0.15s;
+}
+
+.mobile-nav-links a:hover {
+    background: var(--color-bg);
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.mobile-nav-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: auto;
+}
+
+.mobile-nav-actions .btn {
+    width: 100%;
+    text-align: center;
+}
+
+/* Backdrop */
+.mobile-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    z-index: 150;
+    display: none;
+}
+
+.mobile-menu-backdrop.is-open {
+    display: block;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 800px) {
+    .nav-links,
+    .nav-actions,
+    .nav-separator {
+        display: none;
+    }
+
+    .nav-hamburger {
+        display: flex;
+    }
+}

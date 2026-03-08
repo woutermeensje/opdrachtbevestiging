@@ -1,0 +1,63 @@
+/* ===============================
+   LAYOUT
+================================ */
+
+.container {
+    width: min(1080px, 92vw);
+    margin: 0 auto;
+}
+
+/* ===============================
+   HERO
+================================ */
+
+.hero {
+    padding: 5rem 0 3rem;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    margin: 0 0 1rem;
+}
+
+.hero p {
+    color: var(--color-text-subtle);
+    max-width: 650px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ===============================
+   CARDS / GRID
+================================ */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding-bottom: 4rem;
+}
+
+.card {
+    background: var(--color-card);
+    border: var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: 1.2rem;
+    box-shadow: var(--box-shadow-default);
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+@media (max-width: 800px) {
+    .grid { grid-template-columns: 1fr; }
+}
