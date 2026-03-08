@@ -38,6 +38,36 @@
                 <p>Alle versies, wijzigingen en akkoordmomenten op 1 plek.</p>
             </article>
         </section>
+
+        <section class="container split-grid">
+            <article class="card">
+                <h3>Alles voor je opdrachtbevestiging in een brede werkruimte</h3>
+                <p>
+                    Werk in een groter inhoudsblok aan je offerte, voorwaarden en akkoordproces,
+                    zodat je alle belangrijke informatie overzichtelijk bij elkaar houdt.
+                </p>
+            </article>
+
+            <article class="card">
+                <h3>Snelle status</h3>
+                <p>Gebruik een compacter blok voor status, acties of een samenvatting naast de hoofdinhoud.</p>
+            </article>
+        </section>
+
+        <section class="container equal-grid">
+            <article class="card card-image">
+                <img
+                    src="{{ asset('Logo/Logo-opdrachtbevesting.png') }}"
+                    alt="Logo Opdrachtbevestiging.nl"
+                    class="card-media"
+                >
+            </article>
+
+            <article class="card">
+                <h3>Planning en acties</h3>
+                <p>Gebruik dit blok voor deadlines, vervolgstappen en interne opvolging.</p>
+            </article>
+        </section>
     </main>
 
     @include('partials.footer')
