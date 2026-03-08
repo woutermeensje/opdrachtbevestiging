@@ -1,17 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.app', [
+    'title' => 'Inloggen',
+    'mainClass' => 'auth-wrapper',
+])
 
 @section('content')
     <section class="auth-card">
         <h1>Inloggen</h1>
         <p class="subtitle">Log in om je opdrachtbevestigingen te beheren.</p>
 
-        @if ($errors->any())
-            <div class="errors">
-                @foreach ($errors->all() as $error)
-                    <div>{{ $error }}</div>
-                @endforeach
-            </div>
-        @endif
+        @include('partials.forms.errors')
 
         <form method="POST" action="{{ route('login.store') }}">
             @csrf

@@ -20,7 +20,14 @@ class AuthController extends Controller
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
+            'kvk_number' => ['required', 'digits:8'],
             'company_name' => ['required', 'string', 'max:255'],
+            'street_name' => ['required', 'string', 'max:255'],
+            'house_number' => ['required', 'string', 'max:20'],
+            'house_number_addition' => ['nullable', 'string', 'max:20'],
+            'postal_code' => ['required', 'string', 'max:20'],
+            'city' => ['required', 'string', 'max:255'],
+            'country' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -30,6 +37,13 @@ class AuthController extends Controller
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
             'company_name' => $validated['company_name'],
+            'kvk_number' => $validated['kvk_number'],
+            'street_name' => $validated['street_name'],
+            'house_number' => $validated['house_number'],
+            'house_number_addition' => $validated['house_number_addition'] ?? null,
+            'postal_code' => $validated['postal_code'],
+            'city' => $validated['city'],
+            'country' => $validated['country'],
             'email' => $validated['email'],
             'password' => $validated['password'],
         ]);

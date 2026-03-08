@@ -8,9 +8,9 @@
 
         {{-- Menu links (midden, desktop) --}}
         <ul class="nav-links">
-            <li><a href="{{ url('/#hoe-het-werkt') }}">Hoe het werkt</a></li>
-            <li><a href="{{ url('/#prijzen') }}">Prijzen</a></li>
-            <li><a href="{{ url('/#contact') }}">Contact</a></li>
+            <li><a href="{{ route('pages.how-it-works') }}">Hoe het werkt</a></li>
+            <li><a href="{{ route('pages.pricing') }}">Prijzen</a></li>
+            <li><a href="{{ route('pages.contact') }}">Contact</a></li>
         </ul>
 
         {{-- Buttons (rechts, desktop) --}}
@@ -42,9 +42,9 @@
     <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Menu sluiten">✕</button>
 
     <ul class="mobile-nav-links">
-        <li><a href="{{ url('/#hoe-het-werkt') }}">Hoe het werkt</a></li>
-        <li><a href="{{ url('/#prijzen') }}">Prijzen</a></li>
-        <li><a href="{{ url('/#contact') }}">Contact</a></li>
+        <li><a href="{{ route('pages.how-it-works') }}">Hoe het werkt</a></li>
+        <li><a href="{{ route('pages.pricing') }}">Prijzen</a></li>
+        <li><a href="{{ route('pages.contact') }}">Contact</a></li>
     </ul>
 
     <div class="mobile-nav-actions">

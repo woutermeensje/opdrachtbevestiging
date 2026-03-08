@@ -6,13 +6,13 @@
     <title>{{ $title ?? config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="{{ $bodyClass ?? '' }}">
-    @include('partials.navigation')
+<body class="dashboard-body">
+    <div class="dashboard-shell">
+        @include('partials.dashboard.sidebar')
 
-    <main class="{{ $mainClass ?? '' }}">
-        @yield('content')
-    </main>
-
-    @include('partials.footer')
+        <main class="dashboard-main">
+            @yield('content')
+        </main>
+    </div>
 </body>
 </html>

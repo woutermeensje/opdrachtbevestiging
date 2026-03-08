@@ -35,6 +35,45 @@
     flex-wrap: wrap;
 }
 
+.page-hero {
+    padding: 4.5rem 0 2rem;
+}
+
+.page-eyebrow {
+    margin: 0 0 0.5rem;
+    color: #9a6a27;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.page-hero h1 {
+    margin: 0 0 0.8rem;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.page-intro {
+    max-width: 720px;
+    color: var(--color-text-subtle);
+    font-size: 1rem;
+}
+
+.page-content {
+    padding: 0 0 4rem;
+}
+
+.page-content-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.page-card h2 {
+    margin: 0 0 0.8rem;
+    font-size: 1.15rem;
+}
+
 /* ===============================
    CARDS / GRID
 ================================ */
@@ -86,6 +125,7 @@
 }
 
 @media (max-width: 800px) {
+    .page-content-grid { grid-template-columns: 1fr; }
     .grid { grid-template-columns: 1fr; }
     .split-grid { grid-template-columns: 1fr; }
     .equal-grid { grid-template-columns: 1fr; }
