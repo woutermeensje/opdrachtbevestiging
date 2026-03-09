@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Confirmation;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
-        return view('dashboard.index');
-    }
+        $user = auth()->user();
+        $confirmations = $user->confirmations()->latest()->take(5)->get();
 
-    public function create(): View
-    {
-        return view('dashboard.create');
-    }
-
-    public function confirmations(): View
-    {
-        return view('dashboard.confirmations');
+        return view('dashboard.index', [
+            'metrics' => [
+                'total' => $user->confirmations()->count(),
+                'drafts' => $user->confirmations()->where('status', 'concept')->count(),
+                'signed' => $user->confirmations()->where('status', 'getekend')->count(),
+                'value' => (float) $user->confirmations()->sum('total_value'),
+            ],
+            'recentConfirmations' => $confirmations,
+        ]);
     }
 
     public function profile(): View
