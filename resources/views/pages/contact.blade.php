@@ -7,6 +7,14 @@
 
 @section('page-content')
     @include('partials.pages.content-card', [
+        'title' => 'Plan een afspraak',
+        'slot' => '
+            <p>Hier komt straks de Calendly-link of embed te staan, zodat bezoekers direct een afspraak kunnen inplannen.</p>
+            <p><strong>Plaatsaanduiding:</strong> vervang dit blok later met de definitieve Calendly-integratie.</p>
+        ',
+    ])
+
+    @include('partials.pages.content-card', [
         'title' => 'Direct contact',
         'slot' => '
             <p>Stuur een e-mail naar <a href="mailto:info@opdrachtbevestiging.nl">info@opdrachtbevestiging.nl</a> voor vragen of een demo-aanvraag.</p>
