@@ -17,7 +17,7 @@
 }
 
 .hero h1 {
-    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-size: clamp(1.175rem, 3.2vw, 2.375rem);
     margin: 0 0 1rem;
 }
 
@@ -76,6 +76,10 @@
 
 .page-card p + h2 {
     margin-top: 1.75rem;
+}
+
+.page-card-wide {
+    grid-column: 1 / -1;
 }
 
 .pricing-card {

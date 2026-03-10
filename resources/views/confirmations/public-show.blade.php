@@ -1,5 +1,8 @@
 @extends('layouts.app', [
     'title' => 'Opdrachtbevestiging '.$confirmation->reference,
+    'metaDescription' => 'Beveiligde opdrachtbevestiging bekijken en digitaal bevestigen.',
+    'metaRobots' => 'noindex,nofollow,noarchive',
+    'canonical' => route('confirmations.public.show', $confirmation->public_token),
 ])
 
 @section('content')

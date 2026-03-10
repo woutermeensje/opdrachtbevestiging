@@ -1,8 +1,11 @@
 @extends('layouts.page', [
     'title' => 'Contact',
+    'seoTitle' => 'Contact | Opdrachtbevestiging.nl',
     'eyebrow' => 'Contact',
     'heading' => 'Contact',
     'intro' => 'Gebruik deze pagina voor vragen over de software, maatwerk of ondersteuning bij je proces rond opdrachtbevestigingen.',
+    'metaDescription' => 'Neem contact op met Opdrachtbevestiging.nl voor vragen, demo-aanvragen, corporate mogelijkheden en ondersteuning rond opdrachtbevestigingen.',
+    'canonical' => route('pages.contact'),
 ])
 
 @section('page-content')

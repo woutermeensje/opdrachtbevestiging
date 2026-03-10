@@ -1,5 +1,8 @@
 @extends('layouts.app', [
-    'title' => 'Account aanmaken',
+    'title' => 'Account aanmaken | Opdrachtbevestiging.nl',
+    'metaDescription' => 'Maak een account aan op Opdrachtbevestiging.nl en start direct met het aanmaken en versturen van opdrachtbevestigingen.',
+    'metaRobots' => 'noindex,nofollow,noarchive',
+    'canonical' => route('register'),
     'mainClass' => 'auth-wrapper',
 ])
 

@@ -1,5 +1,17 @@
 @extends('layouts.app', [
-    'title' => $title ?? config('app.name'),
+    'title' => $seoTitle ?? (($title ?? config('app.name')).' | Opdrachtbevestiging.nl'),
+    'metaDescription' => $metaDescription ?? ($intro ?? 'Lees meer over opdrachtbevestigingen, het opstellen ervan en het digitaal vastleggen van zakelijke afspraken.'),
+    'canonical' => $canonical ?? url()->current(),
+    'ogTitle' => $ogTitle ?? ($seoTitle ?? (($title ?? config('app.name')).' | Opdrachtbevestiging.nl')),
+    'ogDescription' => $ogDescription ?? ($metaDescription ?? ($intro ?? 'Lees meer over opdrachtbevestigingen en het digitaal vastleggen van afspraken.')),
+    'structuredData' => $structuredData ?? json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => $heading ?? ($title ?? config('app.name')),
+        'description' => $metaDescription ?? ($intro ?? 'Lees meer over opdrachtbevestigingen en het digitaal vastleggen van afspraken.'),
+        'url' => $canonical ?? url()->current(),
+        'inLanguage' => 'nl-NL',
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
 ])
 
 @section('content')

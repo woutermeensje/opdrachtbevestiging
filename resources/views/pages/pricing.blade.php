@@ -1,8 +1,11 @@
 @extends('layouts.page', [
     'title' => 'Prijzen',
+    'seoTitle' => 'Prijzen | Opdrachtbevestiging.nl',
     'eyebrow' => 'Tarieven',
     'heading' => 'Prijzen',
     'intro' => 'Kies een pakket dat past bij je organisatie. Start eenvoudig met een vast jaarbedrag of neem contact op voor een corporate inrichting.',
+    'metaDescription' => 'Bekijk de prijzen van Opdrachtbevestiging.nl. Kies een Basis account van €149 excl. 21% btw per jaar of vraag een corporate voorstel aan.',
+    'canonical' => route('pages.pricing'),
 ])
 
 @section('page-content')

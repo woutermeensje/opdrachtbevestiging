@@ -6,10 +6,42 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KvkLookupController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PublicConfirmationController;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/robots.txt', function (): Response {
+    $content = implode("\n", [
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /dashboard',
+        'Disallow: /inloggen',
+        'Disallow: /registreren',
+        'Disallow: /opdrachtbevestiging/',
+        '',
+        'Sitemap: '.url('/sitemap.xml'),
+    ]);
+
+    return response($content, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+});
+
+Route::get('/sitemap.xml', function (): Response {
+    $pages = collect([
+        ['loc' => url('/'), 'priority' => '1.0'],
+        ['loc' => route('pages.how-it-works'), 'priority' => '0.8'],
+        ['loc' => route('pages.what-is-confirmation'), 'priority' => '0.8'],
+        ['loc' => route('pages.create-confirmation'), 'priority' => '0.8'],
+        ['loc' => route('pages.pricing'), 'priority' => '0.7'],
+        ['loc' => route('pages.contact'), 'priority' => '0.6'],
+    ]);
+
+    return response()->view('seo.sitemap', [
+        'pages' => $pages,
+        'lastModified' => now()->toAtomString(),
+    ])->header('Content-Type', 'application/xml; charset=UTF-8');
 });
 
 Route::get('/hoe-het-werkt', [PageController::class, 'howItWorks'])->name('pages.how-it-works');

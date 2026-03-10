@@ -1,29 +1,41 @@
 @extends('layouts.page', [
     'title' => 'Hoe het werkt',
+    'seoTitle' => 'Hoe Werkt Opdrachtbevestiging.nl? | Opdrachtbevestiging maken en versturen',
     'eyebrow' => 'Werkwijze',
     'heading' => 'Hoe het werkt',
-    'intro' => 'Van eerste klantvraag tot akkoord: dit is de route waarmee je opdrachtbevestigingen sneller en consistenter afhandelt.',
+    'intro' => 'Opdrachtbevestiging.nl helpt je om afspraken gestructureerd vast te leggen en digitaal ter ondertekening te versturen.',
+    'metaDescription' => 'Ontdek hoe Opdrachtbevestiging.nl werkt: account aanmaken, opdrachtbevestiging opstellen, opdrachtgever toevoegen en digitaal versturen ter ondertekening.',
+    'canonical' => route('pages.how-it-works'),
 ])
 
 @section('page-content')
     @include('partials.pages.content-card', [
-        'title' => '1. Gegevens verzamelen',
+        'title' => '1. Maak een account aan',
         'slot' => '
-            <p>Maak een dossier aan en verzamel alle relevante klant-, project- en bedrijfsgegevens op één plek.</p>
+            <p>Je start met het aanmaken van een account binnen Opdrachtbevestiging.nl. Vanuit daar werk je in een centrale omgeving waarin je opdrachtbevestigingen kunt opstellen en beheren.</p>
         ',
     ])
 
     @include('partials.pages.content-card', [
         'title' => '2. Opdrachtbevestiging opstellen',
         'slot' => '
-            <p>Gebruik een vaste template en vul diensten, tarieven, planning en voorwaarden in zonder handmatig knip- en plakwerk.</p>
+            <p>Klik op het aanmaken van een opdrachtbevestiging en vul de relevante gegevens in, zoals prijs of tarief, duur, start- en einddatum en de belangrijkste voorwaarden.</p>
         ',
     ])
 
     @include('partials.pages.content-card', [
-        'title' => '3. Verzenden en opvolgen',
+        'title' => '3. Opdrachtgever toevoegen en versturen',
         'slot' => '
-            <p>Stuur de opdrachtbevestiging digitaal uit, volg de status en houd alle versies centraal beschikbaar.</p>
+            <p>Vervolgens voeg je jouw opdrachtgever toe via de Kamer van Koophandel API en verstuur je de opdrachtbevestiging ter ondertekening naar de andere partij.</p>
+        ',
+    ])
+
+    @include('partials.pages.content-card', [
+        'class' => 'page-card-wide',
+        'title' => 'Waarom deze werkwijze handig is',
+        'slot' => '
+            <p>Met deze aanpak leg je afspraken die mondeling, telefonisch of per e-mail zijn gemaakt alsnog duidelijk schriftelijk vast.</p>
+            <p>Dat helpt om vooraf helderheid te creëren over prijs, planning, voorwaarden en verwachtingen, zonder dat je daar een ingewikkeld juridisch proces van hoeft te maken.</p>
         ',
     ])
 @endsection
