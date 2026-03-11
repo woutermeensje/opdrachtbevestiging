@@ -24,8 +24,9 @@
 
                     <div class="grid-kvk">
                         <div>
-                            <label for="kvk_number">KVK-nummer</label>
-                            <input id="kvk_number" name="kvk_number" type="text" inputmode="numeric" maxlength="8" value="'.e(old('kvk_number')).'" data-kvk-number required>
+                            <label for="company_name">Bedrijfsnaam</label>
+                            <input id="company_name" type="text" value="'.e(old('company_name')).'" data-company-name data-kvk-search-url="'.e(route('kvk.search')).'" list="contact-company-options" required>
+                            <datalist id="contact-company-options" data-company-options></datalist>
                         </div>
                         <div class="dashboard-inline-actions">
                             <button type="button" class="btn btn-secondary" data-kvk-lookup data-kvk-url="'.e(route('kvk.lookup')).'">KVK-gegevens ophalen</button>
@@ -34,10 +35,13 @@
 
                     <p class="dashboard-kvk-feedback" data-kvk-feedback></p>
 
+                    <label for="kvk_number">KVK-nummer</label>
+                    <input id="kvk_number" name="kvk_number" type="text" value="'.e(old('kvk_number')).'" data-kvk-target="kvk_number" required readonly>
+
                     <div class="grid-2">
                         <div>
-                            <label for="company_name">Bedrijfsnaam</label>
-                            <input id="company_name" name="company_name" type="text" value="'.e(old('company_name')).'" data-kvk-target="company_name" required>
+                            <label for="company_name_confirmed">Bedrijfsnaam</label>
+                            <input id="company_name_confirmed" name="company_name" type="text" value="'.e(old('company_name')).'" data-kvk-target="company_name" required>
                         </div>
                         <div>
                             <label for="contact_email">E-mailadres contactpersoon</label>

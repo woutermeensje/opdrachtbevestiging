@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
 
-class KvkLookupController extends Controller
+class KvkSearchController extends Controller
 {
     public function __construct(
         private readonly KvkLookupService $lookupService,
@@ -17,15 +17,12 @@ class KvkLookupController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'kvk_number' => ['nullable', 'digits:8', 'required_without:company_name'],
-            'company_name' => ['nullable', 'string', 'max:255', 'required_without:kvk_number'],
+            'company_name' => ['required', 'string', 'min:2', 'max:255'],
         ]);
-
-        $identifier = $validated['kvk_number'] ?? $validated['company_name'] ?? null;
 
         try {
             return response()->json([
-                'data' => $this->lookupService->lookup((string) $identifier),
+                'data' => $this->lookupService->searchCompanies($validated['company_name']),
             ]);
         } catch (RuntimeException $exception) {
             return response()->json([

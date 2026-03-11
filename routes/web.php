@@ -10,6 +10,7 @@ use App\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\KvkLookupController;
+use App\Http\Controllers\KvkSearchController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PublicConfirmationController;
 use App\Http\Controllers\SignhostWebhookController;
@@ -66,6 +67,7 @@ Route::get('/contact', [PageController::class, 'contact'])->name('pages.contact'
 Route::get('/opdrachtbevestiging/{token}', [PublicConfirmationController::class, 'show'])->name('confirmations.public.show');
 Route::post('/opdrachtbevestiging/{token}/ondertekenen', [PublicConfirmationController::class, 'sign'])->name('confirmations.public.sign');
 Route::post('/kvk/lookup', KvkLookupController::class)->name('kvk.lookup');
+Route::post('/kvk/search', KvkSearchController::class)->name('kvk.search');
 
 Route::redirect('/register', '/registreren');
 Route::redirect('/login', '/inloggen');

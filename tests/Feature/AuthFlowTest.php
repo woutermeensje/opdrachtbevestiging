@@ -171,6 +171,7 @@ class AuthFlowTest extends TestCase
     {
         config()->set('kvk.api_key', 'test-key');
         config()->set('kvk.base_url', 'https://api.kvk.nl/test/api/v1');
+        config()->set('kvk.search_base_url', 'https://api.kvk.nl/test/api/v2');
 
         Http::fake([
             'https://api.kvk.nl/test/api/v1/basisprofielen/12345678' => Http::response([
@@ -204,5 +205,90 @@ class AuthFlowTest extends TestCase
             ->assertJsonPath('data.postal_code', '1234AB')
             ->assertJsonPath('data.city', 'Amsterdam')
             ->assertJsonPath('data.country', 'Nederland');
+    }
+
+    public function test_kvk_lookup_can_search_by_company_name(): void
+    {
+        config()->set('kvk.api_key', 'test-key');
+        config()->set('kvk.base_url', 'https://api.kvk.nl/test/api/v1');
+        config()->set('kvk.search_base_url', 'https://api.kvk.nl/test/api/v2');
+
+        Http::fake([
+            'https://api.kvk.nl/test/api/v2/zoeken*' => Http::response([
+                'resultaten' => [
+                    [
+                        'naam' => 'Opdrachtbevestiging B.V.',
+                        'kvkNummer' => '12345678',
+                    ],
+                ],
+            ]),
+            'https://api.kvk.nl/test/api/v1/basisprofielen/12345678' => Http::response([
+                'naam' => 'Opdrachtbevestiging B.V.',
+                'hoofdvestiging' => [
+                    'adressen' => [
+                        [
+                            'type' => 'bezoekadres',
+                            'straatnaam' => 'Dorpsstraat',
+                            'huisnummer' => 12,
+                            'huisnummerToevoeging' => 'A',
+                            'postcode' => '1234AB',
+                            'plaats' => 'Amsterdam',
+                            'land' => 'Nederland',
+                        ],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $response = $this->postJson(route('kvk.lookup'), [
+            'company_name' => 'Opdrachtbevestiging B.V.',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.kvk_number', '12345678')
+            ->assertJsonPath('data.company_name', 'Opdrachtbevestiging B.V.')
+            ->assertJsonPath('data.street_name', 'Dorpsstraat');
+    }
+
+    public function test_kvk_search_returns_company_suggestions(): void
+    {
+        config()->set('kvk.api_key', 'test-key');
+        config()->set('kvk.search_base_url', 'https://api.kvk.nl/test/api/v2');
+
+        Http::fake([
+            'https://api.kvk.nl/test/api/v2/zoeken*' => Http::response([
+                'resultaten' => [
+                    [
+                        'naam' => 'Opdrachtbevestiging B.V.',
+                        'kvkNummer' => '12345678',
+                        'adres' => [
+                            'binnenlandsAdres' => [
+                                'plaats' => 'Amsterdam',
+                            ],
+                        ],
+                    ],
+                    [
+                        'naam' => 'Opdrachtbevestiging Groep B.V.',
+                        'kvkNummer' => '87654321',
+                        'adres' => [
+                            'binnenlandsAdres' => [
+                                'plaats' => 'Rotterdam',
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $response = $this->postJson(route('kvk.search'), [
+            'company_name' => 'Opdrachtbevestiging',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.0.company_name', 'Opdrachtbevestiging B.V.')
+            ->assertJsonPath('data.0.kvk_number', '12345678')
+            ->assertJsonPath('data.0.city', 'Amsterdam');
     }
 }

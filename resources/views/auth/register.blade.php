@@ -69,17 +69,18 @@
 
                 <div class="grid-kvk">
                     <div>
-                        <label for="kvk_number">KVK-nummer</label>
+                        <label for="company_name">Bedrijfsnaam</label>
                         <input
-                            id="kvk_number"
-                            name="kvk_number"
+                            id="company_name"
+                            name="company_name"
                             type="text"
-                            inputmode="numeric"
-                            maxlength="8"
-                            value="{{ old('kvk_number') }}"
-                            data-kvk-number
+                            value="{{ old('company_name') }}"
+                            data-company-name
+                            data-kvk-search-url="{{ route('kvk.search') }}"
+                            list="register-company-options"
                             required
                         >
+                        <datalist id="register-company-options" data-company-options></datalist>
                     </div>
                     <div class="kvk-actions">
                         <button
@@ -95,8 +96,8 @@
 
                 <p class="form-help" data-kvk-feedback></p>
 
-                <label for="company_name">Bedrijfsnaam</label>
-                <input id="company_name" name="company_name" type="text" value="{{ old('company_name') }}" data-kvk-target="company_name" required>
+                <label for="kvk_number">KVK-nummer</label>
+                <input id="kvk_number" name="kvk_number" type="text" value="{{ old('kvk_number') }}" data-kvk-target="kvk_number" required readonly>
 
                 <div class="grid-address">
                     <div>
