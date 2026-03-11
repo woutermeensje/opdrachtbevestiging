@@ -17,7 +17,7 @@
                     <td>{{ $confirmation->reference }}</td>
                     <td>
                         <strong>{{ $confirmation->client_name }}</strong>
-                        <div class="dashboard-table-subtle">{{ $confirmation->client_email }}</div>
+                        <div class="dashboard-table-subtle">{{ $confirmation->client_contact_name ?: $confirmation->client_email }}</div>
                     </td>
                     <td>EUR {{ number_format((float) $confirmation->total_value, 2, ',', '.') }}</td>
                     <td><span class="dashboard-status dashboard-status-{{ $confirmation->status }}">{{ ucfirst($confirmation->status) }}</span></td>

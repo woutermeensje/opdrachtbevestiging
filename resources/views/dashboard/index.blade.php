@@ -26,14 +26,18 @@
             <p class="dashboard-metric-label">Totale waarde</p>
             <strong>EUR {{ number_format($metrics['value'], 2, ',', '.') }}</strong>
         </article>
+        <article class="dashboard-metric-card">
+            <p class="dashboard-metric-label">Contacten</p>
+            <strong>{{ $contactCount }}</strong>
+        </article>
     </div>
 
     <div class="dashboard-content-grid">
         @include('partials.dashboard.panel', [
             'title' => 'Snelle start',
             'slot' => '
-                <p>Start met een nieuwe opdrachtbevestiging, bekijk lopende akkoordverzoeken en houd per dossier waarde en status bij.</p>
-                <p><a href="'.e(route('dashboard.create')).'" class="btn btn-primary">Nieuwe opdrachtbevestiging</a></p>
+                <p>Voeg eerst een opdrachtgever toe via Contacten. Daarna kun je een nieuwe opdrachtbevestiging aanmaken en later via Signhost laten tekenen.</p>
+                <p><a href="'.e(route('dashboard.contacts')).'" class="btn btn-primary">Contact toevoegen</a></p>
             ',
         ])
 

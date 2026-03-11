@@ -2,27 +2,45 @@
 
 namespace Tests\Feature;
 
-use App\Mail\ConfirmationInvitationMail;
 use App\Models\Confirmation;
+use App\Models\Contact;
 use App\Models\User;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ConfirmationFlowTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->withoutMiddleware(EnsureEmailIsVerified::class);
+    }
+
     public function test_authenticated_user_can_create_confirmation(): void
     {
         $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_first_name' => 'Sanne',
+            'contact_last_name' => 'Jansen',
+            'contact_email' => 'info@acme.test',
+            'kvk_number' => '12345678',
+        ]);
 
         $response = $this
             ->actingAs($user)
             ->post(route('dashboard.create.store'), [
                 'title' => 'Nieuwe website opdracht',
-                'client_name' => 'Acme B.V.',
-                'client_email' => 'info@acme.test',
+                'contact_id' => $contact->id,
                 'description' => 'Ontwikkeling van een marketingwebsite.',
                 'total_value' => '2499.95',
                 'status' => 'verzonden',
@@ -38,6 +56,8 @@ class ConfirmationFlowTest extends TestCase
         $this->assertNotNull($confirmation);
         $this->assertSame($user->id, $confirmation->user_id);
         $this->assertSame('Acme B.V.', $confirmation->client_name);
+        $this->assertSame('Sanne Jansen', $confirmation->client_contact_name);
+        $this->assertSame('info@acme.test', $confirmation->client_email);
     }
 
     public function test_confirmations_page_shows_only_own_confirmations(): void
@@ -80,11 +100,25 @@ class ConfirmationFlowTest extends TestCase
 
     public function test_user_can_send_confirmation_email(): void
     {
-        Mail::fake();
+        Http::fake([
+            'https://api.signhost.com/api/transaction' => Http::response([
+                'Id' => 'tx-legacy-test',
+                'Status' => 5,
+            ], 201),
+            'https://api.signhost.com/api/transaction/tx-legacy-test/file/*' => Http::response([], 200),
+            'https://api.signhost.com/api/transaction/tx-legacy-test/start' => Http::response([], 200),
+        ]);
+        Storage::fake('local');
 
         $user = User::factory()->create();
-        $confirmation = Confirmation::factory()->create([
-            'user_id' => $user->id,
+        $confirmation = $user->confirmations()->create([
+            'reference' => 'OB-SENDTEST',
+            'title' => 'Onderteken deze opdracht',
+            'client_name' => 'Acme B.V.',
+            'client_contact_name' => 'Sanne Jansen',
+            'client_email' => 'sanne@acme.test',
+            'total_value' => '1000.00',
+            'public_token' => 'send-test-token',
             'status' => 'concept',
             'sent_at' => null,
         ]);
@@ -95,14 +129,11 @@ class ConfirmationFlowTest extends TestCase
 
         $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
 
-        Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation) {
-            return $mail->confirmation->is($confirmation);
-        });
-
         $confirmation->refresh();
 
         $this->assertSame('verzonden', $confirmation->status);
         $this->assertNotNull($confirmation->sent_at);
+        $this->assertSame('tx-legacy-test', $confirmation->signhost_transaction_id);
     }
 
     public function test_public_recipient_can_sign_confirmation(): void
@@ -124,5 +155,34 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('getekend', $confirmation->status);
         $this->assertSame('Jan de Vries', $confirmation->signer_name);
         $this->assertNotNull($confirmation->signed_at);
+    }
+
+    public function test_authenticated_user_can_store_a_contact(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.contacts.store'), [
+                'company_name' => 'Voorbeeld B.V.',
+                'kvk_number' => '12345678',
+                'street_name' => 'Keizersgracht',
+                'house_number' => '1',
+                'house_number_addition' => 'A',
+                'postal_code' => '1015CJ',
+                'city' => 'Amsterdam',
+                'country' => 'Nederland',
+                'contact_first_name' => 'Piet',
+                'contact_last_name' => 'de Boer',
+                'contact_email' => 'piet@example.test',
+            ]);
+
+        $response->assertRedirect(route('dashboard.contacts'));
+
+        $this->assertDatabaseHas('contacts', [
+            'user_id' => $user->id,
+            'company_name' => 'Voorbeeld B.V.',
+            'contact_email' => 'piet@example.test',
+        ]);
     }
 }

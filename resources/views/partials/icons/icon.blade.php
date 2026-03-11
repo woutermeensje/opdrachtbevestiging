@@ -46,5 +46,16 @@
             <path d="M3 10.5 12 3l9 7.5"></path>
             <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"></path>
             @break
+
+        @case('building')
+            <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+            <path d="M8 7h.01"></path>
+            <path d="M12 7h.01"></path>
+            <path d="M16 7h.01"></path>
+            <path d="M8 11h.01"></path>
+            <path d="M12 11h.01"></path>
+            <path d="M16 11h.01"></path>
+            <path d="M10 21v-4h4v4"></path>
+            @break
     @endswitch
 </svg>

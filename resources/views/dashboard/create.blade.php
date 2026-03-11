@@ -6,10 +6,24 @@
     @include('partials.dashboard.page-header', [
         'eyebrow' => 'Aanmaken',
         'title' => 'Nieuwe opdrachtbevestiging',
-        'text' => 'Maak hier een nieuwe opdrachtbevestiging aan met klantgegevens, opdrachtwaarde en belangrijke data.',
+        'text' => 'Kies een opgeslagen opdrachtgever uit je contacten en vul daarna de inhoud van de opdrachtbevestiging aan.',
     ])
 
     @include('partials.forms.errors')
+
+    @if (session('status'))
+        <div class="dashboard-notice">{{ session('status') }}</div>
+    @endif
+
+    @if ($contacts->isEmpty())
+        @include('partials.dashboard.panel', [
+            'title' => 'Voeg eerst een contact toe',
+            'slot' => '
+                <p>Je hebt nog geen opdrachtgever in je account staan. Voeg eerst onder Contacten een bedrijf en contactpersoon toe via de KVK API.</p>
+                <p><a href="'.e(route('dashboard.contacts')).'" class="btn btn-primary">Naar contacten</a></p>
+            ',
+        ])
+    @else
 
     @include('partials.dashboard.panel', [
         'title' => 'Gegevens invullen',
@@ -23,19 +37,22 @@
                         <input id="title" name="title" type="text" value="'.e(old('title')).'" required>
                     </div>
                     <div>
-                        <label for="client_name">Klantnaam</label>
-                        <input id="client_name" name="client_name" type="text" value="'.e(old('client_name')).'" required>
+                        <label for="contact_id">Opdrachtgever</label>
+                        <select id="contact_id" name="contact_id" required>
+                            <option value="">Kies een bedrijf</option>
+                            '.collect($contacts)->map(fn ($contact) => '<option value="'.e((string) $contact->id).'" '.(old('contact_id') == $contact->id ? 'selected' : '').'>'.e($contact->company_name.' - '.$contact->contactName().' ('.$contact->contact_email.')').'</option>')->implode('').'
+                        </select>
                     </div>
                 </div>
 
                 <div class="grid-2">
                     <div>
-                        <label for="client_email">E-mailadres klant</label>
-                        <input id="client_email" name="client_email" type="email" value="'.e(old('client_email')).'" required>
-                    </div>
-                    <div>
                         <label for="total_value">Waarde</label>
                         <input id="total_value" name="total_value" type="number" step="0.01" min="0" value="'.e(old('total_value')).'" required>
+                    </div>
+                    <div>
+                        <label for="agreement_date">Opdrachtdatum</label>
+                        <input id="agreement_date" name="agreement_date" type="date" value="'.e(old('agreement_date')).'">
                     </div>
                 </div>
 
@@ -50,12 +67,12 @@
                         </select>
                     </div>
                     <div>
-                        <label for="agreement_date">Opdrachtdatum</label>
-                        <input id="agreement_date" name="agreement_date" type="date" value="'.e(old('agreement_date')).'">
+                        <label for="expires_at">Vervaldatum</label>
+                        <input id="expires_at" name="expires_at" type="date" value="'.e(old('expires_at')).'">
                     </div>
                 </div>
 
-                <div class="grid-3">
+                <div class="grid-2">
                     <div>
                         <label for="sent_at">Verzenddatum</label>
                         <input id="sent_at" name="sent_at" type="date" value="'.e(old('sent_at')).'">
@@ -63,10 +80,6 @@
                     <div>
                         <label for="signed_at">Tekendatum</label>
                         <input id="signed_at" name="signed_at" type="date" value="'.e(old('signed_at')).'">
-                    </div>
-                    <div>
-                        <label for="expires_at">Vervaldatum</label>
-                        <input id="expires_at" name="expires_at" type="date" value="'.e(old('expires_at')).'">
                     </div>
                 </div>
 
@@ -79,4 +92,5 @@
             </form>
         ',
     ])
+    @endif
 @endsection

@@ -3,6 +3,7 @@
         ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home'],
         ['route' => 'dashboard.create', 'label' => 'Aanmaken', 'icon' => 'plus-square'],
         ['route' => 'dashboard.confirmations', 'label' => 'Opdrachtbevestigingen', 'icon' => 'file-text'],
+        ['route' => 'dashboard.contacts', 'label' => 'Contacten', 'icon' => 'building'],
         ['route' => 'dashboard.profile', 'label' => 'Mijn profiel', 'icon' => 'user-circle'],
     ];
 @endphp

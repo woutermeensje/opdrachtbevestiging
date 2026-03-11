@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfirmationController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailVerificationNotificationController;
 use App\Http\Controllers\EmailVerificationPromptController;
@@ -64,6 +65,7 @@ Route::get('/prijzen', [PageController::class, 'pricing'])->name('pages.pricing'
 Route::get('/contact', [PageController::class, 'contact'])->name('pages.contact');
 Route::get('/opdrachtbevestiging/{token}', [PublicConfirmationController::class, 'show'])->name('confirmations.public.show');
 Route::post('/opdrachtbevestiging/{token}/ondertekenen', [PublicConfirmationController::class, 'sign'])->name('confirmations.public.sign');
+Route::post('/kvk/lookup', KvkLookupController::class)->name('kvk.lookup');
 
 Route::redirect('/register', '/registreren');
 Route::redirect('/login', '/inloggen');
@@ -71,7 +73,6 @@ Route::redirect('/login', '/inloggen');
 Route::middleware('guest')->group(function (): void {
     Route::get('/registreren', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/registreren', [AuthController::class, 'register'])->name('register.store');
-    Route::post('/kvk/lookup', KvkLookupController::class)->name('kvk.lookup');
     Route::get('/inloggen', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/inloggen', [AuthController::class, 'login'])->name('login.store');
     Route::get('/wachtwoord-vergeten', [PasswordResetLinkController::class, 'create'])->name('password.request');
@@ -98,5 +99,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard/opdrachtbevestigingen', [ConfirmationController::class, 'index'])->name('dashboard.confirmations');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
     Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
+    Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/ondertekend-document', [ConfirmationController::class, 'downloadSignedDocument'])->name('dashboard.confirmations.download-signed-document');
+    Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/receipt', [ConfirmationController::class, 'downloadReceipt'])->name('dashboard.confirmations.download-receipt');
+    Route::get('/dashboard/contacten', [ContactController::class, 'index'])->name('dashboard.contacts');
+    Route::post('/dashboard/contacten', [ContactController::class, 'store'])->name('dashboard.contacts.store');
     Route::get('/dashboard/mijn-profiel', [DashboardController::class, 'profile'])->name('dashboard.profile');
 });

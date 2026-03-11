@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\SignhostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class SignhostWebhookController extends Controller
 {
+    public function __construct(
+        private readonly SignhostService $signhostService,
+    ) {
+    }
+
     public function status(): JsonResponse
     {
         return response()->json([
@@ -36,6 +42,8 @@ class SignhostWebhookController extends Controller
             ],
             'payload' => $request->json()->all() ?: $request->all(),
         ]);
+
+        $this->signhostService->handlePostback($request->json()->all() ?: $request->all());
 
         return response()->json([
             'received' => true,

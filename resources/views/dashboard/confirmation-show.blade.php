@@ -6,7 +6,7 @@
     @include('partials.dashboard.page-header', [
         'eyebrow' => 'Detail',
         'title' => $confirmation->title,
-        'text' => 'Referentie '.$confirmation->reference.' voor '.$confirmation->client_name.'.',
+        'text' => 'Referentie '.$confirmation->reference.' voor '.$confirmation->client_name.' met contactpersoon '.$confirmation->client_contact_name.'.',
     ])
 
     @if (session('status'))
@@ -15,10 +15,12 @@
 
     <div class="dashboard-content-grid">
         @include('partials.dashboard.panel', [
-            'title' => 'Klant',
+            'title' => 'Opdrachtgever',
             'slot' => '
-                <p><strong>Naam:</strong> '.e($confirmation->client_name).'</p>
+                <p><strong>Bedrijf:</strong> '.e($confirmation->client_name).'</p>
+                <p><strong>Contactpersoon:</strong> '.e($confirmation->client_contact_name ?: '-').'</p>
                 <p><strong>E-mail:</strong> '.e($confirmation->client_email).'</p>
+                <p><strong>KVK:</strong> '.e($confirmation->client_kvk_number ?: '-').'</p>
             ',
         ])
 
@@ -27,6 +29,7 @@
             'slot' => '
                 <p><strong>Status:</strong> '.e($confirmation->status).'</p>
                 <p><strong>Waarde:</strong> EUR '.e(number_format((float) $confirmation->total_value, 2, ',', '.')).'</p>
+                <p><strong>Signhost status:</strong> '.e($confirmation->signhost_status ?: '-').'</p>
                 <p><strong>Publieke link:</strong> <a href="'.e($confirmation->publicUrl()).'" target="_blank" rel="noopener noreferrer">Open document</a></p>
                 <form method="POST" action="'.e(route('dashboard.confirmations.send', $confirmation)).'" style="margin-top:12px;">
                     '.csrf_field().'
@@ -51,6 +54,25 @@
         @include('partials.dashboard.panel', [
             'title' => 'Omschrijving',
             'slot' => '<p>'.e($confirmation->description ?: 'Geen omschrijving toegevoegd.').'</p>',
+        ])
+    </div>
+
+    <div class="dashboard-content-grid">
+        @include('partials.dashboard.panel', [
+            'title' => 'Ondertekenaars',
+            'slot' => '
+                <p><strong>Signer 1:</strong> '.e($confirmation->sender_name ?: '-').' ('.e($confirmation->sender_email ?: '-').')</p>
+                <p><strong>Signer 2:</strong> '.e($confirmation->client_contact_name ?: '-').' ('.e($confirmation->client_email).')</p>
+            ',
+        ])
+
+        @include('partials.dashboard.panel', [
+            'title' => 'Signhost bestanden',
+            'slot' => '
+                <p><strong>Transaction ID:</strong> '.e($confirmation->signhost_transaction_id ?: '-').'</p>
+                <p><strong>Ondertekende PDF:</strong> '.($confirmation->signhost_signed_document_path ? '<a href="'.e(route('dashboard.confirmations.download-signed-document', $confirmation)).'">Downloaden</a>' : 'Nog niet beschikbaar').'</p>
+                <p><strong>Receipt:</strong> '.($confirmation->signhost_receipt_path ? '<a href="'.e(route('dashboard.confirmations.download-receipt', $confirmation)).'">Downloaden</a>' : 'Nog niet beschikbaar').'</p>
+            ',
         ])
     </div>
 @endsection

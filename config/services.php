@@ -40,6 +40,7 @@ return [
         'application_key' => env('SIGNHOST_APPLICATION_KEY'),
         'user_token' => env('SIGNHOST_USER_TOKEN'),
         'postback_url' => env('SIGNHOST_POSTBACK_URL'),
+        'postback_code' => env('SIGNHOST_POSTBACK_CODE'),
         'webhook_bearer_token' => env('SIGNHOST_WEBHOOK_BEARER_TOKEN'),
     ],
 

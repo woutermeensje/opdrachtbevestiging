@@ -19,6 +19,7 @@ class DashboardController extends Controller
                 'signed' => $user->confirmations()->where('status', 'getekend')->count(),
                 'value' => (float) $user->confirmations()->sum('total_value'),
             ],
+            'contactCount' => $user->contacts()->count(),
             'recentConfirmations' => $confirmations,
         ]);
     }
