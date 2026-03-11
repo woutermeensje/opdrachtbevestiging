@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'signhost' => [
+        'base_url' => env('SIGNHOST_BASE_URL', 'https://api.signhost.com/api'),
+        'application_key' => env('SIGNHOST_APPLICATION_KEY'),
+        'user_token' => env('SIGNHOST_USER_TOKEN'),
+        'postback_url' => env('SIGNHOST_POSTBACK_URL'),
+        'webhook_bearer_token' => env('SIGNHOST_WEBHOOK_BEARER_TOKEN'),
+    ],
+
 ];

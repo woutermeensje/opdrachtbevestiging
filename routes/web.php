@@ -11,12 +11,18 @@ use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\KvkLookupController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PublicConfirmationController;
+use App\Http\Controllers\SignhostWebhookController;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/api/signhost/webhook', SignhostWebhookController::class)
+    ->withoutMiddleware([VerifyCsrfToken::class])
+    ->name('signhost.webhook');
 
 Route::get('/robots.txt', function (): Response {
     $content = implode("\n", [
