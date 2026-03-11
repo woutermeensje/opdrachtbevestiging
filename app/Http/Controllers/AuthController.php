@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Notifications\AdminNewUserRegisteredNotification;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -48,10 +51,17 @@ class AuthController extends Controller
             'password' => $validated['password'],
         ]);
 
+        event(new Registered($user));
+
+        if (filled(config('mail.admin_address'))) {
+            Notification::route('mail', config('mail.admin_address'))
+                ->notify(new AdminNewUserRegisteredNotification($user));
+        }
+
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        return redirect()->route('verification.notice');
     }
 
     public function showLogin(): View

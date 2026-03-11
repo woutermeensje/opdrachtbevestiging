@@ -11,6 +11,7 @@
         <h1>Inloggen</h1>
         <p class="subtitle">Log in om je opdrachtbevestigingen te beheren.</p>
 
+        @include('partials.forms.status')
         @include('partials.forms.errors')
 
         <form method="POST" action="{{ route('login.store') }}">
@@ -21,6 +22,10 @@
 
             <label for="password">Wachtwoord</label>
             <input id="password" name="password" type="password" required>
+
+            <p class="auth-inline-link">
+                <a href="{{ route('password.request') }}">Wachtwoord vergeten?</a>
+            </p>
 
             <div class="actions">
                 <a href="{{ route('register') }}" class="btn btn-secondary">Maak een account</a>

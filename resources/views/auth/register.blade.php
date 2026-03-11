@@ -11,6 +11,7 @@
         <h1>Account aanmaken</h1>
         <p class="subtitle">Registreer je met je naam, e-mailadres en bedrijfsnaam.</p>
 
+        @include('partials.forms.status')
         @include('partials.forms.errors')
 
         @php

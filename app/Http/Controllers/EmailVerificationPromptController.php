@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class EmailVerificationPromptController extends Controller
+{
+    public function __invoke(Request $request): View|RedirectResponse
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('auth.verify-email');
+    }
+}

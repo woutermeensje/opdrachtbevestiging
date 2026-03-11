@@ -3,6 +3,11 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfirmationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmailVerificationNotificationController;
+use App\Http\Controllers\EmailVerificationPromptController;
+use App\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\PasswordResetLinkController;
+use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\KvkLookupController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PublicConfirmationController;
@@ -61,9 +66,24 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/kvk/lookup', KvkLookupController::class)->name('kvk.lookup');
     Route::get('/inloggen', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/inloggen', [AuthController::class, 'login'])->name('login.store');
+    Route::get('/wachtwoord-vergeten', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/wachtwoord-vergeten', [PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::get('/wachtwoord-instellen/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/wachtwoord-instellen', [NewPasswordController::class, 'store'])->name('password.update');
 });
 
 Route::middleware('auth')->group(function (): void {
+    Route::get('/email/bevestigen', EmailVerificationPromptController::class)->name('verification.notice');
+    Route::get('/email/bevestigen/{id}/{hash}', VerifyEmailController::class)
+        ->middleware('signed')
+        ->name('verification.verify');
+    Route::post('/email/bevestiging-opnieuw-versturen', EmailVerificationNotificationController::class)
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/aanmaken', [ConfirmationController::class, 'create'])->name('dashboard.create');
     Route::post('/dashboard/aanmaken', [ConfirmationController::class, 'store'])->name('dashboard.create.store');
@@ -71,5 +91,4 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
     Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
     Route::get('/dashboard/mijn-profiel', [DashboardController::class, 'profile'])->name('dashboard.profile');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
