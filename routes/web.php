@@ -23,6 +23,8 @@ Route::get('/', function () {
 Route::post('/api/signhost/webhook', SignhostWebhookController::class)
     ->withoutMiddleware([VerifyCsrfToken::class])
     ->name('signhost.webhook');
+Route::get('/api/signhost/webhook', [SignhostWebhookController::class, 'status'])
+    ->name('signhost.webhook.status');
 
 Route::get('/robots.txt', function (): Response {
     $content = implode("\n", [

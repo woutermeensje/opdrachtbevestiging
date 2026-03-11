@@ -8,6 +8,16 @@ use Illuminate\Support\Facades\Log;
 
 class SignhostWebhookController extends Controller
 {
+    public function status(): JsonResponse
+    {
+        return response()->json([
+            'ok' => true,
+            'postback_url' => config('services.signhost.postback_url'),
+            'has_webhook_bearer_token' => config('services.signhost.webhook_bearer_token') !== null
+                && config('services.signhost.webhook_bearer_token') !== '',
+        ]);
+    }
+
     public function __invoke(Request $request): JsonResponse
     {
         $configuredToken = (string) config('services.signhost.webhook_bearer_token');
