@@ -26,12 +26,6 @@ class AuthFlowTest extends TestCase
             'last_name' => 'Meens',
             'kvk_number' => '12345678',
             'company_name' => 'Opdrachtbevestiging',
-            'street_name' => 'Dorpsstraat',
-            'house_number' => '12',
-            'house_number_addition' => 'A',
-            'postal_code' => '1234AB',
-            'city' => 'Amsterdam',
-            'country' => 'Nederland',
             'email' => 'wouter@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -45,6 +39,12 @@ class AuthFlowTest extends TestCase
             'first_name' => 'Wouter',
             'last_name' => 'Meens',
             'company_name' => 'Opdrachtbevestiging',
+            'kvk_number' => '12345678',
+            'street_name' => null,
+            'house_number' => null,
+            'postal_code' => null,
+            'city' => null,
+            'country' => null,
         ]);
 
         $user = User::where('email', 'wouter@example.com')->firstOrFail();

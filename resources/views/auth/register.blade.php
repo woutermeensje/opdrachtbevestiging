@@ -17,7 +17,7 @@
         @php
             $step = 1;
 
-            if ($errors->hasAny(['kvk_number', 'company_name', 'street_name', 'house_number', 'house_number_addition', 'postal_code', 'city', 'country'])) {
+            if ($errors->hasAny(['kvk_number', 'company_name'])) {
                 $step = 2;
             }
 
@@ -67,7 +67,7 @@
             <section class="form-step-panel" data-step-panel="2">
                 <p class="form-step-title">Stap 2 van 3: bedrijfsgegevens</p>
 
-                <div class="grid-kvk">
+                <div class="grid-2">
                     <div>
                         <label for="company_name">Bedrijfsnaam</label>
                         <input
@@ -82,53 +82,19 @@
                         >
                         <datalist id="register-company-options" data-company-options></datalist>
                     </div>
-                    <div class="kvk-actions">
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-kvk-lookup
-                            data-kvk-url="{{ route('kvk.lookup') }}"
+                    <div>
+                        <label for="kvk_number">KVK-nummer</label>
+                        <input
+                            id="kvk_number"
+                            name="kvk_number"
+                            type="text"
+                            inputmode="numeric"
+                            pattern="[0-9]{8}"
+                            maxlength="8"
+                            value="{{ old('kvk_number') }}"
+                            data-kvk-number
+                            required
                         >
-                            Bedrijfsgegevens ophalen
-                        </button>
-                    </div>
-                </div>
-
-                <p class="form-help" data-kvk-feedback></p>
-
-                <label for="kvk_number">KVK-nummer</label>
-                <input id="kvk_number" name="kvk_number" type="text" value="{{ old('kvk_number') }}" data-kvk-target="kvk_number" required readonly>
-
-                <div class="grid-address">
-                    <div>
-                        <label for="street_name">Straat</label>
-                        <input id="street_name" name="street_name" type="text" value="{{ old('street_name') }}" data-kvk-target="street_name" required>
-                    </div>
-                    <div>
-                        <label for="house_number">Huisnummer</label>
-                        <input id="house_number" name="house_number" type="text" value="{{ old('house_number') }}" data-kvk-target="house_number" required>
-                    </div>
-                </div>
-
-                <div class="grid-address">
-                    <div>
-                        <label for="house_number_addition">Toevoeging</label>
-                        <input id="house_number_addition" name="house_number_addition" type="text" value="{{ old('house_number_addition') }}" data-kvk-target="house_number_addition">
-                    </div>
-                    <div>
-                        <label for="postal_code">Postcode</label>
-                        <input id="postal_code" name="postal_code" type="text" value="{{ old('postal_code') }}" data-kvk-target="postal_code" required>
-                    </div>
-                </div>
-
-                <div class="grid-address">
-                    <div>
-                        <label for="city">Plaats</label>
-                        <input id="city" name="city" type="text" value="{{ old('city') }}" data-kvk-target="city" required>
-                    </div>
-                    <div>
-                        <label for="country">Land</label>
-                        <input id="country" name="country" type="text" value="{{ old('country', 'Nederland') }}" data-kvk-target="country" required>
                     </div>
                 </div>
 

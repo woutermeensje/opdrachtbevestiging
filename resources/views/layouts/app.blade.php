@@ -23,12 +23,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="{{ $bodyClass ?? '' }}">
-    @include('partials.navigation')
-
     <main class="{{ $mainClass ?? '' }}">
         @yield('content')
     </main>
-
-    @include('partials.footer')
 </body>
 </html>

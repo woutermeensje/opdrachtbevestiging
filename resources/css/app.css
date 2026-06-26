@@ -21,13 +21,11 @@
 /* ===============================
    COMPONENTS
 ================================ */
-@import './navigation.css';
 @import './buttons.css';
 @import './forms.css';
 @import './layout.css';
 @import './auth.css';
 @import './dashboard.css';
-@import './footer.css';
 
 /* ===============================
    CSS VARIABLES (SINGLE SOURCE)
