@@ -18,10 +18,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::post('/api/signhost/webhook', SignhostWebhookController::class)
     ->withoutMiddleware([VerifyCsrfToken::class])
     ->name('signhost.webhook');
@@ -45,7 +41,6 @@ Route::get('/robots.txt', function (): Response {
 
 Route::get('/sitemap.xml', function (): Response {
     $pages = collect([
-        ['loc' => url('/'), 'priority' => '1.0'],
         ['loc' => route('pages.how-it-works'), 'priority' => '0.8'],
         ['loc' => route('pages.what-is-confirmation'), 'priority' => '0.8'],
         ['loc' => route('pages.create-confirmation'), 'priority' => '0.8'],
@@ -73,6 +68,7 @@ Route::redirect('/register', '/registreren');
 Route::redirect('/login', '/inloggen');
 
 Route::middleware('guest')->group(function (): void {
+    Route::get('/', fn () => view('welcome'));
     Route::get('/registreren', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/registreren', [AuthController::class, 'register'])->name('register.store');
     Route::get('/inloggen', [AuthController::class, 'showLogin'])->name('login');
