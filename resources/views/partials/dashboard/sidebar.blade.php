@@ -10,7 +10,7 @@
 
 <aside class="dashboard-sidebar">
     <a href="{{ route('dashboard') }}" class="dashboard-brand">
-        <img src="{{ asset('Logo/Logo-opdrachtbevesting.png') }}" alt="Opdrachtbevestiging.nl" class="dashboard-brand-logo">
+        <span class="dashboard-brand-text">Opdrachtbevestiging<span class="dashboard-brand-text-accent">.nl</span></span>
     </a>
 
     <nav class="dashboard-nav" aria-label="Dashboard navigatie">

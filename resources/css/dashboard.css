@@ -25,9 +25,10 @@
 }
 
 .dashboard-brand {
-    display: inline-flex;
+    display: flex;
+    width: 100%;
     align-items: center;
-    padding: 0.5rem 0.5rem 1.25rem;
+    padding: 0.5rem 0.75rem 1.25rem;
     margin-bottom: 0.75rem;
     border-bottom: 1px solid var(--color-border);
 }
@@ -36,9 +37,19 @@
     text-decoration: none;
 }
 
-.dashboard-brand-logo {
-    width: auto;
-    height: 32px;
+.dashboard-brand-text {
+    display: block;
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.dashboard-brand-text-accent {
+    color: color-mix(in srgb, var(--color-primary) 55%, white);
 }
 
 .dashboard-nav {
