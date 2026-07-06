@@ -41,22 +41,28 @@
 
 .page-eyebrow {
     margin: 0 0 0.5rem;
-    color: #9a6a27;
+    color: var(--color-primary);
+    font-family: var(--font-heading);
     font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 .page-hero h1 {
     margin: 0 0 0.8rem;
-    font-size: clamp(2rem, 4vw, 3.2rem);
+    color: #333;
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 800;
 }
 
 .page-intro {
     max-width: 720px;
-    color: var(--color-text-subtle);
+    color: #333;
+    font-family: var(--font-text);
     font-size: 1rem;
+    font-weight: 400;
 }
 
 .page-content {
@@ -91,7 +97,7 @@
 
 .pricing-card-featured {
     border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
-    background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
+    background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, var(--color-primary) 6%, white) 100%);
 }
 
 .pricing-card-wide {

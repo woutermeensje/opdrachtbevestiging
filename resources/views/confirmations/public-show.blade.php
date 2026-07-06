@@ -50,7 +50,7 @@
 
                 <div class="public-document-body">
                     <h3>Omschrijving</h3>
-                    <p>{{ $confirmation->description ?: 'Er is geen aanvullende omschrijving toegevoegd.' }}</p>
+                    <div class="dashboard-rich-content">{!! $confirmation->descriptionHtml() !!}</div>
                 </div>
             </article>
 

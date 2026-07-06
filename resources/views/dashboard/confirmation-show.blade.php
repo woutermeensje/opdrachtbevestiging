@@ -52,7 +52,7 @@
 
         @include('partials.dashboard.panel', [
             'title' => 'Omschrijving',
-            'slot' => '<p>'.e($confirmation->description ?: 'Geen omschrijving toegevoegd.').'</p>',
+            'slot' => '<div class="dashboard-rich-content">'.$confirmation->descriptionHtml().'</div>',
         ])
     </div>
 

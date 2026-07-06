@@ -37,14 +37,16 @@ class ConfirmationController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'contact_id' => ['required', 'integer'],
-            'description' => ['nullable', 'string'],
-            'total_value' => ['required', 'numeric', 'min:0'],
-            'status' => ['required', 'in:concept,verzonden,getekend,wacht-op-akkoord'],
-            'agreement_date' => ['nullable', 'date'],
-            'sent_at' => ['nullable', 'date'],
-            'signed_at' => ['nullable', 'date'],
-            'expires_at' => ['nullable', 'date'],
+            'description' => ['required', 'string'],
         ]);
+
+        $description = Confirmation::sanitizeDescription($validated['description']);
+
+        if ($description === null) {
+            return back()
+                ->withInput()
+                ->withErrors(['description' => 'Vul het tekstblok in.']);
+        }
 
         $contact = $request->user()
             ->contacts()
@@ -58,21 +60,30 @@ class ConfirmationController extends Controller
             'client_contact_name' => $contact->contactName(),
             'client_email' => $contact->contact_email,
             'client_kvk_number' => $contact->kvk_number,
-            'description' => $validated['description'] ?? null,
-            'total_value' => $validated['total_value'],
+            'description' => $description,
+            'total_value' => 0,
             'public_token' => Str::random(40),
-            'status' => $validated['status'],
+            'status' => 'concept',
             'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
             'sender_email' => $request->user()->email,
-            'agreement_date' => $validated['agreement_date'] ?? null,
-            'sent_at' => $validated['sent_at'] ?? null,
-            'signed_at' => $validated['signed_at'] ?? null,
-            'expires_at' => $validated['expires_at'] ?? null,
         ]);
+
+        try {
+            $this->sendConfirmationEmail($confirmation);
+        } catch (Throwable $exception) {
+            return redirect()
+                ->route('dashboard.confirmations.show', $confirmation)
+                ->with('status', 'Opdrachtbevestiging opgeslagen, maar e-mailverzending mislukt: '.$exception->getMessage());
+        }
+
+        $confirmation->forceFill([
+            'status' => 'verzonden',
+            'sent_at' => now(),
+        ])->save();
 
         return redirect()
             ->route('dashboard.confirmations.show', $confirmation)
-            ->with('status', 'Opdrachtbevestiging opgeslagen.');
+            ->with('status', 'Opdrachtbevestiging is per e-mail verzonden naar '.$confirmation->client_email.'.');
     }
 
     public function show(Request $request, Confirmation $confirmation): View
@@ -95,7 +106,7 @@ class ConfirmationController extends Controller
         }
 
         try {
-            Mail::to($confirmation->client_email)->send(new ConfirmationInvitationMail($confirmation));
+            $this->sendConfirmationEmail($confirmation);
         } catch (Throwable $exception) {
             return redirect()
                 ->route('dashboard.confirmations.show', $confirmation)
@@ -110,6 +121,11 @@ class ConfirmationController extends Controller
         return redirect()
             ->route('dashboard.confirmations.show', $confirmation)
             ->with('status', 'Opdrachtbevestiging is per e-mail verzonden naar '.$confirmation->client_email.'.');
+    }
+
+    private function sendConfirmationEmail(Confirmation $confirmation): void
+    {
+        Mail::to($confirmation->client_email)->send(new ConfirmationInvitationMail($confirmation));
     }
 
     private function generateReference(): string

@@ -161,3 +161,44 @@ document.querySelectorAll('[data-kvk-form]').forEach((kvkForm) => {
 
     syncSteps();
 });
+
+document.querySelectorAll('[data-rich-editor-wrapper]').forEach((wrapper) => {
+    const editor = wrapper.querySelector('[data-rich-editor]');
+    const input = wrapper.querySelector('[data-rich-editor-input]');
+    const form = wrapper.closest('form');
+
+    if (!editor || !input) {
+        return;
+    }
+
+    const syncInput = () => {
+        input.value = editor.innerHTML.trim();
+        editor.classList.toggle('is-invalid', editor.dataset.richRequired === 'true' && editor.textContent.trim() === '');
+    };
+
+    wrapper.querySelectorAll('[data-rich-command]').forEach((button) => {
+        button.addEventListener('mousedown', (event) => {
+            event.preventDefault();
+        });
+
+        button.addEventListener('click', () => {
+            editor.focus();
+            document.execCommand(button.dataset.richCommand, false);
+            syncInput();
+        });
+    });
+
+    editor.addEventListener('input', syncInput);
+    editor.addEventListener('blur', syncInput);
+
+    form?.addEventListener('submit', (event) => {
+        syncInput();
+
+        if (editor.dataset.richRequired === 'true' && editor.textContent.trim() === '') {
+            event.preventDefault();
+            editor.focus();
+        }
+    });
+
+    syncInput();
+});

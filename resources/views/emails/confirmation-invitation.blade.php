@@ -36,14 +36,22 @@
             </tr>
         </table>
 
-        <div style="padding:18px 20px;background:#f0f5f0;border-left:4px solid #4f6f52;margin:0 0 24px;">
-            <p style="margin:0 0 8px;"><strong>Opdrachtdatum:</strong> {{ optional($confirmation->agreement_date)->format('d-m-Y') ?? 'Niet ingevuld' }}</p>
-            <p style="margin:0 0 8px;"><strong>Waarde:</strong> EUR {{ number_format((float) $confirmation->total_value, 2, ',', '.') }}</p>
-            <p style="margin:0;"><strong>Vervaldatum:</strong> {{ optional($confirmation->expires_at)->format('d-m-Y') ?? 'Niet ingesteld' }}</p>
-        </div>
+        @if ((float) $confirmation->total_value > 0 || $confirmation->agreement_date !== null || $confirmation->expires_at !== null)
+            <div style="padding:18px 20px;background:#f0f5f0;border-left:4px solid #4f6f52;margin:0 0 24px;">
+                @if ($confirmation->agreement_date !== null)
+                    <p style="margin:0 0 8px;"><strong>Opdrachtdatum:</strong> {{ $confirmation->agreement_date->format('d-m-Y') }}</p>
+                @endif
+                @if ((float) $confirmation->total_value > 0)
+                    <p style="margin:0 0 8px;"><strong>Waarde:</strong> EUR {{ number_format((float) $confirmation->total_value, 2, ',', '.') }}</p>
+                @endif
+                @if ($confirmation->expires_at !== null)
+                    <p style="margin:0;"><strong>Vervaldatum:</strong> {{ $confirmation->expires_at->format('d-m-Y') }}</p>
+                @endif
+            </div>
+        @endif
 
         <h2 style="margin:0 0 12px;font-size:18px;color:#1f2a24;">Omschrijving van de opdracht</h2>
-        <div style="margin:0 0 28px;white-space:pre-line;line-height:1.6;">{{ $confirmation->description ?: 'Geen omschrijving toegevoegd.' }}</div>
+        <div style="margin:0 0 28px;line-height:1.6;">{!! $confirmation->descriptionHtml() !!}</div>
 
         <hr style="border:0;border-top:1px solid #deded7;margin:0 0 20px;">
 

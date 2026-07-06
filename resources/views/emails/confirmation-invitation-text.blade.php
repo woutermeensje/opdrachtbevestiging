@@ -21,12 +21,18 @@ Opdrachtgever
 {{ $confirmation->client_email }}
 
 Referentie: {{ $confirmation->reference }}
-Opdrachtdatum: {{ optional($confirmation->agreement_date)->format('d-m-Y') ?? 'Niet ingevuld' }}
+@if ($confirmation->agreement_date !== null)
+Opdrachtdatum: {{ $confirmation->agreement_date->format('d-m-Y') }}
+@endif
+@if ((float) $confirmation->total_value > 0)
 Waarde: EUR {{ number_format((float) $confirmation->total_value, 2, ',', '.') }}
-Vervaldatum: {{ optional($confirmation->expires_at)->format('d-m-Y') ?? 'Niet ingesteld' }}
+@endif
+@if ($confirmation->expires_at !== null)
+Vervaldatum: {{ $confirmation->expires_at->format('d-m-Y') }}
+@endif
 
 Omschrijving van de opdracht
-{{ $confirmation->description ?: 'Geen omschrijving toegevoegd.' }}
+{{ $confirmation->descriptionText() }}
 
 Met vriendelijke groet,
 {{ $confirmation->sender_name ?: $senderCompany }}

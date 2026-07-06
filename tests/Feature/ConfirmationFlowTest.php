@@ -27,6 +27,8 @@ class ConfirmationFlowTest extends TestCase
 
     public function test_authenticated_user_can_create_confirmation(): void
     {
+        Mail::fake();
+
         $user = User::factory()->create();
         $contact = Contact::factory()->create([
             'user_id' => $user->id,
@@ -42,13 +44,7 @@ class ConfirmationFlowTest extends TestCase
             ->post(route('dashboard.create.store'), [
                 'title' => 'Nieuwe website opdracht',
                 'contact_id' => $contact->id,
-                'description' => 'Ontwikkeling van een marketingwebsite.',
-                'total_value' => '2499.95',
-                'status' => 'verzonden',
-                'agreement_date' => '2026-03-08',
-                'sent_at' => '2026-03-09',
-                'signed_at' => null,
-                'expires_at' => '2026-03-23',
+                'description' => '<p>Ontwikkeling van een <strong>marketingwebsite</strong>.</p>',
             ]);
 
         $confirmation = Confirmation::query()->first();
@@ -59,6 +55,37 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('Acme B.V.', $confirmation->client_name);
         $this->assertSame('Sanne Jansen', $confirmation->client_contact_name);
         $this->assertSame('info@acme.test', $confirmation->client_email);
+        $this->assertSame('verzonden', $confirmation->status);
+        $this->assertSame('0.00', $confirmation->total_value);
+        $this->assertNotNull($confirmation->sent_at);
+        $this->assertSame('<p>Ontwikkeling van een <strong>marketingwebsite</strong>.</p>', $confirmation->description);
+
+        Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
+            $mail->assertSeeInHtml('<strong>marketingwebsite</strong>', false);
+
+            return $mail->hasTo($confirmation->client_email);
+        });
+    }
+
+    public function test_create_confirmation_form_uses_simplified_fields(): void
+    {
+        $user = User::factory()->create();
+
+        Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('dashboard.create'));
+
+        $response
+            ->assertOk()
+            ->assertSee('name="title"', false)
+            ->assertSee('data-rich-editor', false)
+            ->assertSee('name="contact_id"', false)
+            ->assertSee('Verzenden')
+            ->assertDontSee('name="total_value"', false)
+            ->assertDontSee('name="status"', false);
     }
 
     public function test_confirmations_page_shows_only_own_confirmations(): void

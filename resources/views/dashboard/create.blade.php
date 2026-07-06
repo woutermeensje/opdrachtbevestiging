@@ -25,72 +25,55 @@
         ])
     @else
 
-    @include('partials.dashboard.panel', [
-        'title' => 'Gegevens invullen',
-        'slot' => '
-            <form method="POST" action="'.e(route('dashboard.create.store')).'" class="dashboard-form">
-                '.csrf_field().'
+    <div class="dashboard-create-layout">
+        @include('partials.dashboard.panel', [
+            'title' => 'Gegevens invullen',
+            'class' => 'dashboard-create-form-panel',
+            'slot' => '
+                <form method="POST" action="'.e(route('dashboard.create.store')).'" class="dashboard-form">
+                    '.csrf_field().'
 
-                <div class="grid-2">
                     <div>
                         <label for="title">Titel</label>
                         <input id="title" name="title" type="text" value="'.e(old('title')).'" required>
                     </div>
+
+                    <div class="rich-editor-field" data-rich-editor-wrapper>
+                        <label for="description_editor">Tekstblok</label>
+                        <div class="rich-editor-toolbar" aria-label="Opmaak">
+                            <button type="button" data-rich-command="bold"><strong>B</strong></button>
+                            <button type="button" data-rich-command="italic"><em>I</em></button>
+                            <button type="button" data-rich-command="underline"><u>U</u></button>
+                            <button type="button" data-rich-command="insertUnorderedList">Lijst</button>
+                            <button type="button" data-rich-command="insertOrderedList">1. Lijst</button>
+                        </div>
+                        <div id="description_editor" class="rich-editor" contenteditable="true" data-rich-editor data-rich-required="true">'.(\App\Models\Confirmation::sanitizeDescription(old('description')) ?? '').'</div>
+                        <textarea id="description" name="description" class="rich-editor-input" data-rich-editor-input>'.e(old('description')).'</textarea>
+                    </div>
+
                     <div>
-                        <label for="contact_id">Opdrachtgever</label>
+                        <label for="contact_id">Contact selecteren</label>
                         <select id="contact_id" name="contact_id" required>
                             <option value="">Kies een bedrijf</option>
-                            '.collect($contacts)->map(fn ($contact) => '<option value="'.e((string) $contact->id).'" '.(old('contact_id') == $contact->id ? 'selected' : '').'>'.e($contact->company_name.' - '.$contact->contactName().' ('.$contact->contact_email.')').'</option>')->implode('').'
+                            '.collect($contacts)->map(fn ($contact) => '<option value="'.e((string) $contact->id).'" '.(old('contact_id') == $contact->id ? 'selected' : '').'>'.e($contact->company_name).'</option>')->implode('').'
                         </select>
                     </div>
-                </div>
 
-                <div class="grid-2">
-                    <div>
-                        <label for="total_value">Waarde</label>
-                        <input id="total_value" name="total_value" type="number" step="0.01" min="0" value="'.e(old('total_value')).'" required>
+                    <div class="actions actions-end">
+                        <button type="submit" class="btn btn-primary">Verzenden</button>
                     </div>
-                    <div>
-                        <label for="agreement_date">Opdrachtdatum</label>
-                        <input id="agreement_date" name="agreement_date" type="date" value="'.e(old('agreement_date')).'">
-                    </div>
-                </div>
+                </form>
+            ',
+        ])
 
-                <div class="grid-2">
-                    <div>
-                        <label for="status">Status</label>
-                        <select id="status" name="status" required>
-                            <option value="concept" '.(old('status') === 'concept' || old('status') === null ? 'selected' : '').'>Concept</option>
-                            <option value="wacht-op-akkoord" '.(old('status') === 'wacht-op-akkoord' ? 'selected' : '').'>Wacht op akkoord</option>
-                            <option value="verzonden" '.(old('status') === 'verzonden' ? 'selected' : '').'>Verzonden</option>
-                            <option value="getekend" '.(old('status') === 'getekend' ? 'selected' : '').'>Akkoord</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="expires_at">Vervaldatum</label>
-                        <input id="expires_at" name="expires_at" type="date" value="'.e(old('expires_at')).'">
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div>
-                        <label for="sent_at">Verzenddatum</label>
-                        <input id="sent_at" name="sent_at" type="date" value="'.e(old('sent_at')).'">
-                    </div>
-                    <div>
-                        <label for="signed_at">Akkoorddatum</label>
-                        <input id="signed_at" name="signed_at" type="date" value="'.e(old('signed_at')).'">
-                    </div>
-                </div>
-
-                <label for="description">Omschrijving</label>
-                <textarea id="description" name="description" rows="5">'.e(old('description')).'</textarea>
-
-                <div class="actions actions-end">
-                    <button type="submit" class="btn btn-primary">Opdrachtbevestiging opslaan</button>
-                </div>
-            </form>
-        ',
-    ])
+        @include('partials.dashboard.panel', [
+            'title' => 'Na het opslaan',
+            'class' => 'dashboard-create-side-panel',
+            'slot' => '
+                <p>Controleer de opdrachtbevestiging na het opslaan in het detailoverzicht.</p>
+                <p>Vanuit daar verstuur je de volledige opdrachtbevestiging als e-mailtekst naar de opdrachtgever.</p>
+            ',
+        ])
+    </div>
     @endif
 @endsection

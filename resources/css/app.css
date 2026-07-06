@@ -2,6 +2,7 @@
    FONTS
 ================================ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 /* ===============================
@@ -41,7 +42,7 @@
   --color-text: #333;
 
   --color-primary: #7C5CFA;
-  --color-primary-strong: #2b6fdb;
+  --color-primary-strong: color-mix(in srgb, var(--color-primary) 75%, black);
   --color-accent: #ff8200;
   --color-success: #80D424;
   --color-success-hover: #6db61f;
@@ -52,15 +53,15 @@
   --color-sage-soft: #e8f3ee;
 
   /* Icon + chip palette */
-  --icon-azure: #2563eb;
-  --icon-azure-soft: #dbeafe;
+  --icon-azure: var(--color-primary);
+  --icon-azure-soft: color-mix(in srgb, var(--color-primary) 18%, white);
   --icon-teal: #0f766e;
   --icon-teal-soft: #ccfbf1;
   --icon-mint: #059669;
   --icon-mint-soft: #d1fae5;
   --icon-violet: #7c3aed;
   --icon-violet-soft: #ede9fe;
-  --chip-blue: #2563eb;
+  --chip-blue: var(--color-primary);
   --chip-pink: #db2777;
 
   /* Shared button/background helpers */
@@ -76,6 +77,7 @@
 
   /* Typography */
   --font-ui: 'Inter', sans-serif;
+  --font-heading: 'Work Sans', sans-serif;
   --font-text: 'Poppins', sans-serif;
 
   /* Field styling */

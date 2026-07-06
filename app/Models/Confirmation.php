@@ -58,6 +58,36 @@ class Confirmation extends Model
         return $this->belongsTo(Contact::class);
     }
 
+    public static function sanitizeDescription(?string $description): ?string
+    {
+        if ($description === null) {
+            return null;
+        }
+
+        $clean = preg_replace('/<(script|style)\b[^>]*>.*?<\/\1>/is', '', $description) ?? '';
+        $clean = strip_tags($clean, '<p><br><strong><b><em><i><u><ul><ol><li>');
+        $clean = preg_replace('/<([a-z][a-z0-9]*)\b[^>]*>/i', '<$1>', $clean) ?? '';
+        $clean = trim($clean);
+
+        return $clean !== '' ? $clean : null;
+    }
+
+    public function descriptionHtml(): string
+    {
+        return self::sanitizeDescription($this->description) ?? 'Geen omschrijving toegevoegd.';
+    }
+
+    public function descriptionText(): string
+    {
+        $html = str_replace(
+            ['<br>', '<br/>', '<br />', '</p>', '</li>'],
+            ["\n", "\n", "\n", "\n\n", "\n"],
+            $this->descriptionHtml(),
+        );
+
+        return trim(html_entity_decode(strip_tags($html)));
+    }
+
     public function publicUrl(): string
     {
         return URL::route('confirmations.public.show', $this->public_token);
