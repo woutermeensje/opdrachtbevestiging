@@ -58,7 +58,7 @@ Route::post('/kvk/search', KvkSearchController::class)->name('kvk.search');
 
 Route::redirect('/register', '/registreren');
 Route::redirect('/login', '/');
-Route::redirect('/inloggen', '/');
+Route::get('/inloggen', fn () => redirect('/'));
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/', fn () => view('welcome'))->name('login');
