@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\ConfirmationInvitationMail;
 use App\Models\Confirmation;
 use App\Models\Contact;
 use App\Models\User;
@@ -9,7 +10,7 @@ use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ConfirmationFlowTest extends TestCase
@@ -100,27 +101,30 @@ class ConfirmationFlowTest extends TestCase
 
     public function test_user_can_send_confirmation_email(): void
     {
-        Http::fake([
-            'https://api.signhost.com/api/transaction' => Http::response([
-                'Id' => 'tx-legacy-test',
-                'Status' => 5,
-            ], 201),
-            'https://api.signhost.com/api/transaction/tx-legacy-test/file/*' => Http::response([], 200),
-            'https://api.signhost.com/api/transaction/tx-legacy-test/start' => Http::response([], 200),
-        ]);
-        Storage::fake('local');
+        Mail::fake();
+        Http::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'first_name' => 'Wouter',
+            'last_name' => 'Meens',
+            'company_name' => 'Studio Wouter',
+            'email' => 'wouter@example.test',
+        ]);
         $confirmation = $user->confirmations()->create([
             'reference' => 'OB-SENDTEST',
-            'title' => 'Onderteken deze opdracht',
+            'title' => 'Nieuwe website opdracht',
             'client_name' => 'Acme B.V.',
             'client_contact_name' => 'Sanne Jansen',
             'client_email' => 'sanne@acme.test',
+            'description' => 'Ontwikkeling van een marketingwebsite.',
             'total_value' => '1000.00',
             'public_token' => 'send-test-token',
             'status' => 'concept',
+            'sender_name' => 'Wouter Meens',
+            'sender_email' => 'wouter@example.test',
+            'agreement_date' => '2026-03-08',
             'sent_at' => null,
+            'expires_at' => '2026-03-23',
         ]);
 
         $response = $this
@@ -133,17 +137,30 @@ class ConfirmationFlowTest extends TestCase
 
         $this->assertSame('verzonden', $confirmation->status);
         $this->assertNotNull($confirmation->sent_at);
-        $this->assertSame('tx-legacy-test', $confirmation->signhost_transaction_id);
+        $this->assertNull($confirmation->signhost_transaction_id);
+
+        Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
+            $mail->assertHasSubject('Opdrachtbevestiging OB-SENDTEST: Nieuwe website opdracht');
+            $mail->assertSeeInHtml('Deze e-mail bevat de volledige opdrachtbevestiging');
+            $mail->assertSeeInHtml('Ontwikkeling van een marketingwebsite.');
+            $mail->assertSeeInText('Ontwikkeling van een marketingwebsite.');
+
+            $this->assertSame([], $mail->attachments());
+
+            return $mail->hasTo($confirmation->client_email);
+        });
+
+        Http::assertNothingSent();
     }
 
-    public function test_public_recipient_can_sign_confirmation(): void
+    public function test_public_recipient_can_accept_confirmation(): void
     {
         $confirmation = Confirmation::factory()->create([
             'status' => 'verzonden',
             'signed_at' => null,
         ]);
 
-        $response = $this->post(route('confirmations.public.sign', $confirmation->public_token), [
+        $response = $this->post(route('confirmations.public.accept', $confirmation->public_token), [
             'signer_name' => 'Jan de Vries',
             'accept_terms' => '1',
         ]);

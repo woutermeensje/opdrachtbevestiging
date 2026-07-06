@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'title' => 'Opdrachtbevestiging '.$confirmation->reference,
-    'metaDescription' => 'Beveiligde opdrachtbevestiging bekijken en digitaal bevestigen.',
+    'metaDescription' => 'Opdrachtbevestiging bekijken en akkoord bevestigen.',
     'metaRobots' => 'noindex,nofollow,noarchive',
     'canonical' => route('confirmations.public.show', $confirmation->public_token),
 ])
@@ -10,7 +10,7 @@
         <div class="container">
             <p class="page-eyebrow">Opdrachtbevestiging</p>
             <h1>{{ $confirmation->title }}</h1>
-            <p class="page-intro">Bekijk hieronder de opdrachtbevestiging en bevestig deze digitaal in de browser.</p>
+            <p class="page-intro">Bekijk hieronder de opdrachtbevestiging en bevestig desgewenst je akkoord.</p>
         </div>
     </section>
 
@@ -55,19 +55,19 @@
             </article>
 
             <aside class="card public-sign-card">
-                <h2>Digitaal bevestigen</h2>
+                <h2>Akkoord bevestigen</h2>
 
                 @if (session('status'))
                     <div class="dashboard-notice">{{ session('status') }}</div>
                 @endif
 
                 @if ($confirmation->status === 'getekend')
-                    <p>Deze opdrachtbevestiging is ondertekend door <strong>{{ $confirmation->signer_name }}</strong>.</p>
-                    <p><strong>Tekendatum:</strong> {{ optional($confirmation->signed_at)->format('d-m-Y H:i') }}</p>
+                    <p>Deze opdrachtbevestiging is akkoord bevestigd door <strong>{{ $confirmation->signer_name }}</strong>.</p>
+                    <p><strong>Akkoorddatum:</strong> {{ optional($confirmation->signed_at)->format('d-m-Y H:i') }}</p>
                 @else
                     @include('partials.forms.errors')
 
-                    <form method="POST" action="{{ route('confirmations.public.sign', $confirmation->public_token) }}">
+                    <form method="POST" action="{{ route('confirmations.public.accept', $confirmation->public_token) }}">
                         @csrf
 
                         <label for="signer_name">Jouw naam</label>
@@ -75,10 +75,10 @@
 
                         <label class="checkbox-field" for="accept_terms">
                             <input id="accept_terms" name="accept_terms" type="checkbox" value="1" required>
-                            <span>Ik ga akkoord met de inhoud van deze opdrachtbevestiging en bevestig dit digitaal.</span>
+                            <span>Ik ga akkoord met de inhoud van deze opdrachtbevestiging.</span>
                         </label>
 
-                        <button type="submit" class="btn btn-primary">Ondertekenen en bevestigen</button>
+                        <button type="submit" class="btn btn-primary">Akkoord bevestigen</button>
                     </form>
                 @endif
             </aside>

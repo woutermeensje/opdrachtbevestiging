@@ -83,6 +83,13 @@ class AuthFlowTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_inloggen_page_redirects_to_home(): void
+    {
+        $response = $this->get('/inloggen');
+
+        $response->assertRedirect('/');
+    }
+
     public function test_unverified_user_is_redirected_to_email_verification_notice(): void
     {
         $user = User::factory()->unverified()->create();

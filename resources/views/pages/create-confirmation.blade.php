@@ -28,7 +28,7 @@
     @include('partials.pages.content-card', [
         'title' => 'Van opstellen naar akkoord',
         'slot' => '
-            <p>Nadat je de opdrachtbevestiging hebt opgesteld, stuur je deze naar de opdrachtgever ter controle en ondertekening. Daarmee maak je het akkoordproces overzichtelijk en traceerbaar.</p>
+            <p>Nadat je de opdrachtbevestiging hebt opgesteld, stuur je deze per e-mail naar de opdrachtgever ter controle en akkoord. De inhoud staat direct in de e-mail zelf.</p>
             <p>Met Opdrachtbevestiging.nl kun je dit proces centraal beheren, zodat je documenten, statussen en gegevens op één plek houdt.</p>
         ',
     ])

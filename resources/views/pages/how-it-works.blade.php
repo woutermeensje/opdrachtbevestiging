@@ -3,8 +3,8 @@
     'seoTitle' => 'Hoe Werkt Opdrachtbevestiging.nl? | Opdrachtbevestiging maken en versturen',
     'eyebrow' => 'Werkwijze',
     'heading' => 'Hoe het werkt',
-    'intro' => 'Opdrachtbevestiging.nl helpt je om afspraken gestructureerd vast te leggen en digitaal ter ondertekening te versturen.',
-    'metaDescription' => 'Ontdek hoe Opdrachtbevestiging.nl werkt: account aanmaken, opdrachtbevestiging opstellen, opdrachtgever toevoegen en digitaal versturen ter ondertekening.',
+    'intro' => 'Opdrachtbevestiging.nl helpt je om afspraken gestructureerd vast te leggen en per e-mail naar je opdrachtgever te versturen.',
+    'metaDescription' => 'Ontdek hoe Opdrachtbevestiging.nl werkt: account aanmaken, opdrachtbevestiging opstellen, opdrachtgever toevoegen en per e-mail versturen.',
     'canonical' => route('pages.how-it-works'),
 ])
 
@@ -26,7 +26,7 @@
     @include('partials.pages.content-card', [
         'title' => '3. Opdrachtgever toevoegen en versturen',
         'slot' => '
-            <p>Vervolgens voeg je jouw opdrachtgever toe via de Kamer van Koophandel API en verstuur je de opdrachtbevestiging ter ondertekening naar de andere partij.</p>
+            <p>Vervolgens voeg je jouw opdrachtgever toe via de Kamer van Koophandel API en verstuur je de opdrachtbevestiging als volledige e-mailtekst naar de andere partij.</p>
         ',
     ])
 

@@ -34,12 +34,6 @@ class Confirmation extends Model
         'signer_name',
         'signer_ip',
         'signer_user_agent',
-        'signhost_transaction_id',
-        'signhost_status',
-        'signhost_file_id',
-        'signhost_receipt_path',
-        'signhost_signed_document_path',
-        'signhost_completed_at',
     ];
 
     protected function casts(): array
@@ -51,7 +45,6 @@ class Confirmation extends Model
             'signed_at' => 'datetime',
             'expires_at' => 'date',
             'viewed_at' => 'datetime',
-            'signhost_completed_at' => 'datetime',
         ];
     }
 

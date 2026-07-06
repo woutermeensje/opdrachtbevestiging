@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConfirmationInvitationMail;
 use App\Models\Confirmation;
-use App\Services\SignhostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use RuntimeException;
+use Throwable;
 
 class ConfirmationController extends Controller
 {
-    public function __construct(
-        private readonly SignhostService $signhostService,
-    ) {
-    }
-
     public function index(Request $request): View
     {
         $confirmations = $request->user()
@@ -73,7 +68,6 @@ class ConfirmationController extends Controller
             'sent_at' => $validated['sent_at'] ?? null,
             'signed_at' => $validated['signed_at'] ?? null,
             'expires_at' => $validated['expires_at'] ?? null,
-            'signhost_status' => 'draft',
         ]);
 
         return redirect()
@@ -101,46 +95,21 @@ class ConfirmationController extends Controller
         }
 
         try {
-            $result = $this->signhostService->sendConfirmation($confirmation);
-        } catch (RuntimeException $exception) {
+            Mail::to($confirmation->client_email)->send(new ConfirmationInvitationMail($confirmation));
+        } catch (Throwable $exception) {
             return redirect()
                 ->route('dashboard.confirmations.show', $confirmation)
-                ->with('status', 'Signhost verzending mislukt: '.$exception->getMessage());
+                ->with('status', 'E-mailverzending mislukt: '.$exception->getMessage());
         }
 
         $confirmation->forceFill([
             'status' => 'verzonden',
             'sent_at' => now(),
-            'signhost_status' => 'waiting_for_signer',
-            'signhost_transaction_id' => $result['transaction_id'],
-            'signhost_file_id' => $result['file_id'],
         ])->save();
 
         return redirect()
             ->route('dashboard.confirmations.show', $confirmation)
-            ->with('status', 'Opdrachtbevestiging is via Signhost verzonden naar '.$confirmation->client_email.'.');
-    }
-
-    public function downloadSignedDocument(Request $request, Confirmation $confirmation)
-    {
-        abort_unless($confirmation->user_id === $request->user()->id, 403);
-        abort_unless($confirmation->signhost_signed_document_path !== null, 404);
-
-        return Storage::disk('local')->download(
-            $confirmation->signhost_signed_document_path,
-            'ondertekende-opdrachtbevestiging-'.$confirmation->reference.'.pdf'
-        );
-    }
-
-    public function downloadReceipt(Request $request, Confirmation $confirmation)
-    {
-        abort_unless($confirmation->user_id === $request->user()->id, 403);
-        abort_unless($confirmation->signhost_receipt_path !== null, 404);
-
-        return Storage::disk('local')->download(
-            $confirmation->signhost_receipt_path,
-            'signhost-receipt-'.$confirmation->reference.'.pdf'
-        );
+            ->with('status', 'Opdrachtbevestiging is per e-mail verzonden naar '.$confirmation->client_email.'.');
     }
 
     private function generateReference(): string

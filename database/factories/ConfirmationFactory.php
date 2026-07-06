@@ -37,12 +37,6 @@ class ConfirmationFactory extends Factory
             'signer_name' => null,
             'signer_ip' => null,
             'signer_user_agent' => null,
-            'signhost_transaction_id' => null,
-            'signhost_status' => 'draft',
-            'signhost_file_id' => null,
-            'signhost_receipt_path' => null,
-            'signhost_signed_document_path' => null,
-            'signhost_completed_at' => null,
             'expires_at' => now()->addDays(14)->toDateString(),
         ];
     }

@@ -52,11 +52,6 @@ class AuthController extends Controller
         return redirect()->route('verification.notice');
     }
 
-    public function showLogin(): View
-    {
-        return view('auth.login');
-    }
-
     public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([

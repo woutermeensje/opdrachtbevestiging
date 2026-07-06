@@ -6,7 +6,7 @@
     @include('partials.dashboard.page-header', [
         'eyebrow' => 'Contacten',
         'title' => 'Opdrachtgevers en contactpersonen',
-        'text' => 'Voeg bedrijven toe via de KVK API en leg per bedrijf vast wie de opdrachtbevestiging ontvangt en ondertekent.',
+        'text' => 'Voeg bedrijven toe via de KVK API en leg per bedrijf vast wie de opdrachtbevestiging per e-mail ontvangt.',
     ])
 
     @include('partials.forms.errors')
@@ -98,10 +98,10 @@
         ])
 
         @include('partials.dashboard.panel', [
-            'title' => 'Signflow',
+            'title' => 'E-mailontvanger',
             'slot' => '
-                <p>Signer 1 wordt de gebruiker zelf vanuit het platform. Signer 2 wordt de contactpersoon van het gekozen bedrijf.</p>
-                <p>Deze contactenlijst vormt dus straks de bron voor de tweede ondertekenaar in Signhost.</p>
+                <p>De contactpersoon van het gekozen bedrijf ontvangt de opdrachtbevestiging rechtstreeks per e-mail.</p>
+                <p>De volledige opdrachtbevestiging staat in de e-mail zelf; er wordt geen documentbijlage meegestuurd.</p>
             ',
         ])
     </div>

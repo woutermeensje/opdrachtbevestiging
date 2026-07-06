@@ -26,7 +26,7 @@ class PublicConfirmationController extends Controller
         ]);
     }
 
-    public function sign(Request $request, string $token): RedirectResponse
+    public function accept(Request $request, string $token): RedirectResponse
     {
         $confirmation = Confirmation::query()
             ->where('public_token', $token)
@@ -49,6 +49,6 @@ class PublicConfirmationController extends Controller
 
         return redirect()
             ->route('confirmations.public.show', $confirmation->public_token)
-            ->with('status', 'De opdrachtbevestiging is ondertekend.');
+            ->with('status', 'Het akkoord op de opdrachtbevestiging is vastgelegd.');
     }
 }

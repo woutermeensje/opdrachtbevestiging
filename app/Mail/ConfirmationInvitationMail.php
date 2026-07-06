@@ -5,6 +5,8 @@ namespace App\Mail;
 use App\Models\Confirmation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -20,8 +22,13 @@ class ConfirmationInvitationMail extends Mailable
 
     public function envelope(): Envelope
     {
+        $replyTo = filled($this->confirmation->sender_email)
+            ? [new Address($this->confirmation->sender_email, $this->confirmation->sender_name)]
+            : [];
+
         return new Envelope(
-            subject: 'Opdrachtbevestiging '.$this->confirmation->reference,
+            replyTo: $replyTo,
+            subject: 'Opdrachtbevestiging '.$this->confirmation->reference.': '.$this->confirmation->title,
         );
     }
 
@@ -29,6 +36,15 @@ class ConfirmationInvitationMail extends Mailable
     {
         return new Content(
             view: 'emails.confirmation-invitation',
+            text: 'emails.confirmation-invitation-text',
         );
+    }
+
+    /**
+     * @return array<int, Attachment>
+     */
+    public function attachments(): array
+    {
+        return [];
     }
 }

@@ -29,11 +29,10 @@
             'slot' => '
                 <p><strong>Status:</strong> '.e($confirmation->status).'</p>
                 <p><strong>Waarde:</strong> EUR '.e(number_format((float) $confirmation->total_value, 2, ',', '.')).'</p>
-                <p><strong>Signhost status:</strong> '.e($confirmation->signhost_status ?: '-').'</p>
-                <p><strong>Publieke link:</strong> <a href="'.e($confirmation->publicUrl()).'" target="_blank" rel="noopener noreferrer">Open document</a></p>
+                <p><strong>Online voorbeeld:</strong> <a href="'.e($confirmation->publicUrl()).'" target="_blank" rel="noopener noreferrer">Open document</a></p>
                 <form method="POST" action="'.e(route('dashboard.confirmations.send', $confirmation)).'" style="margin-top:12px;">
                     '.csrf_field().'
-                    <button type="submit" class="btn btn-primary">Versturen naar klant</button>
+                    <button type="submit" class="btn btn-primary">Per e-mail versturen</button>
                 </form>
             ',
         ])
@@ -45,7 +44,7 @@
             'slot' => '
                 <p><strong>Opdrachtdatum:</strong> '.e(optional($confirmation->agreement_date)->format('d-m-Y') ?? '-').'</p>
                 <p><strong>Verzenddatum:</strong> '.e(optional($confirmation->sent_at)->format('d-m-Y') ?? '-').'</p>
-                <p><strong>Tekendatum:</strong> '.e(optional($confirmation->signed_at)->format('d-m-Y') ?? '-').'</p>
+                <p><strong>Akkoorddatum:</strong> '.e(optional($confirmation->signed_at)->format('d-m-Y') ?? '-').'</p>
                 <p><strong>Vervaldatum:</strong> '.e(optional($confirmation->expires_at)->format('d-m-Y') ?? '-').'</p>
                 <p><strong>Bekeken op:</strong> '.e(optional($confirmation->viewed_at)->format('d-m-Y H:i') ?? '-').'</p>
             ',
@@ -59,19 +58,20 @@
 
     <div class="dashboard-content-grid">
         @include('partials.dashboard.panel', [
-            'title' => 'Ondertekenaars',
+            'title' => 'E-mailverzending',
             'slot' => '
-                <p><strong>Signer 1:</strong> '.e($confirmation->sender_name ?: '-').' ('.e($confirmation->sender_email ?: '-').')</p>
-                <p><strong>Signer 2:</strong> '.e($confirmation->client_contact_name ?: '-').' ('.e($confirmation->client_email).')</p>
+                <p><strong>Afzender:</strong> '.e($confirmation->sender_name ?: '-').' ('.e($confirmation->sender_email ?: '-').')</p>
+                <p><strong>Ontvanger:</strong> '.e($confirmation->client_contact_name ?: $confirmation->client_name).' ('.e($confirmation->client_email).')</p>
+                <p><strong>Inhoud:</strong> De volledige opdrachtbevestiging staat in de e-mailtekst. Er wordt geen bijlage meegestuurd.</p>
             ',
         ])
 
         @include('partials.dashboard.panel', [
-            'title' => 'Signhost bestanden',
+            'title' => 'Akkoord',
             'slot' => '
-                <p><strong>Transaction ID:</strong> '.e($confirmation->signhost_transaction_id ?: '-').'</p>
-                <p><strong>Ondertekende PDF:</strong> '.($confirmation->signhost_signed_document_path ? '<a href="'.e(route('dashboard.confirmations.download-signed-document', $confirmation)).'">Downloaden</a>' : 'Nog niet beschikbaar').'</p>
-                <p><strong>Receipt:</strong> '.($confirmation->signhost_receipt_path ? '<a href="'.e(route('dashboard.confirmations.download-receipt', $confirmation)).'">Downloaden</a>' : 'Nog niet beschikbaar').'</p>
+                <p><strong>Akkoord door:</strong> '.e($confirmation->signer_name ?: '-').'</p>
+                <p><strong>IP-adres:</strong> '.e($confirmation->signer_ip ?: '-').'</p>
+                <p><strong>Laatste weergave:</strong> '.e(optional($confirmation->viewed_at)->format('d-m-Y H:i') ?? '-').'</p>
             ',
         ])
     </div>

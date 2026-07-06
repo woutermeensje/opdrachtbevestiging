@@ -63,7 +63,7 @@
                             <option value="concept" '.(old('status') === 'concept' || old('status') === null ? 'selected' : '').'>Concept</option>
                             <option value="wacht-op-akkoord" '.(old('status') === 'wacht-op-akkoord' ? 'selected' : '').'>Wacht op akkoord</option>
                             <option value="verzonden" '.(old('status') === 'verzonden' ? 'selected' : '').'>Verzonden</option>
-                            <option value="getekend" '.(old('status') === 'getekend' ? 'selected' : '').'>Getekend</option>
+                            <option value="getekend" '.(old('status') === 'getekend' ? 'selected' : '').'>Akkoord</option>
                         </select>
                     </div>
                     <div>
@@ -78,7 +78,7 @@
                         <input id="sent_at" name="sent_at" type="date" value="'.e(old('sent_at')).'">
                     </div>
                     <div>
-                        <label for="signed_at">Tekendatum</label>
+                        <label for="signed_at">Akkoorddatum</label>
                         <input id="signed_at" name="signed_at" type="date" value="'.e(old('signed_at')).'">
                     </div>
                 </div>

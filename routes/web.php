@@ -13,16 +13,8 @@ use App\Http\Controllers\KvkLookupController;
 use App\Http\Controllers\KvkSearchController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PublicConfirmationController;
-use App\Http\Controllers\SignhostWebhookController;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
-
-Route::post('/api/signhost/webhook', SignhostWebhookController::class)
-    ->withoutMiddleware([VerifyCsrfToken::class])
-    ->name('signhost.webhook');
-Route::get('/api/signhost/webhook', [SignhostWebhookController::class, 'status'])
-    ->name('signhost.webhook.status');
 
 Route::get('/robots.txt', function (): Response {
     $content = implode("\n", [
@@ -60,18 +52,18 @@ Route::get('/opdrachtbevestiging-opstellen', [PageController::class, 'createConf
 Route::get('/prijzen', [PageController::class, 'pricing'])->name('pages.pricing');
 Route::get('/contact', [PageController::class, 'contact'])->name('pages.contact');
 Route::get('/opdrachtbevestiging/{token}', [PublicConfirmationController::class, 'show'])->name('confirmations.public.show');
-Route::post('/opdrachtbevestiging/{token}/ondertekenen', [PublicConfirmationController::class, 'sign'])->name('confirmations.public.sign');
+Route::post('/opdrachtbevestiging/{token}/akkoord', [PublicConfirmationController::class, 'accept'])->name('confirmations.public.accept');
 Route::post('/kvk/lookup', KvkLookupController::class)->name('kvk.lookup');
 Route::post('/kvk/search', KvkSearchController::class)->name('kvk.search');
 
 Route::redirect('/register', '/registreren');
-Route::redirect('/login', '/inloggen');
+Route::redirect('/login', '/');
+Route::redirect('/inloggen', '/');
 
 Route::middleware('guest')->group(function (): void {
-    Route::get('/', fn () => view('welcome'));
+    Route::get('/', fn () => view('welcome'))->name('login');
     Route::get('/registreren', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/registreren', [AuthController::class, 'register'])->name('register.store');
-    Route::get('/inloggen', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/inloggen', [AuthController::class, 'login'])->name('login.store');
     Route::get('/wachtwoord-vergeten', [PasswordResetLinkController::class, 'create'])->name('password.request');
     Route::post('/wachtwoord-vergeten', [PasswordResetLinkController::class, 'store'])->name('password.email');
@@ -97,8 +89,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard/opdrachtbevestigingen', [ConfirmationController::class, 'index'])->name('dashboard.confirmations');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
     Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
-    Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/ondertekend-document', [ConfirmationController::class, 'downloadSignedDocument'])->name('dashboard.confirmations.download-signed-document');
-    Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/receipt', [ConfirmationController::class, 'downloadReceipt'])->name('dashboard.confirmations.download-receipt');
     Route::get('/dashboard/contacten', [ContactController::class, 'index'])->name('dashboard.contacts');
     Route::post('/dashboard/contacten', [ContactController::class, 'store'])->name('dashboard.contacts.store');
     Route::get('/dashboard/mijn-profiel', [DashboardController::class, 'profile'])->name('dashboard.profile');
