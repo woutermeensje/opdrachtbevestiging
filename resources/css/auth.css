@@ -41,7 +41,7 @@
 .auth-card {
     width: min(420px, 92vw);
     background: var(--color-card);
-    border: var(--border-default);
+    border: 1px solid #dedede;
     border-radius: var(--radius-lg);
     padding: 1.4rem;
     box-shadow: var(--box-shadow-default);

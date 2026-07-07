@@ -3,7 +3,7 @@
 ================================ */
 
 .site-footer {
-    border-top: var(--border-default);
+    border-top: 1px solid #dedede;
     background: var(--color-bg-white);
     padding: 3rem 0 1.25rem;
 }
@@ -74,7 +74,7 @@
     gap: 1rem;
     flex-wrap: wrap;
     padding-top: 1.25rem;
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid #dedede;
 }
 
 .footer-note {

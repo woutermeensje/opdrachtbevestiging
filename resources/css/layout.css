@@ -96,8 +96,8 @@
 }
 
 .pricing-card-featured {
-    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
-    background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, var(--color-primary) 6%, white) 100%);
+    border-color: #dedede;
+    background: #ffffff;
 }
 
 .pricing-card-wide {
@@ -164,7 +164,7 @@
 
 .card {
     background: var(--color-card);
-    border: var(--border-default);
+    border: 1px solid #dedede;
     border-radius: 5px;
     padding: 1.2rem;
     box-shadow: var(--box-shadow-default);

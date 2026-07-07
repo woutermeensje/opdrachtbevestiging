@@ -3,7 +3,7 @@
 ================================ */
 
 .dashboard-body {
-    background: linear-gradient(180deg, #f7f3ed 0%, #fbfaf8 100%);
+    background: var(--color-bg);
     color: var(--color-text);
 }
 
@@ -18,7 +18,7 @@
     flex-direction: column;
     padding: 1.25rem 1rem;
     background: #ffffff;
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid #dedede;
     position: sticky;
     top: 0;
     height: 100vh;
@@ -30,7 +30,7 @@
     align-items: center;
     padding: 0.5rem 0.75rem 1.25rem;
     margin-bottom: 0.75rem;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid #dedede;
 }
 
 .dashboard-brand:hover {
@@ -79,13 +79,13 @@
 }
 
 .dashboard-nav-link:hover {
-    background: color-mix(in srgb, var(--color-primary) 6%, white);
+    background: var(--color-bg);
     color: var(--color-text);
     text-decoration: none;
 }
 
 .dashboard-nav-link.is-active {
-    background: color-mix(in srgb, var(--color-primary) 10%, white);
+    background: var(--color-bg);
     color: var(--color-primary);
     font-weight: 700;
 }
@@ -96,9 +96,9 @@
     left: -1rem;
     top: 0.35rem;
     bottom: 0.35rem;
-    width: 3px;
+    width: 0;
     border-radius: 0 3px 3px 0;
-    background: var(--color-primary);
+    border-left: 1px solid #dedede;
 }
 
 .dashboard-nav-icon {
@@ -120,7 +120,7 @@
 .dashboard-logout {
     margin-top: auto;
     padding-top: 0.75rem;
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid #dedede;
 }
 
 .dashboard-logout-button {
@@ -130,7 +130,7 @@
 }
 
 .dashboard-logout-button:hover {
-    background: var(--color-danger-soft);
+    background: var(--color-bg);
     color: var(--color-danger);
 }
 
@@ -146,8 +146,8 @@
 }
 
 .dashboard-metric-card {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #eadfce;
+    background: #ffffff;
+    border: 1px solid #dedede;
     border-radius: 5px;
     padding: 1rem 1.1rem;
 }
@@ -221,8 +221,8 @@
 }
 
 .dashboard-panel {
-    background: rgba(255, 255, 255, 0.86);
-    border: 1px solid #eadfce;
+    background: #ffffff;
+    border: 1px solid #dedede;
     border-radius: 5px;
     padding: 1.4rem;
 }
@@ -247,15 +247,15 @@
 .dashboard-notice {
     margin-bottom: 1rem;
     padding: 0.9rem 1rem;
-    border: 1px solid #cfe4d5;
+    border: 1px solid #dedede;
     border-radius: 5px;
-    background: #ecf8ef;
+    background: var(--color-bg);
     color: #1f7a46;
 }
 
 .dashboard-notice-warning {
-    border-color: #fbe4ac;
-    background: #fef3c7;
+    border-color: #dedede;
+    background: var(--color-bg);
     color: #92400e;
 }
 
@@ -306,7 +306,7 @@
 .dashboard-table th,
 .dashboard-table td {
     padding: 0.85rem 0.7rem;
-    border-bottom: 1px solid #efe4d5;
+    border-bottom: 1px solid #dedede;
     text-align: left;
     vertical-align: top;
 }
@@ -334,22 +334,22 @@
 }
 
 .dashboard-status-concept {
-    background: #f3f4f6;
+    background: var(--color-bg);
     color: #4b5563;
 }
 
 .dashboard-status-wacht-op-akkoord {
-    background: #fef3c7;
+    background: var(--color-bg);
     color: #92400e;
 }
 
 .dashboard-status-verzonden {
-    background: color-mix(in srgb, var(--color-primary) 16%, white);
+    background: var(--color-bg);
     color: color-mix(in srgb, var(--color-primary) 70%, black);
 }
 
 .dashboard-status-getekend {
-    background: #d1fae5;
+    background: var(--color-bg);
     color: #047857;
 }
 
@@ -381,7 +381,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     padding: 1rem 0;
-    border-top: 1px solid #efe4d5;
+    border-top: 1px solid #dedede;
 }
 
 .public-document-grid p:last-child,
@@ -391,7 +391,7 @@
 
 .public-document-body {
     padding-top: 1rem;
-    border-top: 1px solid #efe4d5;
+    border-top: 1px solid #dedede;
 }
 
 .checkbox-field {
@@ -417,7 +417,7 @@
         position: static;
         height: auto;
         border-right: 0;
-        border-bottom: 1px solid var(--color-border);
+        border-bottom: 1px solid #dedede;
     }
 
     .dashboard-main {

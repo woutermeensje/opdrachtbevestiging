@@ -37,7 +37,7 @@ textarea,
 select {
     width: 100%;
     background: var(--field-bg);
-    border: 1px solid var(--field-border);
+    border: 1px solid #dedede;
     border-radius: var(--radius-default);
     padding: 0.5rem 0.65rem;
     margin-bottom: 0.7rem;
@@ -52,13 +52,13 @@ select {
 input:hover,
 textarea:hover,
 select:hover {
-    border-color: var(--field-border-hover);
+    border-color: #dedede;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: var(--field-focus);
+    border-color: #dedede;
     box-shadow: var(--field-shadow-focus);
 }
 
@@ -71,16 +71,16 @@ select:focus {
     flex-wrap: wrap;
     gap: 0.35rem;
     padding: 0.45rem;
-    border: 1px solid var(--field-border);
+    border: 1px solid #dedede;
     border-bottom: 0;
     border-radius: var(--radius-default) var(--radius-default) 0 0;
-    background: #f8fafc;
+    background: var(--color-bg);
 }
 
 .rich-editor-toolbar button {
     min-height: 2rem;
     padding: 0.3rem 0.55rem;
-    border: 1px solid var(--field-border);
+    border: 1px solid #dedede;
     border-radius: 5px;
     background: #ffffff;
     color: var(--color-text);
@@ -90,13 +90,13 @@ select:focus {
 }
 
 .rich-editor-toolbar button:hover {
-    border-color: var(--field-border-hover);
+    border-color: #dedede;
 }
 
 .rich-editor {
     min-height: 220px;
     padding: 0.75rem;
-    border: 1px solid var(--field-border);
+    border: 1px solid #dedede;
     border-radius: 0 0 var(--radius-default) var(--radius-default);
     background: var(--field-bg);
     color: var(--color-text);
@@ -107,12 +107,12 @@ select:focus {
 }
 
 .rich-editor:focus {
-    border-color: var(--field-focus);
+    border-color: #dedede;
     box-shadow: var(--field-shadow-focus);
 }
 
 .rich-editor.is-invalid {
-    border-color: var(--color-danger);
+    border-color: #dedede;
 }
 
 .rich-editor-input {
@@ -131,24 +131,24 @@ select:focus {
     align-items: center;
     gap: 0.6rem;
     padding: 0.7rem 0.8rem;
-    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, white);
+    border: 1px solid #dedede;
     border-radius: 5px;
-    background: color-mix(in srgb, var(--color-primary) 6%, white);
+    background: var(--color-bg);
     color: color-mix(in srgb, var(--color-primary) 55%, black);
     font-size: 0.9rem;
     font-weight: 500;
 }
 
 .form-step-pill.is-active {
-    border-color: var(--color-primary);
-    background: color-mix(in srgb, var(--color-primary) 14%, white);
+    border-color: #dedede;
+    background: #ffffff;
     color: var(--color-primary);
 }
 
 .form-step-pill.is-complete {
-    border-color: var(--color-primary);
-    background: var(--color-primary);
-    color: #ffffff;
+    border-color: #dedede;
+    background: var(--color-bg);
+    color: var(--color-primary);
 }
 
 .form-step-number {
@@ -233,8 +233,8 @@ select:focus {
 }
 
 .errors {
-    background: var(--color-danger-soft);
-    border: 1px solid var(--color-danger-border);
+    background: var(--color-bg);
+    border: 1px solid #dedede;
     color: var(--color-danger);
     border-radius: var(--radius-default);
     padding: 0.8rem;
@@ -243,8 +243,8 @@ select:focus {
 }
 
 .form-status {
-    background: #edf7ee;
-    border: 1px solid #b9dfbd;
+    background: var(--color-bg);
+    border: 1px solid #dedede;
     color: #1f7a46;
     border-radius: var(--radius-default);
     padding: 0.8rem;

@@ -80,7 +80,7 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #fafafa;
+    background-color: #FBFAF8;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -125,9 +125,9 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #fafafa;
-    border-bottom: 1px solid #fafafa;
-    border-top: 1px solid #fafafa;
+    background-color: #FBFAF8;
+    border-bottom: 1px solid #dedede;
+    border-top: 1px solid #dedede;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -138,10 +138,9 @@ img {
     -premailer-cellspacing: 0;
     -premailer-width: 570px;
     background-color: #ffffff;
-    border-color: #e4e4e7;
+    border: 1px solid #dedede;
     border-radius: 4px;
-    border-width: 1px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     margin: 0 auto;
     padding: 0;
     width: 570px;
@@ -154,7 +153,7 @@ img {
 /* Subcopy */
 
 .subcopy {
-    border-top: 1px solid #e4e4e7;
+    border-top: 1px solid #dedede;
     margin-top: 25px;
     padding-top: 25px;
 }
@@ -197,7 +196,7 @@ img {
 }
 
 .table th {
-    border-bottom: 1px solid #e4e4e7;
+    border-bottom: 1px solid #dedede;
     margin: 0;
     padding-bottom: 8px;
 }
@@ -230,49 +229,45 @@ img {
 
 .button {
     -webkit-text-size-adjust: none;
+    border: 1px solid #dedede;
     border-radius: 4px;
-    color: #fff;
+    color: #18181b;
     display: inline-block;
     overflow: hidden;
+    padding: 8px 18px;
     text-decoration: none;
 }
 
 .button-blue,
 .button-primary {
-    background-color: #7C5CFA;
-    border-bottom: 8px solid #7C5CFA;
-    border-left: 18px solid #7C5CFA;
-    border-right: 18px solid #7C5CFA;
-    border-top: 8px solid #7C5CFA;
+    background-color: #FBFAF8;
+    border: 1px solid #dedede;
+    color: #7C5CFA;
 }
 
 .button-green,
 .button-success {
-    background-color: #16a34a;
-    border-bottom: 8px solid #16a34a;
-    border-left: 18px solid #16a34a;
-    border-right: 18px solid #16a34a;
-    border-top: 8px solid #16a34a;
+    background-color: #FBFAF8;
+    border: 1px solid #dedede;
+    color: #16a34a;
 }
 
 .button-red,
 .button-error {
-    background-color: #dc2626;
-    border-bottom: 8px solid #dc2626;
-    border-left: 18px solid #dc2626;
-    border-right: 18px solid #dc2626;
-    border-top: 8px solid #dc2626;
+    background-color: #FBFAF8;
+    border: 1px solid #dedede;
+    color: #dc2626;
 }
 
 /* Panels */
 
 .panel {
-    border-left: #18181b solid 4px;
+    border-left: 1px solid #dedede;
     margin: 21px 0;
 }
 
 .panel-content {
-    background-color: #fafafa;
+    background-color: #FBFAF8;
     color: #52525b;
     padding: 16px;
 }

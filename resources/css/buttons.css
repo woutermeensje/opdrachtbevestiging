@@ -21,37 +21,40 @@
 }
 
 .btn-primary {
-    background: var(--color-primary);
-    color: #fff;
+    background: var(--color-bg);
+    border: 1px solid #dedede;
+    color: var(--color-primary);
 }
 
 .btn-primary:hover {
-    background: var(--color-primary-strong);
-    color: #fff;
+    background: var(--color-bg-white);
+    color: var(--color-primary-strong);
 }
 
 .btn-secondary {
     background: var(--color-bg-white);
     color: var(--color-text);
-    border: 1px solid var(--color-border);
+    border: 1px solid #dedede;
 }
 
 .btn-secondary:hover {
-    border-color: var(--field-border-hover);
+    border-color: #dedede;
     color: var(--color-text);
 }
 
 .btn-success {
-    background: var(--color-success);
-    color: #fff;
+    background: var(--color-bg);
+    border: 1px solid #dedede;
+    color: color-mix(in srgb, var(--color-success) 65%, black);
 }
 
 .btn-success:hover {
-    background: var(--color-success-hover);
-    color: #fff;
+    background: var(--color-bg-white);
+    color: var(--color-success-hover);
 }
 
 .btn-danger {
-    background: var(--color-danger);
-    color: #fff;
+    background: var(--color-bg);
+    border: 1px solid #dedede;
+    color: var(--color-danger);
 }
