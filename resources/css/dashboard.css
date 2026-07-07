@@ -160,7 +160,7 @@
 
 .dashboard-metric-label {
     margin-bottom: 0.35rem;
-    color: #85725c;
+    color: var(--color-text-subtle);
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -291,7 +291,7 @@
 }
 
 .dashboard-kvk-feedback[data-state='loading'] {
-    color: #9a6a27;
+    color: var(--color-text-subtle);
 }
 
 .dashboard-table-wrap {
@@ -312,7 +312,7 @@
 }
 
 .dashboard-table th {
-    color: #85725c;
+    color: var(--color-text-subtle);
     font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0.05em;
