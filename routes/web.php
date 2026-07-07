@@ -50,6 +50,7 @@ Route::get('/hoe-het-werkt', [PageController::class, 'howItWorks'])->name('pages
 Route::get('/wat-is-een-opdrachtbevestiging', [PageController::class, 'whatIsConfirmation'])->name('pages.what-is-confirmation');
 Route::get('/opdrachtbevestiging-opstellen', [PageController::class, 'createConfirmation'])->name('pages.create-confirmation');
 Route::get('/prijzen', [PageController::class, 'pricing'])->name('pages.pricing');
+Route::get('/tarieven', [PageController::class, 'tariffs'])->name('pages.tariffs');
 Route::get('/contact', [PageController::class, 'contact'])->name('pages.contact');
 Route::get('/opdrachtbevestiging/{token}', [PublicConfirmationController::class, 'show'])->name('confirmations.public.show');
 Route::post('/opdrachtbevestiging/{token}/akkoord', [PublicConfirmationController::class, 'accept'])->name('confirmations.public.accept');

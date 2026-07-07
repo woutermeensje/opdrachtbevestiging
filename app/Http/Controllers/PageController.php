@@ -26,6 +26,11 @@ class PageController extends Controller
         return view('pages.pricing');
     }
 
+    public function tariffs(): View
+    {
+        return view('pages.tariffs');
+    }
+
     public function contact(): View
     {
         return view('pages.contact');

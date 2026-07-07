@@ -15,9 +15,10 @@
         <div class="dashboard-notice">{{ session('status') }}</div>
     @endif
 
-    <div class="dashboard-content-grid">
+    <div class="dashboard-create-layout">
         @include('partials.dashboard.panel', [
             'title' => 'Nieuw contact toevoegen',
+            'class' => 'dashboard-create-form-panel',
             'slot' => '
                 <form method="POST" action="'.e(route('dashboard.contacts.store')).'" class="dashboard-form" data-kvk-form>
                     '.csrf_field().'
@@ -99,6 +100,7 @@
 
         @include('partials.dashboard.panel', [
             'title' => 'E-mailontvanger',
+            'class' => 'dashboard-create-side-panel',
             'slot' => '
                 <p>De contactpersoon van het gekozen bedrijf ontvangt de opdrachtbevestiging rechtstreeks per e-mail.</p>
                 <p>De volledige opdrachtbevestiging staat in de e-mail zelf; er wordt geen documentbijlage meegestuurd.</p>

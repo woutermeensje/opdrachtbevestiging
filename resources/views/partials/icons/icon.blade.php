@@ -57,5 +57,9 @@
             <path d="M16 11h.01"></path>
             <path d="M10 21v-4h4v4"></path>
             @break
+
+        @case('check')
+            <path d="M20 6 9 17l-5-5"></path>
+            @break
     @endswitch
 </svg>

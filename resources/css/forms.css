@@ -37,9 +37,9 @@ textarea,
 select {
     width: 100%;
     background: var(--field-bg);
-    border: 1px solid #dedede;
+    border: 1px solid var(--field-border);
     border-radius: var(--radius-default);
-    padding: 0.5rem 0.65rem;
+    padding: 0.65rem 0.85rem;
     margin-bottom: 0.7rem;
     font-size: 0.9rem;
     font-family: var(--font-text);
@@ -52,13 +52,13 @@ select {
 input:hover,
 textarea:hover,
 select:hover {
-    border-color: #dedede;
+    border-color: var(--field-border-hover);
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: #dedede;
+    border-color: var(--field-focus);
     box-shadow: var(--field-shadow-focus);
 }
 

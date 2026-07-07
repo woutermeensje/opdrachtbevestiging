@@ -27,6 +27,7 @@
 @import './layout.css';
 @import './auth.css';
 @import './dashboard.css';
+@import './tariffs.css';
 
 /* ===============================
    CSS VARIABLES (SINGLE SOURCE)
@@ -86,11 +87,11 @@
   --box-shadow-default: none;
   --field-bg: #ffffff;
   --field-border: #dedede;
-  --field-border-hover: #dedede;
-  --field-focus: #dedede;
+  --field-border-hover: #bfbfbf;
+  --field-focus: var(--color-primary);
   --field-shadow: none;
   --field-shadow-hover: none;
-  --field-shadow-focus: none;
+  --field-shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 /* ===============================
