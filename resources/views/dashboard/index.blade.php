@@ -9,6 +9,12 @@
         'text' => 'Welkom terug. Kies links een onderdeel om nieuwe opdrachtbevestigingen te maken of bestaande dossiers te beheren.',
     ])
 
+    @unless (auth()->user()->hasCompletedCompanyProfile())
+        <div class="dashboard-notice dashboard-notice-warning">
+            Vul eerst je bedrijfsgegevens aan in <a href="{{ route('dashboard.profile') }}">Mijn profiel</a>. Pas daarna kun je opdrachtbevestigingen aanmaken en versturen.
+        </div>
+    @endunless
+
     <div class="dashboard-metrics">
         <article class="dashboard-metric-card">
             <p class="dashboard-metric-label">Totaal</p>
@@ -44,7 +50,7 @@
         @include('partials.dashboard.panel', [
             'title' => 'Account',
             'slot' => '
-                <p>Je bent ingelogd als <strong>'.e(auth()->user()->first_name.' '.auth()->user()->last_name).'</strong> bij <strong>'.e(auth()->user()->company_name).'</strong>.</p>
+                <p>Je bent ingelogd als <strong>'.e(auth()->user()->first_name.' '.auth()->user()->last_name).'</strong>'.(auth()->user()->company_name ? ' bij <strong>'.e(auth()->user()->company_name).'</strong>' : '').'.</p>
             ',
         ])
     </div>

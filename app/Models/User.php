@@ -22,6 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'first_name',
         'last_name',
+        'phone_number',
         'company_name',
         'kvk_number',
         'street_name',
@@ -65,5 +66,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class);
+    }
+
+    public function hasCompletedCompanyProfile(): bool
+    {
+        return filled($this->company_name) && filled($this->kvk_number);
     }
 }

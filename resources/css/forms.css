@@ -2,6 +2,27 @@
    FORMS
 ================================ */
 
+.form-title {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    color: var(--color-text);
+}
+
+.form-subtitle {
+    margin: 0 0 1.4rem;
+    font-family: var(--font-text);
+    font-size: 15px;
+    color: #333;
+}
+
+.auth-card label {
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 400;
+    color: #333;
+}
+
 label {
     display: block;
     margin-bottom: 0.3rem;
@@ -100,7 +121,7 @@ select:focus {
 
 .form-steps {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.6rem;
     margin-bottom: 1.2rem;
 }
@@ -110,24 +131,24 @@ select:focus {
     align-items: center;
     gap: 0.6rem;
     padding: 0.7rem 0.8rem;
-    border: 1px solid #e7ddd1;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, white);
     border-radius: 5px;
-    background: #f8f4ee;
-    color: #8a7a66;
+    background: color-mix(in srgb, var(--color-primary) 6%, white);
+    color: color-mix(in srgb, var(--color-primary) 55%, black);
     font-size: 0.9rem;
     font-weight: 500;
 }
 
 .form-step-pill.is-active {
-    border-color: #d7bf9c;
-    background: #efe0ca;
-    color: #6f4f28;
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 14%, white);
+    color: var(--color-primary);
 }
 
 .form-step-pill.is-complete {
-    border-color: #cfe4d5;
-    background: #ecf8ef;
-    color: #1f7a46;
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: #ffffff;
 }
 
 .form-step-number {
@@ -153,7 +174,7 @@ select:focus {
 
 .form-step-title {
     margin: 0 0 1rem;
-    color: #7b6a56;
+    color: color-mix(in srgb, var(--color-primary) 65%, black);
     font-size: 0.9rem;
     font-weight: 600;
 }

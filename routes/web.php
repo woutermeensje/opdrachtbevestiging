@@ -84,12 +84,16 @@ Route::middleware('auth')->group(function (): void {
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/aanmaken', [ConfirmationController::class, 'create'])->name('dashboard.create');
-    Route::post('/dashboard/aanmaken', [ConfirmationController::class, 'store'])->name('dashboard.create.store');
     Route::get('/dashboard/opdrachtbevestigingen', [ConfirmationController::class, 'index'])->name('dashboard.confirmations');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
-    Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
     Route::get('/dashboard/contacten', [ContactController::class, 'index'])->name('dashboard.contacts');
     Route::post('/dashboard/contacten', [ContactController::class, 'store'])->name('dashboard.contacts.store');
     Route::get('/dashboard/mijn-profiel', [DashboardController::class, 'profile'])->name('dashboard.profile');
+    Route::post('/dashboard/mijn-profiel', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
+
+    Route::middleware('company.profile')->group(function (): void {
+        Route::get('/dashboard/aanmaken', [ConfirmationController::class, 'create'])->name('dashboard.create');
+        Route::post('/dashboard/aanmaken', [ConfirmationController::class, 'store'])->name('dashboard.create.store');
+        Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
+    });
 });

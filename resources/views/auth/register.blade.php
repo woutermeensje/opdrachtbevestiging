@@ -7,9 +7,11 @@
 ])
 
 @section('content')
+    @include('partials.auth.homepage-link')
+    @include('partials.auth.brand')
     <section class="auth-card">
-        <h1>Account aanmaken</h1>
-        <p class="subtitle">Registreer je met je naam, e-mailadres en bedrijfsnaam.</p>
+        <h1 class="form-title">Account aanmaken</h1>
+        <p class="form-subtitle">Registreer je met je naam, e-mailadres en telefoonnummer.</p>
 
         @include('partials.forms.status')
         @include('partials.forms.errors')
@@ -17,35 +19,27 @@
         @php
             $step = 1;
 
-            if ($errors->hasAny(['kvk_number', 'company_name'])) {
+            if ($errors->hasAny(['password', 'password_confirmation'])) {
                 $step = 2;
-            }
-
-            if ($errors->hasAny(['email', 'password', 'password_confirmation'])) {
-                $step = 3;
             }
         @endphp
 
-        <form method="POST" action="{{ route('register.store') }}" data-kvk-form data-step-form data-initial-step="{{ $step }}">
+        <form method="POST" action="{{ route('register.store') }}" data-step-form data-initial-step="{{ $step }}">
             @csrf
 
             <div class="form-steps" aria-label="Registratiestappen">
                 <div class="form-step-pill is-active" data-step-indicator="1">
                     <span class="form-step-number">1</span>
-                    <span>Persoon</span>
+                    <span>Gegevens</span>
                 </div>
                 <div class="form-step-pill" data-step-indicator="2">
                     <span class="form-step-number">2</span>
-                    <span>Bedrijf</span>
-                </div>
-                <div class="form-step-pill" data-step-indicator="3">
-                    <span class="form-step-number">3</span>
-                    <span>Account</span>
+                    <span>Wachtwoord</span>
                 </div>
             </div>
 
             <section class="form-step-panel is-active" data-step-panel="1">
-                <p class="form-step-title">Stap 1 van 3: jouw gegevens</p>
+                <p class="form-step-title">Stap 1 van 2: jouw gegevens</p>
 
                 <div class="grid-2">
                     <div>
@@ -58,6 +52,12 @@
                     </div>
                 </div>
 
+                <label for="email">E-mailadres</label>
+                <input id="email" name="email" type="email" value="{{ old('email') }}" required>
+
+                <label for="phone_number">Telefoonnummer</label>
+                <input id="phone_number" name="phone_number" type="tel" value="{{ old('phone_number') }}" required>
+
                 <div class="actions actions-split">
                     <a href="{{ route('login') }}" class="btn btn-secondary">Ik heb al een account</a>
                     <button type="button" class="btn btn-primary" data-step-next>Volgende stap</button>
@@ -65,50 +65,7 @@
             </section>
 
             <section class="form-step-panel" data-step-panel="2">
-                <p class="form-step-title">Stap 2 van 3: bedrijfsgegevens</p>
-
-                <div class="grid-2">
-                    <div>
-                        <label for="company_name">Bedrijfsnaam</label>
-                        <input
-                            id="company_name"
-                            name="company_name"
-                            type="text"
-                            value="{{ old('company_name') }}"
-                            data-company-name
-                            data-kvk-search-url="{{ route('kvk.search') }}"
-                            list="register-company-options"
-                            required
-                        >
-                        <datalist id="register-company-options" data-company-options></datalist>
-                    </div>
-                    <div>
-                        <label for="kvk_number">KVK-nummer</label>
-                        <input
-                            id="kvk_number"
-                            name="kvk_number"
-                            type="text"
-                            inputmode="numeric"
-                            pattern="[0-9]{8}"
-                            maxlength="8"
-                            value="{{ old('kvk_number') }}"
-                            data-kvk-number
-                            required
-                        >
-                    </div>
-                </div>
-
-                <div class="actions actions-end">
-                    <button type="button" class="btn btn-secondary" data-step-prev>Vorige stap</button>
-                    <button type="button" class="btn btn-primary" data-step-next>Volgende stap</button>
-                </div>
-            </section>
-
-            <section class="form-step-panel" data-step-panel="3">
-                <p class="form-step-title">Stap 3 van 3: account instellen</p>
-
-                <label for="email">E-mailadres</label>
-                <input id="email" name="email" type="email" value="{{ old('email') }}" required>
+                <p class="form-step-title">Stap 2 van 2: wachtwoord instellen</p>
 
                 <label for="password">Wachtwoord</label>
                 <input id="password" name="password" type="password" required>

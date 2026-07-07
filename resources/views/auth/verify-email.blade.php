@@ -8,8 +8,8 @@
 
 @section('content')
     <section class="auth-card">
-        <h1>Bevestig je e-mailadres</h1>
-        <p class="subtitle">We hebben een verificatielink gestuurd naar het e-mailadres van je account.</p>
+        <h1 class="form-title">Bevestig je e-mailadres</h1>
+        <p class="form-subtitle">We hebben een verificatielink gestuurd naar het e-mailadres van je account.</p>
 
         @include('partials.forms.status')
         @include('partials.forms.errors')

@@ -7,6 +7,7 @@
     <meta name="google-site-verification" content="fPPs1bdTHYCUPew7OF7YKFYQOHCW9YAeqyUbZXEX8Tg">
     <meta name="robots" content="noindex,nofollow,noarchive">
     <title>{{ $title ?? config('app.name') }}</title>
+    @include('partials.favicon')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="dashboard-body">

@@ -29,7 +29,6 @@ class AdminNewUserRegisteredNotification extends Notification
             ->line('Er is zojuist een nieuwe gebruiker aangemeld op '.config('app.name').'.')
             ->line('Naam: '.$this->user->name)
             ->line('E-mailadres: '.$this->user->email)
-            ->line('Bedrijf: '.$this->user->company_name)
-            ->line('KvK-nummer: '.$this->user->kvk_number);
+            ->line('Telefoonnummer: '.$this->user->phone_number);
     }
 }

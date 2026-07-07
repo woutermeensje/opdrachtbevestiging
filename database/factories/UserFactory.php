@@ -27,6 +27,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
+            'phone_number' => fake()->phoneNumber(),
             'company_name' => fake()->company(),
             'kvk_number' => fake()->numerify('########'),
             'street_name' => fake()->streetName(),

@@ -1,52 +1,12 @@
 import './bootstrap';
 
 document.querySelectorAll('[data-kvk-form]').forEach((kvkForm) => {
-    const stepForm = kvkForm.matches('[data-step-form]') ? kvkForm : null;
-    const stepPanels = stepForm ? Array.from(stepForm.querySelectorAll('[data-step-panel]')) : [];
-    const stepIndicators = stepForm ? Array.from(stepForm.querySelectorAll('[data-step-indicator]')) : [];
     const kvkInput = kvkForm.querySelector('[data-kvk-number]');
     const companyNameInput = kvkForm.querySelector('[data-company-name]');
     const companyOptions = kvkForm.querySelector('[data-company-options]');
     const lookupButton = kvkForm.querySelector('[data-kvk-lookup]');
     const feedback = kvkForm.querySelector('[data-kvk-feedback]');
-    let currentStep = Number(stepForm?.dataset.initialStep ?? 1);
     let searchTimeout = null;
-
-    const syncSteps = () => {
-        if (!stepForm) {
-            return;
-        }
-
-        stepPanels.forEach((panel) => {
-            const isActive = Number(panel.dataset.stepPanel) === currentStep;
-            panel.classList.toggle('is-active', isActive);
-        });
-
-        stepIndicators.forEach((indicator) => {
-            const step = Number(indicator.dataset.stepIndicator);
-            indicator.classList.toggle('is-active', step === currentStep);
-            indicator.classList.toggle('is-complete', step < currentStep);
-        });
-    };
-
-    const validateCurrentStep = () => {
-        const currentPanel = stepForm?.querySelector(`[data-step-panel="${currentStep}"]`);
-
-        if (!currentPanel) {
-            return true;
-        }
-
-        const fields = Array.from(currentPanel.querySelectorAll('input, select, textarea'));
-
-        for (const field of fields) {
-            if (typeof field.reportValidity === 'function' && !field.reportValidity()) {
-                field.focus();
-                return false;
-            }
-        }
-
-        return true;
-    };
 
     const setFeedback = (message, type = '') => {
         if (!feedback) {
@@ -141,7 +101,46 @@ document.querySelectorAll('[data-kvk-form]').forEach((kvkForm) => {
         }
     });
 
-    stepForm?.querySelectorAll('[data-step-next]').forEach((button) => {
+});
+
+document.querySelectorAll('[data-step-form]').forEach((stepForm) => {
+    const stepPanels = Array.from(stepForm.querySelectorAll('[data-step-panel]'));
+    const stepIndicators = Array.from(stepForm.querySelectorAll('[data-step-indicator]'));
+    let currentStep = Number(stepForm.dataset.initialStep ?? 1);
+
+    const syncSteps = () => {
+        stepPanels.forEach((panel) => {
+            const isActive = Number(panel.dataset.stepPanel) === currentStep;
+            panel.classList.toggle('is-active', isActive);
+        });
+
+        stepIndicators.forEach((indicator) => {
+            const step = Number(indicator.dataset.stepIndicator);
+            indicator.classList.toggle('is-active', step === currentStep);
+            indicator.classList.toggle('is-complete', step < currentStep);
+        });
+    };
+
+    const validateCurrentStep = () => {
+        const currentPanel = stepForm.querySelector(`[data-step-panel="${currentStep}"]`);
+
+        if (!currentPanel) {
+            return true;
+        }
+
+        const fields = Array.from(currentPanel.querySelectorAll('input, select, textarea'));
+
+        for (const field of fields) {
+            if (typeof field.reportValidity === 'function' && !field.reportValidity()) {
+                field.focus();
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    stepForm.querySelectorAll('[data-step-next]').forEach((button) => {
         button.addEventListener('click', () => {
             if (!validateCurrentStep()) {
                 return;
@@ -152,7 +151,7 @@ document.querySelectorAll('[data-kvk-form]').forEach((kvkForm) => {
         });
     });
 
-    stepForm?.querySelectorAll('[data-step-prev]').forEach((button) => {
+    stepForm.querySelectorAll('[data-step-prev]').forEach((button) => {
         button.addEventListener('click', () => {
             currentStep = Math.max(currentStep - 1, 1);
             syncSteps();

@@ -17,6 +17,7 @@
     <meta name="twitter:title" content="{{ $ogTitle ?? ($title ?? config('app.name')) }}">
     <meta name="twitter:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Opdrachtbevestiging.nl helpt je om afspraken en opdrachtbevestigingen eenvoudig digitaal vast te leggen en te versturen.') }}">
     <title>{{ $title ?? config('app.name') }}</title>
+    @include('partials.favicon')
     @isset($structuredData)
         <script type="application/ld+json">{!! $structuredData !!}</script>
     @endisset

@@ -253,6 +253,12 @@
     color: #1f7a46;
 }
 
+.dashboard-notice-warning {
+    border-color: #fbe4ac;
+    background: #fef3c7;
+    color: #92400e;
+}
+
 .grid-3 {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

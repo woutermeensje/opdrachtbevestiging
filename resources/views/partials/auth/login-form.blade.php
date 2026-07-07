@@ -1,6 +1,6 @@
 <section class="auth-card">
-    <h1>Inloggen</h1>
-    <p class="subtitle">Log in om je opdrachtbevestigingen te beheren.</p>
+    <h1 class="form-title">Inloggen</h1>
+    <p class="form-subtitle">Log in om je opdrachtbevestigingen te beheren.</p>
 
     @include('partials.forms.status')
     @include('partials.forms.errors')

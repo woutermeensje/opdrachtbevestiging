@@ -7,5 +7,7 @@
 ])
 
 @section('content')
+    @include('partials.auth.homepage-link')
+    @include('partials.auth.brand')
     @include('partials.auth.login-form')
 @endsection

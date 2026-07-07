@@ -8,8 +8,8 @@
 
 @section('content')
     <section class="auth-card">
-        <h1>Nieuw wachtwoord instellen</h1>
-        <p class="subtitle">Kies een nieuw wachtwoord voor je account.</p>
+        <h1 class="form-title">Nieuw wachtwoord instellen</h1>
+        <p class="form-subtitle">Kies een nieuw wachtwoord voor je account.</p>
 
         @include('partials.forms.status')
         @include('partials.forms.errors')

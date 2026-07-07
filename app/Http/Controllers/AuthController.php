@@ -23,8 +23,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'kvk_number' => ['required', 'digits:8'],
-            'company_name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:30'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -33,8 +32,7 @@ class AuthController extends Controller
             'name' => trim($validated['first_name'].' '.$validated['last_name']),
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
-            'company_name' => $validated['company_name'],
-            'kvk_number' => $validated['kvk_number'],
+            'phone_number' => $validated['phone_number'],
             'email' => $validated['email'],
             'password' => $validated['password'],
         ]);
