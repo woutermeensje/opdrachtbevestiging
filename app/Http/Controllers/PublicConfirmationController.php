@@ -32,7 +32,7 @@ class PublicConfirmationController extends Controller
             ->where('public_token', $token)
             ->firstOrFail();
 
-        abort_if($confirmation->status === 'getekend', 409);
+        abort_if($confirmation->status !== 'verzonden' || $confirmation->signed_at !== null, 409);
 
         $validated = $request->validate([
             'signer_name' => ['required', 'string', 'max:255'],

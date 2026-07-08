@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\ConfirmationInvitationMail;
+use App\Mail\ConfirmationRetractionMail;
 use App\Models\Confirmation;
 use App\Models\Contact;
 use App\Models\User;
@@ -238,6 +239,70 @@ class ConfirmationFlowTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_user_can_retract_sent_confirmation(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create([
+            'first_name' => 'Wouter',
+            'last_name' => 'Meens',
+            'company_name' => 'Studio Wouter',
+            'email' => 'wouter@example.test',
+        ]);
+        $confirmation = Confirmation::factory()->create([
+            'user_id' => $user->id,
+            'reference' => 'OB-RETRACT',
+            'title' => 'Nieuwe website opdracht',
+            'client_name' => 'Acme B.V.',
+            'client_contact_name' => 'Sanne Jansen',
+            'client_email' => 'sanne@acme.test',
+            'status' => 'verzonden',
+            'signed_at' => null,
+            'sender_name' => 'Wouter Meens',
+            'sender_email' => 'wouter@example.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.confirmations.retract', $confirmation));
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+
+        $confirmation->refresh();
+
+        $this->assertSame('ingetrokken', $confirmation->status);
+        $this->assertNull($confirmation->signed_at);
+
+        Mail::assertSent(ConfirmationRetractionMail::class, function (ConfirmationRetractionMail $mail) use ($confirmation): bool {
+            $mail->assertHasSubject('Opdrachtbevestiging OB-RETRACT is ingetrokken');
+            $mail->assertSeeInHtml('is ingetrokken');
+            $mail->assertSeeInText('is ingetrokken');
+
+            return $mail->hasTo($confirmation->client_email);
+        });
+    }
+
+    public function test_signed_confirmation_cannot_be_retracted(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create();
+        $confirmation = Confirmation::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'getekend',
+            'signed_at' => now(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.confirmations.retract', $confirmation));
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+        $this->assertSame('getekend', $confirmation->fresh()->status);
+
+        Mail::assertNothingSent();
+    }
+
     public function test_public_recipient_can_accept_confirmation(): void
     {
         $confirmation = Confirmation::factory()->create([
@@ -257,6 +322,27 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('getekend', $confirmation->status);
         $this->assertSame('Jan de Vries', $confirmation->signer_name);
         $this->assertNotNull($confirmation->signed_at);
+    }
+
+    public function test_public_recipient_cannot_accept_retracted_confirmation(): void
+    {
+        $confirmation = Confirmation::factory()->create([
+            'status' => 'ingetrokken',
+            'signed_at' => null,
+        ]);
+
+        $this->get(route('confirmations.public.show', $confirmation->public_token))
+            ->assertOk()
+            ->assertSee('Deze opdrachtbevestiging is ingetrokken')
+            ->assertDontSee('type="submit" class="btn btn-primary">Akkoord bevestigen</button>', false);
+
+        $response = $this->post(route('confirmations.public.accept', $confirmation->public_token), [
+            'signer_name' => 'Jan de Vries',
+            'accept_terms' => '1',
+        ]);
+
+        $response->assertStatus(409);
+        $this->assertSame('ingetrokken', $confirmation->fresh()->status);
     }
 
     public function test_authenticated_user_can_store_a_contact(): void

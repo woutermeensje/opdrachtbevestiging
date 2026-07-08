@@ -4,6 +4,12 @@
 
 @php
     $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
+    $retractForm = $confirmation->canBeRetracted()
+        ? '<form method="POST" action="'.e(route('dashboard.confirmations.retract', $confirmation)).'" class="dashboard-action-form" onsubmit="return confirm(\'Weet je zeker dat je deze opdrachtbevestiging wilt intrekken?\');">
+            '.csrf_field().'
+            <button type="submit" class="btn btn-danger">Intrekken</button>
+        </form>'
+        : '';
 @endphp
 
 @section('content')
@@ -34,10 +40,13 @@
                 <p><strong>Status:</strong> '.e($confirmation->status).'</p>
                 <p><strong>Waarde:</strong> EUR '.e(number_format((float) $confirmation->total_value, 2, ',', '.')).'</p>
                 <p><strong>Online voorbeeld:</strong> <a href="'.e($confirmation->publicUrl()).'" target="_blank" rel="noopener noreferrer">Open document</a></p>
-                <form method="POST" action="'.e(route('dashboard.confirmations.send', $confirmation)).'" style="margin-top:12px;">
-                    '.csrf_field().'
-                    <button type="submit" class="btn btn-primary">Per e-mail versturen</button>
-                </form>
+                <div class="dashboard-panel-actions">
+                    <form method="POST" action="'.e(route('dashboard.confirmations.send', $confirmation)).'" class="dashboard-action-form">
+                        '.csrf_field().'
+                        <button type="submit" class="btn btn-primary">Per e-mail versturen</button>
+                    </form>
+                    '.$retractForm.'
+                </div>
             ',
         ])
     </div>

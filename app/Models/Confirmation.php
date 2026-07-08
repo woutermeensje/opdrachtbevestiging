@@ -99,6 +99,11 @@ class Confirmation extends Model
         return URL::route('confirmations.public.show', $this->public_token);
     }
 
+    public function canBeRetracted(): bool
+    {
+        return $this->status === 'verzonden' && $this->signed_at === null;
+    }
+
     /**
      * @return array<int, array{label: string, path: string, name: string, mime: string|null}>
      */

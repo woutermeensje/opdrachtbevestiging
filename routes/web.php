@@ -6,13 +6,13 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailVerificationNotificationController;
 use App\Http\Controllers\EmailVerificationPromptController;
-use App\Http\Controllers\NewPasswordController;
-use App\Http\Controllers\PasswordResetLinkController;
-use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\KvkLookupController;
 use App\Http\Controllers\KvkSearchController;
+use App\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\PublicConfirmationController;
+use App\Http\Controllers\VerifyEmailController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -96,5 +96,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::get('/dashboard/aanmaken', [ConfirmationController::class, 'create'])->name('dashboard.create');
         Route::post('/dashboard/aanmaken', [ConfirmationController::class, 'store'])->name('dashboard.create.store');
         Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
+        Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/intrekken', [ConfirmationController::class, 'retract'])->name('dashboard.confirmations.retract');
     });
 });

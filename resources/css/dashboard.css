@@ -247,6 +247,18 @@
     margin-bottom: 0;
 }
 
+.dashboard-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    margin-top: 0.75rem;
+}
+
+.dashboard-action-form {
+    margin: 0;
+}
+
 .dashboard-form textarea {
     min-height: 132px;
 }
@@ -355,6 +367,10 @@
 
 .dashboard-status-getekend {
     color: #047857;
+}
+
+.dashboard-status-ingetrokken {
+    color: var(--color-danger);
 }
 
 .upload-block-grid {

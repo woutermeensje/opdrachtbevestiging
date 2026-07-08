@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ConfirmationInvitationMail;
+use App\Mail\ConfirmationRetractionMail;
 use App\Models\Confirmation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -139,9 +140,38 @@ class ConfirmationController extends Controller
             ->with('status', 'Opdrachtbevestiging is per e-mail verzonden naar '.$confirmation->client_email.'.');
     }
 
+    public function retract(Request $request, Confirmation $confirmation): RedirectResponse
+    {
+        abort_unless($confirmation->user_id === $request->user()->id, 403);
+
+        if (! $confirmation->canBeRetracted()) {
+            return redirect()
+                ->route('dashboard.confirmations.show', $confirmation)
+                ->with('status', 'Deze opdrachtbevestiging kan niet meer worden ingetrokken.');
+        }
+
+        try {
+            Mail::to($confirmation->client_email)->send(new ConfirmationRetractionMail($confirmation));
+        } catch (Throwable $exception) {
+            return redirect()
+                ->route('dashboard.confirmations.show', $confirmation)
+                ->with('status', 'Intrekken mislukt, omdat de e-mail niet kon worden verzonden: '.$exception->getMessage());
+        }
+
+        $confirmation->forceFill([
+            'status' => 'ingetrokken',
+        ])->save();
+
+        return redirect()
+            ->route('dashboard.confirmations.show', $confirmation)
+            ->with('status', 'Opdrachtbevestiging is ingetrokken. De opdrachtgever is per e-mail geinformeerd.');
+    }
+
     private function sendConfirmationEmail(Confirmation $confirmation): void
     {
-        Mail::to($confirmation->client_email)->send(new ConfirmationInvitationMail($confirmation));
+        Mail::to($confirmation->client_email)
+            ->cc($confirmation->user->email)
+            ->send(new ConfirmationInvitationMail($confirmation));
     }
 
     /**

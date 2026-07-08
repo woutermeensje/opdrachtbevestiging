@@ -64,7 +64,9 @@
                 @if ($confirmation->status === 'getekend')
                     <p>Deze opdrachtbevestiging is akkoord bevestigd door <strong>{{ $confirmation->signer_name }}</strong>.</p>
                     <p><strong>Akkoorddatum:</strong> {{ optional($confirmation->signed_at)->format('d-m-Y H:i') }}</p>
-                @else
+                @elseif ($confirmation->status === 'ingetrokken')
+                    <p>Deze opdrachtbevestiging is ingetrokken. Je kunt deze niet meer akkoord bevestigen.</p>
+                @elseif ($confirmation->status === 'verzonden')
                     @include('partials.forms.errors')
 
                     <form method="POST" action="{{ route('confirmations.public.accept', $confirmation->public_token) }}">
@@ -80,6 +82,8 @@
 
                         <button type="submit" class="btn btn-primary">Akkoord bevestigen</button>
                     </form>
+                @else
+                    <p>Deze opdrachtbevestiging kan niet akkoord worden bevestigd.</p>
                 @endif
             </aside>
         </div>
