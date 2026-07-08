@@ -15,28 +15,13 @@
         </div>
     @endunless
 
-    <div class="dashboard-metrics">
-        <article class="dashboard-metric-card">
-            <p class="dashboard-metric-label">Totaal</p>
-            <strong>{{ $metrics['total'] }}</strong>
-        </article>
-        <article class="dashboard-metric-card">
-            <p class="dashboard-metric-label">Concepten</p>
-            <strong>{{ $metrics['drafts'] }}</strong>
-        </article>
-        <article class="dashboard-metric-card">
-            <p class="dashboard-metric-label">Akkoord</p>
-            <strong>{{ $metrics['signed'] }}</strong>
-        </article>
-        <article class="dashboard-metric-card">
-            <p class="dashboard-metric-label">Totale waarde</p>
-            <strong>EUR {{ number_format($metrics['value'], 2, ',', '.') }}</strong>
-        </article>
-        <article class="dashboard-metric-card">
-            <p class="dashboard-metric-label">Contacten</p>
-            <strong>{{ $contactCount }}</strong>
-        </article>
-    </div>
+    @if ($recentConfirmations->isNotEmpty())
+        @include('partials.dashboard.panel', [
+            'title' => 'Recente opdrachtbevestigingen',
+            'class' => 'dashboard-panel-wide',
+            'slot' => view('partials.dashboard.confirmations-table', ['confirmations' => $recentConfirmations])->render(),
+        ])
+    @endif
 
     <div class="dashboard-content-grid">
         @include('partials.dashboard.panel', [
@@ -54,12 +39,4 @@
             ',
         ])
     </div>
-
-    @if ($recentConfirmations->isNotEmpty())
-        @include('partials.dashboard.panel', [
-            'title' => 'Recente opdrachtbevestigingen',
-            'class' => 'dashboard-panel-wide',
-            'slot' => view('partials.dashboard.confirmations-table', ['confirmations' => $recentConfirmations])->render(),
-        ])
-    @endif
 @endsection

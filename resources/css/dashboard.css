@@ -228,12 +228,14 @@
 }
 
 .dashboard-panel-wide {
-    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .dashboard-panel h2 {
     margin: 0 0 0.8rem;
-    font-size: 1.1rem;
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .dashboard-panel p:last-child {
@@ -331,25 +333,23 @@
     padding: 0.28rem 0.6rem;
     font-size: 0.8rem;
     font-weight: 700;
+    background: #ffffff;
+    border: 1px solid #dedede;
 }
 
 .dashboard-status-concept {
-    background: var(--color-bg);
     color: #4b5563;
 }
 
 .dashboard-status-wacht-op-akkoord {
-    background: var(--color-bg);
     color: #92400e;
 }
 
 .dashboard-status-verzonden {
-    background: var(--color-bg);
     color: color-mix(in srgb, var(--color-primary) 70%, black);
 }
 
 .dashboard-status-getekend {
-    background: var(--color-bg);
     color: #047857;
 }
 
