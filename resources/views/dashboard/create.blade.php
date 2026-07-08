@@ -30,7 +30,7 @@
             'title' => 'Gegevens invullen',
             'class' => 'dashboard-create-form-panel',
             'slot' => '
-                <form method="POST" action="'.e(route('dashboard.create.store')).'" class="dashboard-form">
+                <form method="POST" action="'.e(route('dashboard.create.store')).'" class="dashboard-form" enctype="multipart/form-data">
                     '.csrf_field().'
 
                     <div>
@@ -59,6 +59,20 @@
                         </select>
                     </div>
 
+                    <div class="upload-block-grid">
+                        <div class="upload-block">
+                            <label for="attachment">Bijlage</label>
+                            <input id="attachment" name="attachment" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg">
+                            <p class="form-help">Optioneel. PDF, Word, Excel of afbeelding tot 10 MB.</p>
+                        </div>
+
+                        <div class="upload-block">
+                            <label for="quote">Offerte</label>
+                            <input id="quote" name="quote" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg">
+                            <p class="form-help">Optioneel. PDF, Word, Excel of afbeelding tot 10 MB.</p>
+                        </div>
+                    </div>
+
                     <div class="actions actions-end">
                         <button type="submit" class="btn btn-primary">Verzenden</button>
                     </div>
@@ -71,7 +85,7 @@
             'class' => 'dashboard-create-side-panel',
             'slot' => '
                 <p>Controleer de opdrachtbevestiging na het opslaan in het detailoverzicht.</p>
-                <p>Vanuit daar verstuur je de volledige opdrachtbevestiging als e-mailtekst naar de opdrachtgever.</p>
+                <p>Vanuit daar verstuur je de volledige opdrachtbevestiging als e-mailtekst naar de opdrachtgever. Eventuele bijlagen en offertes gaan mee als e-mailbijlage.</p>
             ',
         ])
     </div>

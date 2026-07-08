@@ -17,8 +17,7 @@ class ConfirmationInvitationMail extends Mailable
 
     public function __construct(
         public readonly Confirmation $confirmation,
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {
@@ -45,6 +44,17 @@ class ConfirmationInvitationMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        return collect($this->confirmation->emailAttachments())
+            ->map(function (array $file): Attachment {
+                $attachment = Attachment::fromStorageDisk('local', $file['path'])
+                    ->as($file['name']);
+
+                if (filled($file['mime'])) {
+                    $attachment->withMime($file['mime']);
+                }
+
+                return $attachment;
+            })
+            ->all();
     }
 }

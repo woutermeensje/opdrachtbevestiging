@@ -6,7 +6,7 @@
     @include('partials.dashboard.page-header', [
         'eyebrow' => 'Contacten',
         'title' => 'Opdrachtgevers en contactpersonen',
-        'text' => 'Voeg bedrijven toe via de KVK API en leg per bedrijf vast wie de opdrachtbevestiging per e-mail ontvangt.',
+        'text' => 'Voeg een opdrachtgever toe en leg vast wie de opdrachtbevestiging per e-mail ontvangt.',
     ])
 
     @include('partials.forms.errors')
@@ -20,33 +20,31 @@
             'title' => 'Nieuw contact toevoegen',
             'class' => 'dashboard-create-form-panel',
             'slot' => '
-                <form method="POST" action="'.e(route('dashboard.contacts.store')).'" class="dashboard-form" data-kvk-form>
+                <form method="POST" action="'.e(route('dashboard.contacts.store')).'" class="dashboard-form">
                     '.csrf_field().'
 
-                    <div class="grid-kvk">
-                        <div>
-                            <label for="company_name">Bedrijfsnaam</label>
-                            <input id="company_name" type="text" value="'.e(old('company_name')).'" data-company-name data-kvk-search-url="'.e(route('kvk.search')).'" list="contact-company-options" required>
-                            <datalist id="contact-company-options" data-company-options></datalist>
-                        </div>
-                        <div class="dashboard-inline-actions">
-                            <button type="button" class="btn btn-secondary" data-kvk-lookup data-kvk-url="'.e(route('kvk.lookup')).'">KVK-gegevens ophalen</button>
-                        </div>
-                    </div>
-
-                    <p class="dashboard-kvk-feedback" data-kvk-feedback></p>
-
-                    <label for="kvk_number">KVK-nummer</label>
-                    <input id="kvk_number" name="kvk_number" type="text" value="'.e(old('kvk_number')).'" data-kvk-target="kvk_number" required readonly>
+                    <label for="company_name">Bedrijfsnaam</label>
+                    <input id="company_name" name="company_name" type="text" value="'.e(old('company_name')).'" required>
 
                     <div class="grid-2">
                         <div>
-                            <label for="company_name_confirmed">Bedrijfsnaam</label>
-                            <input id="company_name_confirmed" name="company_name" type="text" value="'.e(old('company_name')).'" data-kvk-target="company_name" required>
+                            <label for="street_name">Straat</label>
+                            <input id="street_name" name="street_name" type="text" value="'.e(old('street_name')).'" required>
                         </div>
                         <div>
-                            <label for="contact_email">E-mailadres contactpersoon</label>
-                            <input id="contact_email" name="contact_email" type="email" value="'.e(old('contact_email')).'" required>
+                            <label for="house_number">Huisnummer</label>
+                            <input id="house_number" name="house_number" type="text" value="'.e(old('house_number')).'" required>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div>
+                            <label for="postal_code">Postcode</label>
+                            <input id="postal_code" name="postal_code" type="text" value="'.e(old('postal_code')).'" required>
+                        </div>
+                        <div>
+                            <label for="city">Plaats</label>
+                            <input id="city" name="city" type="text" value="'.e(old('city')).'" required>
                         </div>
                     </div>
 
@@ -61,33 +59,14 @@
                         </div>
                     </div>
 
-                    <div class="grid-3">
+                    <div class="grid-2">
                         <div>
-                            <label for="street_name">Straat</label>
-                            <input id="street_name" name="street_name" type="text" value="'.e(old('street_name')).'" data-kvk-target="street_name">
+                            <label for="contact_email">E-mailadres contactpersoon</label>
+                            <input id="contact_email" name="contact_email" type="email" value="'.e(old('contact_email')).'" required>
                         </div>
                         <div>
-                            <label for="house_number">Huisnummer</label>
-                            <input id="house_number" name="house_number" type="text" value="'.e(old('house_number')).'" data-kvk-target="house_number">
-                        </div>
-                        <div>
-                            <label for="house_number_addition">Toevoeging</label>
-                            <input id="house_number_addition" name="house_number_addition" type="text" value="'.e(old('house_number_addition')).'" data-kvk-target="house_number_addition">
-                        </div>
-                    </div>
-
-                    <div class="grid-3">
-                        <div>
-                            <label for="postal_code">Postcode</label>
-                            <input id="postal_code" name="postal_code" type="text" value="'.e(old('postal_code')).'" data-kvk-target="postal_code">
-                        </div>
-                        <div>
-                            <label for="city">Plaats</label>
-                            <input id="city" name="city" type="text" value="'.e(old('city')).'" data-kvk-target="city">
-                        </div>
-                        <div>
-                            <label for="country">Land</label>
-                            <input id="country" name="country" type="text" value="'.e(old('country')).'" data-kvk-target="country">
+                            <label for="contact_phone">Telefoonnummer contactpersoon</label>
+                            <input id="contact_phone" name="contact_phone" type="text" value="'.e(old('contact_phone')).'" required>
                         </div>
                     </div>
 

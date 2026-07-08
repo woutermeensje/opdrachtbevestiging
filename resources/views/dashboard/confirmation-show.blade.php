@@ -2,6 +2,10 @@
     'title' => $confirmation->title,
 ])
 
+@php
+    $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
+@endphp
+
 @section('content')
     @include('partials.dashboard.page-header', [
         'eyebrow' => 'Detail',
@@ -62,7 +66,8 @@
             'slot' => '
                 <p><strong>Afzender:</strong> '.e($confirmation->sender_name ?: '-').' ('.e($confirmation->sender_email ?: '-').')</p>
                 <p><strong>Ontvanger:</strong> '.e($confirmation->client_contact_name ?: $confirmation->client_name).' ('.e($confirmation->client_email).')</p>
-                <p><strong>Inhoud:</strong> De volledige opdrachtbevestiging staat in de e-mailtekst. Er wordt geen bijlage meegestuurd.</p>
+                <p><strong>Inhoud:</strong> De volledige opdrachtbevestiging staat in de e-mailtekst.</p>
+                <p><strong>Bijlagen:</strong> '.e($emailAttachmentSummary ?: 'Geen bijlage of offerte toegevoegd.').'</p>
             ',
         ])
 

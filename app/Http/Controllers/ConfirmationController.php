@@ -7,8 +7,10 @@ use App\Models\Confirmation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Throwable;
 
 class ConfirmationController extends Controller
@@ -38,6 +40,11 @@ class ConfirmationController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'contact_id' => ['required', 'integer'],
             'description' => ['required', 'string'],
+            'attachment' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg', 'max:10240'],
+            'quote' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg', 'max:10240'],
+        ], [], [
+            'attachment' => 'bijlage',
+            'quote' => 'offerte',
         ]);
 
         $description = Confirmation::sanitizeDescription($validated['description']);
@@ -67,6 +74,15 @@ class ConfirmationController extends Controller
             'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
             'sender_email' => $request->user()->email,
         ]);
+
+        $uploadedFiles = array_filter([
+            'attachment' => $this->storeUploadedDocument($request->file('attachment'), $confirmation, 'bijlagen', 'attachment'),
+            'quote' => $this->storeUploadedDocument($request->file('quote'), $confirmation, 'offertes', 'quote'),
+        ]);
+
+        if ($uploadedFiles !== []) {
+            $confirmation->forceFill(collect($uploadedFiles)->collapse()->all())->save();
+        }
 
         try {
             $this->sendConfirmationEmail($confirmation);
@@ -126,6 +142,28 @@ class ConfirmationController extends Controller
     private function sendConfirmationEmail(Confirmation $confirmation): void
     {
         Mail::to($confirmation->client_email)->send(new ConfirmationInvitationMail($confirmation));
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    private function storeUploadedDocument(mixed $file, Confirmation $confirmation, string $directory, string $fieldPrefix): array
+    {
+        if (! $file instanceof UploadedFile) {
+            return [];
+        }
+
+        $path = $file->store('confirmations/'.$confirmation->id.'/'.$directory, 'local');
+
+        if ($path === false) {
+            throw new RuntimeException('Het uploadbestand kon niet worden opgeslagen.');
+        }
+
+        return [
+            $fieldPrefix.'_path' => $path,
+            $fieldPrefix.'_original_name' => $file->getClientOriginalName(),
+            $fieldPrefix.'_mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
+        ];
     }
 
     private function generateReference(): string

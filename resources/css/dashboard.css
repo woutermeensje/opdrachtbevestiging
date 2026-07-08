@@ -199,7 +199,12 @@
 .dashboard-content-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.dashboard-content-grid:last-child {
+    margin-bottom: 0;
 }
 
 .dashboard-create-layout {
@@ -315,10 +320,9 @@
 
 .dashboard-table th {
     color: var(--color-text-subtle);
+    font-family: var(--font-ui);
     font-size: 0.82rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
 }
 
 .dashboard-table-subtle {
@@ -351,6 +355,23 @@
 
 .dashboard-status-getekend {
     color: #047857;
+}
+
+.upload-block-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.upload-block {
+    padding: 0.85rem;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    background: var(--color-bg);
+}
+
+.upload-block input[type='file'] {
+    margin-bottom: 0;
 }
 
 .public-confirmation-layout {
@@ -427,6 +448,7 @@
     .dashboard-metrics,
     .grid-kvk,
     .grid-3,
+    .upload-block-grid,
     .dashboard-content-grid {
         grid-template-columns: 1fr;
     }

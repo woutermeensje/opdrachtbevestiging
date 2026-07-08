@@ -5,7 +5,7 @@
                 <th>Bedrijf</th>
                 <th>Contactpersoon</th>
                 <th>Adres</th>
-                <th>KVK</th>
+                <th>Telefoon</th>
             </tr>
         </thead>
         <tbody>
@@ -22,7 +22,7 @@
                             {{ trim(collect([$contact->postal_code, $contact->city, $contact->country])->filter()->implode(' ')) ?: '-' }}
                         </div>
                     </td>
-                    <td>{{ $contact->kvk_number }}</td>
+                    <td>{{ $contact->contact_phone ?: '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

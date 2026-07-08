@@ -25,6 +25,7 @@ class ContactFactory extends Factory
             'contact_first_name' => fake()->firstName(),
             'contact_last_name' => fake()->lastName(),
             'contact_email' => fake()->safeEmail(),
+            'contact_phone' => fake()->phoneNumber(),
         ];
     }
 }

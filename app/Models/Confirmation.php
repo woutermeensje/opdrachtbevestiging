@@ -26,6 +26,12 @@ class Confirmation extends Model
         'status',
         'sender_name',
         'sender_email',
+        'attachment_path',
+        'attachment_original_name',
+        'attachment_mime_type',
+        'quote_path',
+        'quote_original_name',
+        'quote_mime_type',
         'agreement_date',
         'sent_at',
         'signed_at',
@@ -91,5 +97,38 @@ class Confirmation extends Model
     public function publicUrl(): string
     {
         return URL::route('confirmations.public.show', $this->public_token);
+    }
+
+    /**
+     * @return array<int, array{label: string, path: string, name: string, mime: string|null}>
+     */
+    public function emailAttachments(): array
+    {
+        return array_values(array_filter([
+            $this->attachment_path ? [
+                'label' => 'Bijlage',
+                'path' => $this->attachment_path,
+                'name' => $this->attachment_original_name ?: basename($this->attachment_path),
+                'mime' => $this->attachment_mime_type,
+            ] : null,
+            $this->quote_path ? [
+                'label' => 'Offerte',
+                'path' => $this->quote_path,
+                'name' => $this->quote_original_name ?: basename($this->quote_path),
+                'mime' => $this->quote_mime_type,
+            ] : null,
+        ]));
+    }
+
+    public function hasEmailAttachments(): bool
+    {
+        return $this->emailAttachments() !== [];
+    }
+
+    public function emailAttachmentSummary(): string
+    {
+        return collect($this->emailAttachments())
+            ->map(fn (array $attachment): string => $attachment['label'].': '.$attachment['name'])
+            ->implode(', ');
     }
 }

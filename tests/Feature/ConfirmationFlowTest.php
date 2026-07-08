@@ -9,8 +9,11 @@ use App\Models\User;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ConfirmationFlowTest extends TestCase
@@ -80,12 +83,67 @@ class ConfirmationFlowTest extends TestCase
 
         $response
             ->assertOk()
+            ->assertSee('enctype="multipart/form-data"', false)
             ->assertSee('name="title"', false)
             ->assertSee('data-rich-editor', false)
             ->assertSee('name="contact_id"', false)
+            ->assertSee('name="attachment"', false)
+            ->assertSee('name="quote"', false)
             ->assertSee('Verzenden')
             ->assertDontSee('name="total_value"', false)
             ->assertDontSee('name="status"', false);
+    }
+
+    public function test_authenticated_user_can_create_confirmation_with_attachment_and_quote(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'title' => 'Nieuwe website opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Ontwikkeling van een website.</p>',
+                'attachment' => UploadedFile::fake()->create('voorwaarden.pdf', 32, 'application/pdf'),
+                'quote' => UploadedFile::fake()->create('offerte.pdf', 48, 'application/pdf'),
+            ]);
+
+        $confirmation = Confirmation::query()->first();
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+        $this->assertNotNull($confirmation);
+        $this->assertNotNull($confirmation->attachment_path);
+        $this->assertNotNull($confirmation->quote_path);
+        $this->assertSame('voorwaarden.pdf', $confirmation->attachment_original_name);
+        $this->assertSame('offerte.pdf', $confirmation->quote_original_name);
+
+        Storage::disk('local')->assertExists($confirmation->attachment_path);
+        Storage::disk('local')->assertExists($confirmation->quote_path);
+
+        Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
+            $mail->assertHasAttachment(
+                Attachment::fromStorageDisk('local', $confirmation->attachment_path)
+                    ->as('voorwaarden.pdf')
+                    ->withMime('application/pdf')
+            );
+            $mail->assertHasAttachment(
+                Attachment::fromStorageDisk('local', $confirmation->quote_path)
+                    ->as('offerte.pdf')
+                    ->withMime('application/pdf')
+            );
+            $mail->assertSeeInHtml('Bijlage: voorwaarden.pdf');
+            $mail->assertSeeInHtml('Offerte: offerte.pdf');
+
+            return $mail->hasTo($confirmation->client_email);
+        });
     }
 
     public function test_confirmations_page_shows_only_own_confirmations(): void
@@ -209,16 +267,14 @@ class ConfirmationFlowTest extends TestCase
             ->actingAs($user)
             ->post(route('dashboard.contacts.store'), [
                 'company_name' => 'Voorbeeld B.V.',
-                'kvk_number' => '12345678',
                 'street_name' => 'Keizersgracht',
                 'house_number' => '1',
-                'house_number_addition' => 'A',
                 'postal_code' => '1015CJ',
                 'city' => 'Amsterdam',
-                'country' => 'Nederland',
                 'contact_first_name' => 'Piet',
                 'contact_last_name' => 'de Boer',
                 'contact_email' => 'piet@example.test',
+                'contact_phone' => '0612345678',
             ]);
 
         $response->assertRedirect(route('dashboard.contacts'));

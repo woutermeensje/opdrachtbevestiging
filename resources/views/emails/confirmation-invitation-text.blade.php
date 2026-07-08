@@ -2,12 +2,13 @@
     $recipientName = $confirmation->client_contact_name ?: $confirmation->client_name;
     $senderCompany = $confirmation->user->company_name ?: $confirmation->sender_name;
     $totalValue = (float) $confirmation->total_value;
+    $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
 @endphp
 Opdrachtbevestiging {{ $confirmation->reference }}: {{ $confirmation->title }}
 
 Beste {{ $recipientName }},
 
-Hierbij bevestigen wij de opdracht zoals hieronder uitgewerkt. Deze e-mail bevat de volledige opdrachtbevestiging; er is geen bijlage toegevoegd.
+Hierbij bevestigen wij de opdracht zoals hieronder uitgewerkt. Deze e-mail bevat de volledige opdrachtbevestiging @if ($emailAttachmentSummary !== ''). Bijgevoegd: {{ $emailAttachmentSummary }}@endif.
 
 Je kunt rechtstreeks op deze e-mail reageren bij vragen of om akkoord te geven.
 
