@@ -67,8 +67,9 @@ select:focus {
 }
 
 .profile-form-section {
-    padding-top: 1rem;
-    margin-top: 1rem;
+    padding-top: 1.75rem;
+    margin-top: 1.75rem;
+    margin-bottom: 1.75rem;
     border-top: 1px solid #dedede;
 }
 
