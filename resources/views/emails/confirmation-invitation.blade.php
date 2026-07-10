@@ -11,6 +11,7 @@
     $senderAddressLines = $confirmation->senderAddressLines();
     $totalValue = (float) $confirmation->total_value;
     $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
+    $acceptUrl = $confirmation->publicUrl();
 @endphp
 <body style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#333333;">
     <div style="width:100%;background:#ffffff;padding:32px 16px;box-sizing:border-box;">
@@ -19,7 +20,10 @@
             <h1 style="margin:0 0 12px;font-size:28px;line-height:1.2;color:#333333;font-weight:700;">{{ $confirmation->title }}</h1>
             <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#333333;">Beste {{ $recipientName }},</p>
             <p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#333333;">Hierbij bevestigen wij de opdracht zoals hieronder uitgewerkt. Deze e-mail bevat de volledige opdrachtbevestiging @if ($emailAttachmentSummary !== ''). Bijgevoegd: {{ $emailAttachmentSummary }}@endif.</p>
-            <p style="margin:0 0 28px;font-size:15px;line-height:1.6;color:#333333;">Je kunt rechtstreeks op deze e-mail reageren bij vragen of om akkoord te geven.</p>
+            <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#333333;">Klik op de knop hieronder om de opdrachtbevestiging digitaal te bekijken en akkoord te geven.</p>
+            <p style="margin:0 0 28px;">
+                <a href="{{ $acceptUrl }}" style="display:inline-block;padding:12px 18px;border-radius:5px;background:#7C5CFA;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">Akkoord geven!</a>
+            </p>
 
             <div style="width:100%;background:#FBFAF8;border:1px solid #dedede;border-radius:5px;overflow:hidden;box-sizing:border-box;margin:0 0 28px;">
                 <div style="padding:20px 22px;border-bottom:1px solid #dedede;">

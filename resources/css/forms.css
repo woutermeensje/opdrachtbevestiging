@@ -28,7 +28,7 @@ label {
     margin-bottom: 0.3rem;
     font-weight: 300;
     font-size: 15px;
-    font-family: var(--font-ui);
+    font-family: var(--font-text);
     color: var(--color-text);
 }
 
@@ -39,7 +39,7 @@ select {
     background: var(--field-bg);
     border: 1px solid var(--field-border);
     border-radius: var(--radius-default);
-    padding: 0.65rem 0.85rem;
+    padding: 0.45rem 0.7rem;
     margin-bottom: 0.7rem;
     font-size: 0.9rem;
     font-family: var(--font-text);
@@ -60,6 +60,113 @@ textarea:focus,
 select:focus {
     border-color: var(--field-focus);
     box-shadow: var(--field-shadow-focus);
+}
+
+.dashboard-form textarea {
+    min-height: 132px;
+}
+
+.profile-form-section {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid #dedede;
+}
+
+.profile-form-section:first-child {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: 0;
+}
+
+.profile-form-section h3 {
+    margin: 0 0 0.85rem;
+    font-family: var(--font-text);
+    font-size: 1rem;
+}
+
+.profile-file-current {
+    margin: 0.45rem 0 0;
+    color: var(--color-text-subtle);
+    font-size: 0.85rem;
+}
+
+.dashboard-create-layout {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.dashboard-create-form-panel {
+    flex: 0 0 calc(65% - 0.5rem);
+    max-width: calc(65% - 0.5rem);
+}
+
+.dashboard-create-side-panel {
+    flex: 0 0 calc(35% - 0.5rem);
+    max-width: calc(35% - 0.5rem);
+    position: sticky;
+    top: 2rem;
+}
+
+.upload-block-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.upload-block {
+    padding: 0.85rem;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    background: var(--color-bg);
+}
+
+.upload-block input[type='file'] {
+    margin-bottom: 0;
+}
+
+.checkbox-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    margin: 1rem 0 1.2rem;
+}
+
+.checkbox-field input {
+    width: 18px;
+    height: 18px;
+    margin: 0.15rem 0 0;
+    flex-shrink: 0;
+}
+
+.signature-field {
+    margin: 1rem 0;
+}
+
+.signature-canvas {
+    display: block;
+    width: 100%;
+    height: 150px;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    background: #ffffff;
+    touch-action: none;
+}
+
+.signature-canvas:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.signature-canvas.is-invalid {
+    border-color: var(--color-danger);
+}
+
+.signature-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.6rem;
 }
 
 .rich-editor-field {
@@ -185,11 +292,39 @@ select:focus {
     gap: 0.8rem;
 }
 
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
 .grid-kvk {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.8rem;
     align-items: end;
+}
+
+.dashboard-inline-actions {
+    display: flex;
+    align-items: flex-end;
+}
+
+.dashboard-kvk-feedback {
+    min-height: 1.5rem;
+    color: #6b7280;
+}
+
+.dashboard-kvk-feedback[data-state='success'] {
+    color: #1f7a46;
+}
+
+.dashboard-kvk-feedback[data-state='error'] {
+    color: #b42318;
+}
+
+.dashboard-kvk-feedback[data-state='loading'] {
+    color: var(--color-text-subtle);
 }
 
 .grid-address {
@@ -258,13 +393,32 @@ select:focus {
     }
 
     .grid-2 { grid-template-columns: 1fr; gap: 0; }
+    .grid-3,
     .grid-kvk,
-    .grid-address { grid-template-columns: 1fr; gap: 0; }
+    .grid-address,
+    .upload-block-grid { grid-template-columns: 1fr; gap: 0; }
 
     .actions,
     .actions-end,
     .actions-split {
         flex-direction: column;
         align-items: stretch;
+    }
+}
+
+@media (max-width: 720px) {
+    .dashboard-create-layout {
+        flex-direction: column;
+    }
+
+    .dashboard-create-form-panel,
+    .dashboard-create-side-panel {
+        flex-basis: auto;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .dashboard-create-side-panel {
+        position: static;
     }
 }

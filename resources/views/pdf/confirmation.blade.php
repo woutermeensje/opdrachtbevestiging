@@ -109,11 +109,32 @@
             margin: 0;
             padding-left: 18px;
         }
+
+        .signature-box {
+            min-height: 110px;
+            margin-top: 10px;
+            border: 1px dashed #999999;
+            padding: 12px;
+        }
+
+        .signature-image {
+            max-width: 260px;
+            max-height: 92px;
+            margin-top: 8px;
+        }
+
+        .signature-line {
+            margin-top: 55px;
+            border-top: 1px solid #999999;
+            padding-top: 6px;
+            color: #666666;
+        }
     </style>
 </head>
 @php
     $senderAddressLines = $confirmation->senderAddressLines();
     $logo = $confirmation->senderCompanyLogoDataUri();
+    $signature = $confirmation->signerSignatureDataUri();
     $documents = array_values(array_filter([
         $confirmation->terms_path ? 'Algemene voorwaarden: '.($confirmation->terms_original_name ?: basename($confirmation->terms_path)) : null,
         $confirmation->attachment_path ? 'Bijlage: '.($confirmation->attachment_original_name ?: basename($confirmation->attachment_path)) : null,
@@ -189,6 +210,27 @@
             </ul>
         </div>
     @endif
+
+    <div class="box">
+        <h2>Akkoord en handtekening</h2>
+        @if ($confirmation->signed_at !== null)
+            <p>
+                Akkoord gegeven door <strong>{{ $confirmation->signer_name ?: '-' }}</strong><br>
+                Datum: {{ $confirmation->signed_at->format('d-m-Y H:i') }}<br>
+                @if (filled($confirmation->signer_ip))
+                    IP-adres: {{ $confirmation->signer_ip }}
+                @endif
+            </p>
+            @if ($signature !== null)
+                <img class="signature-image" src="{{ $signature }}" alt="">
+            @endif
+        @else
+            <div class="signature-box">
+                <p class="meta">Ruimte voor digitale handtekening na akkoord.</p>
+                <p class="signature-line">Naam en handtekening opdrachtgever</p>
+            </div>
+        @endif
+    </div>
 
     <p class="meta">
         Deze opdrachtbevestiging is opgesteld door {{ $confirmation->senderCompanyDisplayName() }}.

@@ -13,6 +13,9 @@
     $termsLine = $confirmation->terms_path
         ? '<p><strong>Algemene voorwaarden:</strong> '.e($confirmation->terms_original_name ?: basename($confirmation->terms_path)).'</p>'
         : '<p><strong>Algemene voorwaarden:</strong> Niet toegevoegd.</p>';
+    $signatureLine = $confirmation->signer_signature_path
+        ? '<p><strong>Handtekening:</strong> Vastgelegd in de PDF.</p>'
+        : '<p><strong>Handtekening:</strong> Nog niet gezet.</p>';
     $retractForm = $confirmation->canBeRetracted()
         ? '<form method="POST" action="'.e(route('dashboard.confirmations.retract', $confirmation)).'" class="dashboard-action-form" onsubmit="return confirm(\'Weet je zeker dat je deze opdrachtbevestiging wilt intrekken?\');">
             '.csrf_field().'
@@ -113,6 +116,7 @@
             'slot' => '
                 <p><strong>Akkoord door:</strong> '.e($confirmation->signer_name ?: '-').'</p>
                 <p><strong>IP-adres:</strong> '.e($confirmation->signer_ip ?: '-').'</p>
+                '.$signatureLine.'
                 <p><strong>Laatste weergave:</strong> '.e(optional($confirmation->viewed_at)->format('d-m-Y H:i') ?? '-').'</p>
             ',
         ])

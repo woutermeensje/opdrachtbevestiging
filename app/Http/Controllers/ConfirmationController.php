@@ -6,7 +6,7 @@ use App\Mail\ConfirmationInvitationMail;
 use App\Mail\ConfirmationRetractionMail;
 use App\Models\Confirmation;
 use App\Models\User;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\ConfirmationPdfService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,6 +20,10 @@ use Throwable;
 
 class ConfirmationController extends Controller
 {
+    public function __construct(
+        private readonly ConfirmationPdfService $pdfService,
+    ) {}
+
     public function index(Request $request): View
     {
         $confirmations = $request->user()
@@ -92,7 +96,7 @@ class ConfirmationController extends Controller
         }
 
         try {
-            $this->generateConfirmationPdf($confirmation);
+            $this->pdfService->generate($confirmation);
             $this->sendConfirmationEmail($confirmation);
         } catch (Throwable $exception) {
             return redirect()
@@ -143,7 +147,7 @@ class ConfirmationController extends Controller
 
         try {
             $this->hydrateProfileSnapshot($confirmation);
-            $this->generateConfirmationPdf($confirmation);
+            $this->pdfService->generate($confirmation);
             $this->sendConfirmationEmail($confirmation);
         } catch (Throwable $exception) {
             return redirect()
@@ -289,27 +293,6 @@ class ConfirmationController extends Controller
             $fieldPrefix.'_original_name' => $originalName,
             $fieldPrefix.'_mime_type' => $mimeType,
         ];
-    }
-
-    private function generateConfirmationPdf(Confirmation $confirmation): void
-    {
-        $confirmation->loadMissing('user');
-
-        $path = 'confirmations/'.$confirmation->id.'/pdf/'.$confirmation->pdfDownloadName();
-        $contents = Pdf::loadView('pdf.confirmation', [
-            'confirmation' => $confirmation,
-        ])->setPaper('a4')->output();
-
-        if (! Storage::disk('local')->put($path, $contents)) {
-            throw new RuntimeException('De PDF kon niet worden opgeslagen.');
-        }
-
-        $confirmation->forceFill([
-            'pdf_path' => $path,
-            'pdf_original_name' => $confirmation->pdfDownloadName(),
-            'pdf_mime_type' => 'application/pdf',
-            'pdf_generated_at' => now(),
-        ])->save();
     }
 
     /**

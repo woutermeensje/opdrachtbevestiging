@@ -61,6 +61,8 @@ class Confirmation extends Model
         'signer_name',
         'signer_ip',
         'signer_user_agent',
+        'signer_signature_path',
+        'signer_signature_mime_type',
     ];
 
     protected function casts(): array
@@ -170,6 +172,18 @@ class Confirmation extends Model
 
         $contents = Storage::disk('local')->get($this->sender_company_logo_path);
         $mimeType = $this->sender_company_logo_mime_type ?: 'image/png';
+
+        return 'data:'.$mimeType.';base64,'.base64_encode($contents);
+    }
+
+    public function signerSignatureDataUri(): ?string
+    {
+        if (! filled($this->signer_signature_path) || ! Storage::disk('local')->exists($this->signer_signature_path)) {
+            return null;
+        }
+
+        $contents = Storage::disk('local')->get($this->signer_signature_path);
+        $mimeType = $this->signer_signature_mime_type ?: 'image/png';
 
         return 'data:'.$mimeType.';base64,'.base64_encode($contents);
     }

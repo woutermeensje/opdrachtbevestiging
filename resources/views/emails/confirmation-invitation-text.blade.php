@@ -4,6 +4,7 @@
     $senderAddressLines = $confirmation->senderAddressLines();
     $totalValue = (float) $confirmation->total_value;
     $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
+    $acceptUrl = $confirmation->publicUrl();
 @endphp
 Opdrachtbevestiging {{ $confirmation->reference }}: {{ $confirmation->title }}
 
@@ -11,7 +12,8 @@ Beste {{ $recipientName }},
 
 Hierbij bevestigen wij de opdracht zoals hieronder uitgewerkt. Deze e-mail bevat de volledige opdrachtbevestiging @if ($emailAttachmentSummary !== ''). Bijgevoegd: {{ $emailAttachmentSummary }}@endif.
 
-Je kunt rechtstreeks op deze e-mail reageren bij vragen of om akkoord te geven.
+Akkoord geven:
+{{ $acceptUrl }}
 
 Referentie: {{ $confirmation->reference }}
 Titel: {{ $confirmation->title }}

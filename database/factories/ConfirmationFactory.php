@@ -43,6 +43,8 @@ class ConfirmationFactory extends Factory
             'signer_name' => null,
             'signer_ip' => null,
             'signer_user_agent' => null,
+            'signer_signature_path' => null,
+            'signer_signature_mime_type' => null,
             'expires_at' => now()->addDays(14)->toDateString(),
         ];
     }

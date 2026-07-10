@@ -75,6 +75,8 @@ class ConfirmationFlowTest extends TestCase
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
             $mail->assertSeeInHtml('<strong>marketingwebsite</strong>', false);
+            $mail->assertSeeInHtml('Akkoord geven');
+            $mail->assertSeeInHtml($confirmation->publicUrl());
             $mail->assertHasAttachment(
                 Attachment::fromStorageDisk('local', $confirmation->pdf_path)
                     ->as($confirmation->pdf_original_name)
@@ -320,7 +322,9 @@ class ConfirmationFlowTest extends TestCase
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
             $mail->assertHasSubject('Opdrachtbevestiging OB-SENDTEST: Nieuwe website opdracht');
             $mail->assertSeeInHtml('Deze e-mail bevat de volledige opdrachtbevestiging');
+            $mail->assertSeeInHtml('Akkoord geven');
             $mail->assertSeeInHtml('Ontwikkeling van een marketingwebsite.');
+            $mail->assertSeeInText($confirmation->publicUrl());
             $mail->assertSeeInText('Ontwikkeling van een marketingwebsite.');
             $mail->assertHasAttachment(
                 Attachment::fromStorageDisk('local', $confirmation->pdf_path)
@@ -400,6 +404,8 @@ class ConfirmationFlowTest extends TestCase
 
     public function test_public_recipient_can_accept_confirmation(): void
     {
+        Storage::fake('local');
+
         $confirmation = Confirmation::factory()->create([
             'status' => 'verzonden',
             'signed_at' => null,
@@ -408,6 +414,7 @@ class ConfirmationFlowTest extends TestCase
         $response = $this->post(route('confirmations.public.accept', $confirmation->public_token), [
             'signer_name' => 'Jan de Vries',
             'accept_terms' => '1',
+            'signer_signature_data' => $this->signatureDataUri(),
         ]);
 
         $response->assertRedirect(route('confirmations.public.show', $confirmation->public_token));
@@ -417,6 +424,35 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('getekend', $confirmation->status);
         $this->assertSame('Jan de Vries', $confirmation->signer_name);
         $this->assertNotNull($confirmation->signed_at);
+        $this->assertNotNull($confirmation->signer_signature_path);
+        $this->assertNotNull($confirmation->pdf_path);
+
+        Storage::disk('local')->assertExists($confirmation->signer_signature_path);
+        Storage::disk('local')->assertExists($confirmation->pdf_path);
+    }
+
+    public function test_public_recipient_must_draw_signature_to_accept_confirmation(): void
+    {
+        $confirmation = Confirmation::factory()->create([
+            'status' => 'verzonden',
+            'signed_at' => null,
+        ]);
+
+        $response = $this->from(route('confirmations.public.show', $confirmation->public_token))
+            ->post(route('confirmations.public.accept', $confirmation->public_token), [
+                'signer_name' => 'Jan de Vries',
+                'accept_terms' => '1',
+            ]);
+
+        $response
+            ->assertRedirect(route('confirmations.public.show', $confirmation->public_token))
+            ->assertSessionHasErrors('signer_signature_data');
+
+        $confirmation->refresh();
+
+        $this->assertSame('verzonden', $confirmation->status);
+        $this->assertNull($confirmation->signed_at);
+        $this->assertNull($confirmation->signer_signature_path);
     }
 
     public function test_public_recipient_cannot_accept_retracted_confirmation(): void
@@ -465,5 +501,10 @@ class ConfirmationFlowTest extends TestCase
             'company_name' => 'Voorbeeld B.V.',
             'contact_email' => 'piet@example.test',
         ]);
+    }
+
+    private function signatureDataUri(): string
+    {
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=';
     }
 }
