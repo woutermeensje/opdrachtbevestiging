@@ -27,8 +27,8 @@
         @include('partials.dashboard.panel', [
             'title' => 'Snelle start',
             'slot' => '
-                <p>Voeg eerst een opdrachtgever toe via Contacten. Daarna kun je een nieuwe opdrachtbevestiging aanmaken en als volledige e-mailtekst versturen.</p>
-                <p><a href="'.e(route('dashboard.contacts')).'" class="btn btn-primary">Contact toevoegen</a></p>
+                <p>Voeg eerst een opdrachtgever toe. Daarna kun je een nieuwe opdrachtbevestiging aanmaken en als volledige e-mailtekst versturen.</p>
+                <p><a href="'.e(route('dashboard.contacts.create')).'" class="btn btn-primary">Opdrachtgever toevoegen</a></p>
             ',
         ])
 

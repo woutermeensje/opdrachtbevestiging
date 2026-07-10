@@ -88,8 +88,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard/opdrachtbevestigingen', [ConfirmationController::class, 'index'])->name('dashboard.confirmations');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/pdf', [ConfirmationController::class, 'downloadPdf'])->name('dashboard.confirmations.pdf');
-    Route::get('/dashboard/contacten', [ContactController::class, 'index'])->name('dashboard.contacts');
-    Route::post('/dashboard/contacten', [ContactController::class, 'store'])->name('dashboard.contacts.store');
+    Route::get('/dashboard/opdrachtgever', [ContactController::class, 'index'])->name('dashboard.contacts');
+    Route::get('/dashboard/opdrachtgever/toevoegen', [ContactController::class, 'create'])->name('dashboard.contacts.create');
+    Route::post('/dashboard/opdrachtgever/toevoegen', [ContactController::class, 'store'])->name('dashboard.contacts.store');
     Route::get('/dashboard/mijn-profiel', [DashboardController::class, 'profile'])->name('dashboard.profile');
     Route::post('/dashboard/mijn-profiel', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
 

@@ -20,6 +20,11 @@ class ContactController extends Controller
         ]);
     }
 
+    public function create(): View
+    {
+        return view('dashboard.contacts-create');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([

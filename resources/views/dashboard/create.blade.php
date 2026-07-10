@@ -19,8 +19,8 @@
         @include('partials.dashboard.panel', [
             'title' => 'Voeg eerst een contact toe',
             'slot' => '
-                <p>Je hebt nog geen opdrachtgever in je account staan. Voeg eerst onder Contacten een bedrijf en contactpersoon toe via de KVK API.</p>
-                <p><a href="'.e(route('dashboard.contacts')).'" class="btn btn-primary">Naar contacten</a></p>
+                <p>Je hebt nog geen opdrachtgever in je account staan. Voeg eerst een bedrijf en contactpersoon toe.</p>
+                <p><a href="'.e(route('dashboard.contacts.create')).'" class="btn btn-primary">Opdrachtgever toevoegen</a></p>
             ',
         ])
     @else
