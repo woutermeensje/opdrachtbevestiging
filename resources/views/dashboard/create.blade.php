@@ -81,11 +81,12 @@
         ])
 
         @include('partials.dashboard.panel', [
-            'title' => 'Na het opslaan',
+            'title' => 'Vaste gegevens',
             'class' => 'dashboard-create-side-panel',
             'slot' => '
-                <p>Controleer de opdrachtbevestiging na het opslaan in het detailoverzicht.</p>
-                <p>Vanuit daar verstuur je de volledige opdrachtbevestiging als e-mailtekst naar de opdrachtgever. Eventuele bijlagen en offertes gaan mee als e-mailbijlage.</p>
+                <p>Algemene voorwaarden, bedrijfslogo, bedrijfsgegevens en basis afspraken beheer je in Mijn profiel.</p>
+                <p>Die vaste gegevens worden automatisch toegevoegd aan nieuwe opdrachtbevestigingen en meegenomen in de PDF die bij het verzenden wordt gemaakt.</p>
+                <p><a href="'.e(route('dashboard.profile')).'" class="btn btn-secondary">Naar Mijn profiel</a></p>
             ',
         ])
     </div>

@@ -31,6 +31,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'postal_code',
         'city',
         'country',
+        'company_logo_path',
+        'company_logo_original_name',
+        'company_logo_mime_type',
+        'terms_path',
+        'terms_original_name',
+        'terms_mime_type',
+        'default_agreements',
         'email',
         'password',
     ];
@@ -71,5 +78,33 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasCompletedCompanyProfile(): bool
     {
         return filled($this->company_name) && filled($this->kvk_number);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function companyAddressLines(): array
+    {
+        $streetLine = trim(implode(' ', array_filter([
+            $this->street_name,
+            $this->house_number,
+            $this->house_number_addition,
+        ])));
+
+        $cityLine = trim(implode(' ', array_filter([
+            $this->postal_code,
+            $this->city,
+        ])));
+
+        return array_values(array_filter([
+            $streetLine,
+            $cityLine,
+            $this->country,
+        ]));
+    }
+
+    public function defaultAgreementsHtml(): string
+    {
+        return Confirmation::sanitizeDescription($this->default_agreements) ?? '';
     }
 }

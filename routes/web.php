@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/opdrachtbevestigingen', [ConfirmationController::class, 'index'])->name('dashboard.confirmations');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
+    Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/pdf', [ConfirmationController::class, 'downloadPdf'])->name('dashboard.confirmations.pdf');
     Route::get('/dashboard/contacten', [ContactController::class, 'index'])->name('dashboard.contacts');
     Route::post('/dashboard/contacten', [ContactController::class, 'store'])->name('dashboard.contacts.store');
     Route::get('/dashboard/mijn-profiel', [DashboardController::class, 'profile'])->name('dashboard.profile');

@@ -207,6 +207,10 @@
     margin-bottom: 0;
 }
 
+.dashboard-content-grid > .dashboard-panel-wide {
+    grid-column: 1 / -1;
+}
+
 .dashboard-create-layout {
     display: flex;
     gap: 1rem;
@@ -234,6 +238,29 @@
 
 .dashboard-panel-wide {
     margin-bottom: 1rem;
+}
+
+.profile-form-section {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid #dedede;
+}
+
+.profile-form-section:first-child {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: 0;
+}
+
+.profile-form-section h3 {
+    margin: 0 0 0.85rem;
+    font-size: 1rem;
+}
+
+.profile-file-current {
+    margin: 0.45rem 0 0;
+    color: var(--color-text-subtle);
+    font-size: 0.85rem;
 }
 
 .dashboard-panel h2 {
@@ -411,6 +438,12 @@
 
 .public-document-header h2 {
     margin: 0;
+}
+
+.public-document-logo {
+    max-width: 130px;
+    max-height: 72px;
+    object-fit: contain;
 }
 
 .public-document-grid {

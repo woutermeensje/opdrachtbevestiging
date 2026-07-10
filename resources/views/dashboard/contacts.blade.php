@@ -82,7 +82,7 @@
             'class' => 'dashboard-create-side-panel',
             'slot' => '
                 <p>De contactpersoon van het gekozen bedrijf ontvangt de opdrachtbevestiging rechtstreeks per e-mail.</p>
-                <p>De volledige opdrachtbevestiging staat in de e-mail zelf; er wordt geen documentbijlage meegestuurd.</p>
+                <p>De volledige opdrachtbevestiging staat in de e-mail zelf en wordt bij verzending ook als PDF meegestuurd.</p>
             ',
         ])
     </div>

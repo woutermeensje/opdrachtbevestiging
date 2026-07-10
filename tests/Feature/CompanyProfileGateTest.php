@@ -7,6 +7,8 @@ use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CompanyProfileGateTest extends TestCase
@@ -97,5 +99,38 @@ class CompanyProfileGateTest extends TestCase
         $this->assertSame('12345678', $user->kvk_number);
 
         $this->actingAs($user)->get(route('dashboard.create'))->assertOk();
+    }
+
+    public function test_user_can_store_document_defaults_on_profile(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->withoutMiddleware(ValidateCsrfToken::class)
+            ->post(route('dashboard.profile.update'), [
+                'company_name' => 'Acme B.V.',
+                'kvk_number' => '12345678',
+                'street_name' => 'Keizersgracht',
+                'house_number' => '1',
+                'postal_code' => '1015CJ',
+                'city' => 'Amsterdam',
+                'country' => 'Nederland',
+                'company_logo' => UploadedFile::fake()->create('logo.jpg', 12, 'image/jpeg'),
+                'terms' => UploadedFile::fake()->create('algemene-voorwaarden.pdf', 32, 'application/pdf'),
+                'default_agreements' => '<p>Betaling binnen <strong>14 dagen</strong>.</p><script>alert("x")</script>',
+            ]);
+
+        $response->assertRedirect(route('dashboard.profile'));
+
+        $user->refresh();
+        $this->assertSame('logo.jpg', $user->company_logo_original_name);
+        $this->assertSame('algemene-voorwaarden.pdf', $user->terms_original_name);
+        $this->assertSame('<p>Betaling binnen <strong>14 dagen</strong>.</p>', $user->default_agreements);
+
+        Storage::disk('local')->assertExists($user->company_logo_path);
+        Storage::disk('local')->assertExists($user->terms_path);
     }
 }

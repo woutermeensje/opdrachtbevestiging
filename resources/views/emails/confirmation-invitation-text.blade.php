@@ -1,6 +1,7 @@
 @php
     $recipientName = $confirmation->client_contact_name ?: $confirmation->client_name;
-    $senderCompany = $confirmation->user->company_name ?: $confirmation->sender_name;
+    $senderCompany = $confirmation->senderCompanyDisplayName();
+    $senderAddressLines = $confirmation->senderAddressLines();
     $totalValue = (float) $confirmation->total_value;
     $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
 @endphp
@@ -34,11 +35,22 @@ KVK: {{ $confirmation->client_kvk_number }}
 
 Opdrachtnemer
 {{ $senderCompany }}
+@foreach ($senderAddressLines as $line)
+{{ $line }}
+@endforeach
+@if (filled($confirmation->sender_kvk_number))
+KVK: {{ $confirmation->sender_kvk_number }}
+@endif
 {{ $confirmation->sender_name ?: '-' }}
 {{ $confirmation->sender_email ?: '-' }}
 
 Omschrijving van de opdracht
 {{ $confirmation->descriptionText() }}
+
+@if ($confirmation->defaultAgreementsText() !== '')
+Basis afspraken
+{{ $confirmation->defaultAgreementsText() }}
+@endif
 
 Met vriendelijke groet,
 {{ $confirmation->sender_name ?: $senderCompany }}

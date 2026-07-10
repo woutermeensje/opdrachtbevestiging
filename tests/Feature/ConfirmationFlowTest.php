@@ -32,6 +32,7 @@ class ConfirmationFlowTest extends TestCase
     public function test_authenticated_user_can_create_confirmation(): void
     {
         Mail::fake();
+        Storage::fake('local');
 
         $user = User::factory()->create();
         $contact = Contact::factory()->create([
@@ -62,10 +63,23 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('verzonden', $confirmation->status);
         $this->assertSame('0.00', $confirmation->total_value);
         $this->assertNotNull($confirmation->sent_at);
+        $this->assertNotNull($confirmation->pdf_path);
         $this->assertSame('<p>Ontwikkeling van een <strong>marketingwebsite</strong>.</p>', $confirmation->description);
+
+        Storage::disk('local')->assertExists($confirmation->pdf_path);
+
+        $this->actingAs($user)
+            ->get(route('dashboard.confirmations.pdf', $confirmation))
+            ->assertOk()
+            ->assertDownload($confirmation->pdf_original_name);
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
             $mail->assertSeeInHtml('<strong>marketingwebsite</strong>', false);
+            $mail->assertHasAttachment(
+                Attachment::fromStorageDisk('local', $confirmation->pdf_path)
+                    ->as($confirmation->pdf_original_name)
+                    ->withMime('application/pdf')
+            );
 
             return $mail->hasTo($confirmation->client_email);
         });
@@ -91,6 +105,7 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('name="attachment"', false)
             ->assertSee('name="quote"', false)
             ->assertSee('Verzenden')
+            ->assertSee('Vaste gegevens')
             ->assertDontSee('name="total_value"', false)
             ->assertDontSee('name="status"', false);
     }
@@ -128,8 +143,14 @@ class ConfirmationFlowTest extends TestCase
 
         Storage::disk('local')->assertExists($confirmation->attachment_path);
         Storage::disk('local')->assertExists($confirmation->quote_path);
+        Storage::disk('local')->assertExists($confirmation->pdf_path);
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
+            $mail->assertHasAttachment(
+                Attachment::fromStorageDisk('local', $confirmation->pdf_path)
+                    ->as($confirmation->pdf_original_name)
+                    ->withMime('application/pdf')
+            );
             $mail->assertHasAttachment(
                 Attachment::fromStorageDisk('local', $confirmation->attachment_path)
                     ->as('voorwaarden.pdf')
@@ -142,6 +163,72 @@ class ConfirmationFlowTest extends TestCase
             );
             $mail->assertSeeInHtml('Bijlage: voorwaarden.pdf');
             $mail->assertSeeInHtml('Offerte: offerte.pdf');
+
+            return $mail->hasTo($confirmation->client_email);
+        });
+    }
+
+    public function test_profile_defaults_are_added_to_created_confirmation_and_email(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create([
+            'company_name' => 'Studio Wouter',
+            'kvk_number' => '12345678',
+            'street_name' => 'Keizersgracht',
+            'house_number' => '1',
+            'postal_code' => '1015CJ',
+            'city' => 'Amsterdam',
+            'country' => 'Nederland',
+            'default_agreements' => '<p>Betaling binnen <strong>14 dagen</strong>.</p>',
+        ]);
+
+        Storage::disk('local')->put('profiles/'.$user->id.'/algemene-voorwaarden/voorwaarden.pdf', 'voorwaarden');
+        $user->forceFill([
+            'terms_path' => 'profiles/'.$user->id.'/algemene-voorwaarden/voorwaarden.pdf',
+            'terms_original_name' => 'algemene-voorwaarden.pdf',
+            'terms_mime_type' => 'application/pdf',
+        ])->save();
+
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'title' => 'Nieuwe website opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Ontwikkeling van een website.</p>',
+            ]);
+
+        $confirmation = Confirmation::query()->first();
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+        $this->assertSame('Studio Wouter', $confirmation->sender_company_name);
+        $this->assertSame('12345678', $confirmation->sender_kvk_number);
+        $this->assertSame('<p>Betaling binnen <strong>14 dagen</strong>.</p>', $confirmation->default_agreements);
+        $this->assertNotNull($confirmation->terms_path);
+        $this->assertNotSame($user->terms_path, $confirmation->terms_path);
+
+        Storage::disk('local')->assertExists($confirmation->terms_path);
+        Storage::disk('local')->assertExists($confirmation->pdf_path);
+
+        Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
+            $mail->assertSeeInHtml('Betaling binnen <strong>14 dagen</strong>', false);
+            $mail->assertHasAttachment(
+                Attachment::fromStorageDisk('local', $confirmation->terms_path)
+                    ->as('algemene-voorwaarden.pdf')
+                    ->withMime('application/pdf')
+            );
+            $mail->assertHasAttachment(
+                Attachment::fromStorageDisk('local', $confirmation->pdf_path)
+                    ->as($confirmation->pdf_original_name)
+                    ->withMime('application/pdf')
+            );
 
             return $mail->hasTo($confirmation->client_email);
         });
@@ -189,6 +276,7 @@ class ConfirmationFlowTest extends TestCase
     {
         Mail::fake();
         Http::fake();
+        Storage::fake('local');
 
         $user = User::factory()->create([
             'first_name' => 'Wouter',
@@ -223,15 +311,22 @@ class ConfirmationFlowTest extends TestCase
 
         $this->assertSame('verzonden', $confirmation->status);
         $this->assertNotNull($confirmation->sent_at);
+        $this->assertNotNull($confirmation->pdf_path);
+        $this->assertSame('Studio Wouter', $confirmation->sender_company_name);
         $this->assertNull($confirmation->signhost_transaction_id);
+
+        Storage::disk('local')->assertExists($confirmation->pdf_path);
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
             $mail->assertHasSubject('Opdrachtbevestiging OB-SENDTEST: Nieuwe website opdracht');
             $mail->assertSeeInHtml('Deze e-mail bevat de volledige opdrachtbevestiging');
             $mail->assertSeeInHtml('Ontwikkeling van een marketingwebsite.');
             $mail->assertSeeInText('Ontwikkeling van een marketingwebsite.');
-
-            $this->assertSame([], $mail->attachments());
+            $mail->assertHasAttachment(
+                Attachment::fromStorageDisk('local', $confirmation->pdf_path)
+                    ->as($confirmation->pdf_original_name)
+                    ->withMime('application/pdf')
+            );
 
             return $mail->hasTo($confirmation->client_email);
         });

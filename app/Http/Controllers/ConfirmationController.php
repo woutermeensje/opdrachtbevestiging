@@ -5,13 +5,17 @@ namespace App\Http\Controllers;
 use App\Mail\ConfirmationInvitationMail;
 use App\Mail\ConfirmationRetractionMail;
 use App\Models\Confirmation;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 class ConfirmationController extends Controller
@@ -74,7 +78,9 @@ class ConfirmationController extends Controller
             'status' => 'concept',
             'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
             'sender_email' => $request->user()->email,
-        ]);
+        ] + $this->profileSnapshotAttributes($request->user()));
+
+        $this->copyProfileFilesToConfirmation($confirmation);
 
         $uploadedFiles = array_filter([
             'attachment' => $this->storeUploadedDocument($request->file('attachment'), $confirmation, 'bijlagen', 'attachment'),
@@ -86,11 +92,12 @@ class ConfirmationController extends Controller
         }
 
         try {
+            $this->generateConfirmationPdf($confirmation);
             $this->sendConfirmationEmail($confirmation);
         } catch (Throwable $exception) {
             return redirect()
                 ->route('dashboard.confirmations.show', $confirmation)
-                ->with('status', 'Opdrachtbevestiging opgeslagen, maar e-mailverzending mislukt: '.$exception->getMessage());
+                ->with('status', 'Opdrachtbevestiging opgeslagen, maar verzenden mislukt: '.$exception->getMessage());
         }
 
         $confirmation->forceFill([
@@ -112,6 +119,18 @@ class ConfirmationController extends Controller
         ]);
     }
 
+    public function downloadPdf(Request $request, Confirmation $confirmation): StreamedResponse
+    {
+        abort_unless($confirmation->user_id === $request->user()->id, 403);
+        abort_unless($confirmation->hasPdf(), 404);
+
+        return Storage::disk('local')->download(
+            $confirmation->pdf_path,
+            $confirmation->pdf_original_name ?: $confirmation->pdfDownloadName(),
+            ['Content-Type' => $confirmation->pdf_mime_type ?: 'application/pdf'],
+        );
+    }
+
     public function send(Request $request, Confirmation $confirmation): RedirectResponse
     {
         abort_unless($confirmation->user_id === $request->user()->id, 403);
@@ -123,11 +142,13 @@ class ConfirmationController extends Controller
         }
 
         try {
+            $this->hydrateProfileSnapshot($confirmation);
+            $this->generateConfirmationPdf($confirmation);
             $this->sendConfirmationEmail($confirmation);
         } catch (Throwable $exception) {
             return redirect()
                 ->route('dashboard.confirmations.show', $confirmation)
-                ->with('status', 'E-mailverzending mislukt: '.$exception->getMessage());
+                ->with('status', 'Verzenden mislukt: '.$exception->getMessage());
         }
 
         $confirmation->forceFill([
@@ -172,6 +193,123 @@ class ConfirmationController extends Controller
         Mail::to($confirmation->client_email)
             ->cc($confirmation->user->email)
             ->send(new ConfirmationInvitationMail($confirmation));
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    private function profileSnapshotAttributes(User $user): array
+    {
+        return [
+            'sender_company_name' => $user->company_name,
+            'sender_kvk_number' => $user->kvk_number,
+            'sender_street_name' => $user->street_name,
+            'sender_house_number' => $user->house_number,
+            'sender_house_number_addition' => $user->house_number_addition,
+            'sender_postal_code' => $user->postal_code,
+            'sender_city' => $user->city,
+            'sender_country' => $user->country,
+            'default_agreements' => Confirmation::sanitizeDescription($user->default_agreements),
+        ];
+    }
+
+    private function hydrateProfileSnapshot(Confirmation $confirmation): void
+    {
+        $updates = [];
+
+        foreach ($this->profileSnapshotAttributes($confirmation->user) as $field => $value) {
+            if (! filled($confirmation->{$field}) && filled($value)) {
+                $updates[$field] = $value;
+            }
+        }
+
+        if ($updates !== []) {
+            $confirmation->forceFill($updates)->save();
+        }
+
+        $this->copyProfileFilesToConfirmation($confirmation);
+        $confirmation->refresh();
+    }
+
+    private function copyProfileFilesToConfirmation(Confirmation $confirmation): void
+    {
+        $user = $confirmation->user;
+
+        $updates = array_merge(
+            filled($confirmation->sender_company_logo_path) ? [] : $this->copyProfileFile(
+                $user->company_logo_path,
+                $confirmation,
+                'bedrijfslogo',
+                'bedrijfslogo',
+                'sender_company_logo',
+                $user->company_logo_original_name,
+                $user->company_logo_mime_type,
+            ),
+            filled($confirmation->terms_path) ? [] : $this->copyProfileFile(
+                $user->terms_path,
+                $confirmation,
+                'algemene-voorwaarden',
+                'algemene-voorwaarden',
+                'terms',
+                $user->terms_original_name,
+                $user->terms_mime_type,
+            ),
+        );
+
+        if ($updates !== []) {
+            $confirmation->forceFill($updates)->save();
+        }
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    private function copyProfileFile(
+        ?string $sourcePath,
+        Confirmation $confirmation,
+        string $directory,
+        string $baseName,
+        string $fieldPrefix,
+        ?string $originalName,
+        ?string $mimeType,
+    ): array {
+        if (! filled($sourcePath) || ! Storage::disk('local')->exists($sourcePath)) {
+            return [];
+        }
+
+        $extension = pathinfo($originalName ?: $sourcePath, PATHINFO_EXTENSION) ?: 'bin';
+        $targetPath = 'confirmations/'.$confirmation->id.'/'.$directory.'/'.$baseName.'.'.$extension;
+
+        if (! Storage::disk('local')->copy($sourcePath, $targetPath)) {
+            throw new RuntimeException('Het profielbestand kon niet aan de opdrachtbevestiging worden toegevoegd.');
+        }
+
+        return [
+            $fieldPrefix.'_path' => $targetPath,
+            $fieldPrefix.'_original_name' => $originalName,
+            $fieldPrefix.'_mime_type' => $mimeType,
+        ];
+    }
+
+    private function generateConfirmationPdf(Confirmation $confirmation): void
+    {
+        $confirmation->loadMissing('user');
+
+        $path = 'confirmations/'.$confirmation->id.'/pdf/'.$confirmation->pdfDownloadName();
+        $contents = Pdf::loadView('pdf.confirmation', [
+            'confirmation' => $confirmation,
+        ])->setPaper('a4')->output();
+
+        if (! Storage::disk('local')->put($path, $contents)) {
+            throw new RuntimeException('De PDF kon niet worden opgeslagen.');
+        }
+
+        $confirmation->forceFill([
+            'pdf_path' => $path,
+            'pdf_original_name' => $confirmation->pdfDownloadName(),
+            'pdf_mime_type' => 'application/pdf',
+            'pdf_generated_at' => now(),
+        ])->save();
     }
 
     /**

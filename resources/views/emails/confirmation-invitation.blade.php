@@ -7,7 +7,8 @@
 </head>
 @php
     $recipientName = $confirmation->client_contact_name ?: $confirmation->client_name;
-    $senderCompany = $confirmation->user->company_name ?: $confirmation->sender_name;
+    $senderCompany = $confirmation->senderCompanyDisplayName();
+    $senderAddressLines = $confirmation->senderAddressLines();
     $totalValue = (float) $confirmation->total_value;
     $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
 @endphp
@@ -65,6 +66,12 @@
                 <div style="padding:20px 22px;border-bottom:1px solid #dedede;">
                     <p style="margin:0 0 6px;font-size:12px;line-height:1.4;color:#333333;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Opdrachtnemer</p>
                     <p style="margin:0;font-size:16px;line-height:1.5;color:#333333;font-weight:700;">{{ $senderCompany }}</p>
+                    @foreach ($senderAddressLines as $line)
+                        <p style="margin:4px 0 0;font-size:15px;line-height:1.5;color:#333333;">{{ $line }}</p>
+                    @endforeach
+                    @if (filled($confirmation->sender_kvk_number))
+                        <p style="margin:4px 0 0;font-size:15px;line-height:1.5;color:#333333;">KVK: {{ $confirmation->sender_kvk_number }}</p>
+                    @endif
                     <p style="margin:4px 0 0;font-size:15px;line-height:1.5;color:#333333;">{{ $confirmation->sender_name ?: '-' }}</p>
                     <p style="margin:4px 0 0;font-size:15px;line-height:1.5;color:#333333;">{{ $confirmation->sender_email ?: '-' }}</p>
                 </div>
@@ -73,6 +80,13 @@
                     <p style="margin:0 0 10px;font-size:12px;line-height:1.4;color:#333333;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Omschrijving van de opdracht</p>
                     <div style="margin:0;font-size:15px;line-height:1.7;color:#333333;">{!! $confirmation->descriptionHtml() !!}</div>
                 </div>
+
+                @if ($confirmation->defaultAgreementsHtml() !== '')
+                    <div style="padding:20px 22px;border-top:1px solid #dedede;">
+                        <p style="margin:0 0 10px;font-size:12px;line-height:1.4;color:#333333;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Basis afspraken</p>
+                        <div style="margin:0;font-size:15px;line-height:1.7;color:#333333;">{!! $confirmation->defaultAgreementsHtml() !!}</div>
+                    </div>
+                @endif
             </div>
 
             <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#333333;">Met vriendelijke groet,</p>

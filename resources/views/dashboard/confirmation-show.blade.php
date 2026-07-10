@@ -4,6 +4,15 @@
 
 @php
     $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
+    $senderAddress = collect($confirmation->senderAddressLines())
+        ->map(fn (string $line): string => e($line))
+        ->implode('<br>');
+    $pdfLine = $confirmation->hasPdf()
+        ? '<p><strong>PDF:</strong> <a href="'.e(route('dashboard.confirmations.pdf', $confirmation)).'">Download opdrachtbevestiging</a></p>'
+        : '<p><strong>PDF:</strong> Nog niet gegenereerd. De PDF wordt gemaakt bij verzending.</p>';
+    $termsLine = $confirmation->terms_path
+        ? '<p><strong>Algemene voorwaarden:</strong> '.e($confirmation->terms_original_name ?: basename($confirmation->terms_path)).'</p>'
+        : '<p><strong>Algemene voorwaarden:</strong> Niet toegevoegd.</p>';
     $retractForm = $confirmation->canBeRetracted()
         ? '<form method="POST" action="'.e(route('dashboard.confirmations.retract', $confirmation)).'" class="dashboard-action-form" onsubmit="return confirm(\'Weet je zeker dat je deze opdrachtbevestiging wilt intrekken?\');">
             '.csrf_field().'
@@ -35,11 +44,22 @@
         ])
 
         @include('partials.dashboard.panel', [
+            'title' => 'Opdrachtnemer',
+            'slot' => '
+                <p><strong>Bedrijf:</strong> '.e($confirmation->senderCompanyDisplayName()).'</p>
+                <p><strong>KVK:</strong> '.e($confirmation->sender_kvk_number ?: '-').'</p>
+                <p><strong>Adres:</strong><br>'.($senderAddress !== '' ? $senderAddress : '-').'</p>
+                <p><strong>Contact:</strong> '.e($confirmation->sender_name ?: '-').' ('.e($confirmation->sender_email ?: '-').')</p>
+            ',
+        ])
+
+        @include('partials.dashboard.panel', [
             'title' => 'Status en waarde',
             'slot' => '
                 <p><strong>Status:</strong> '.e($confirmation->status).'</p>
                 <p><strong>Waarde:</strong> EUR '.e(number_format((float) $confirmation->total_value, 2, ',', '.')).'</p>
                 <p><strong>Online voorbeeld:</strong> <a href="'.e($confirmation->publicUrl()).'" target="_blank" rel="noopener noreferrer">Open document</a></p>
+                '.$pdfLine.'
                 <div class="dashboard-panel-actions">
                     <form method="POST" action="'.e(route('dashboard.confirmations.send', $confirmation)).'" class="dashboard-action-form">
                         '.csrf_field().'
@@ -66,6 +86,14 @@
         @include('partials.dashboard.panel', [
             'title' => 'Omschrijving',
             'slot' => '<div class="dashboard-rich-content">'.$confirmation->descriptionHtml().'</div>',
+        ])
+
+        @include('partials.dashboard.panel', [
+            'title' => 'Vaste afspraken',
+            'slot' => '
+                '.($confirmation->defaultAgreementsHtml() !== '' ? '<div class="dashboard-rich-content">'.$confirmation->defaultAgreementsHtml().'</div>' : '<p>Geen basis afspraken toegevoegd.</p>').'
+                '.$termsLine.'
+            ',
         ])
     </div>
 
