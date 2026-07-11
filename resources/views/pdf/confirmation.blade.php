@@ -65,7 +65,7 @@
 
         .eyebrow {
             margin-bottom: 5px;
-            color: #7C5CFA;
+            color: #003B73;
             font-size: 10px;
             font-weight: bold;
             text-transform: uppercase;
@@ -149,7 +149,13 @@
             <p class="meta">
                 Referentie {{ $confirmation->reference }}
                 @if ($confirmation->agreement_date !== null)
-                    <br>Opdrachtdatum {{ $confirmation->agreement_date->format('d-m-Y') }}
+                    <br>Startdatum {{ $confirmation->agreement_date->format('d-m-Y') }}
+                @endif
+                @if (filled($confirmation->duration))
+                    <br>Duur van de opdracht: {{ $confirmation->duration }}
+                @endif
+                @if ((float) $confirmation->total_value > 0)
+                    <br>Vergoeding: EUR {{ number_format((float) $confirmation->total_value, 2, ',', '.') }} ({{ $confirmation->valueVatLabel() }})
                 @endif
             </p>
         </div>
@@ -200,6 +206,13 @@
         </div>
     @endif
 
+    @if (filled($confirmation->termination_terms))
+        <div class="box">
+            <h2>Beëindiging van de opdracht</h2>
+            <p>{{ $confirmation->termination_terms }}</p>
+        </div>
+    @endif
+
     @if ($documents !== [])
         <div class="box">
             <h2>Meegestuurde documenten</h2>
@@ -208,6 +221,9 @@
                     <li>{{ $document }}</li>
                 @endforeach
             </ul>
+            @if ($confirmation->terms_path)
+                <p class="meta">Op deze opdracht zijn de bijgevoegde algemene voorwaarden van toepassing.</p>
+            @endif
         </div>
     @endif
 

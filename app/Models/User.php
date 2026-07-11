@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -107,17 +106,5 @@ class User extends Authenticatable implements MustVerifyEmail
     public function defaultAgreementsHtml(): string
     {
         return Confirmation::sanitizeDescription($this->default_agreements) ?? '';
-    }
-
-    public function companyLogoDataUri(): ?string
-    {
-        if (! filled($this->company_logo_path) || ! Storage::disk('local')->exists($this->company_logo_path)) {
-            return null;
-        }
-
-        $contents = Storage::disk('local')->get($this->company_logo_path);
-        $mimeType = $this->company_logo_mime_type ?: 'image/png';
-
-        return 'data:'.$mimeType.';base64,'.base64_encode($contents);
     }
 }

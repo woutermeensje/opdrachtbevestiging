@@ -42,9 +42,9 @@
 
   --color-text: #333;
 
-  --color-primary: #7C5CFA;
+  --color-primary: #003B73;
   --color-primary-strong: color-mix(in srgb, var(--color-primary) 75%, black);
-  --color-accent: #ff8200;
+  --color-accent: #0C76DA;
   --color-success: #80D424;
   --color-success-hover: #6db61f;
   --color-danger: #dc2626;

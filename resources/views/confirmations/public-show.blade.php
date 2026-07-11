@@ -54,14 +54,23 @@
 
                 <div class="public-document-grid">
                     <div>
-                        <p><strong>Waarde</strong></p>
-                        <p>EUR {{ number_format((float) $confirmation->total_value, 2, ',', '.') }}</p>
+                        <p><strong>Vergoeding</strong></p>
+                        <p>EUR {{ number_format((float) $confirmation->total_value, 2, ',', '.') }} ({{ $confirmation->valueVatLabel() }})</p>
                     </div>
                     <div>
-                        <p><strong>Opdrachtdatum</strong></p>
+                        <p><strong>Startdatum</strong></p>
                         <p>{{ optional($confirmation->agreement_date)->format('d-m-Y') ?? 'Niet ingevuld' }}</p>
                     </div>
                 </div>
+
+                @if (filled($confirmation->duration))
+                    <div class="public-document-grid">
+                        <div>
+                            <p><strong>Duur van de opdracht</strong></p>
+                            <p>{{ $confirmation->duration }}</p>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="public-document-body">
                     <h3>Omschrijving</h3>
@@ -75,10 +84,17 @@
                     </div>
                 @endif
 
+                @if (filled($confirmation->termination_terms))
+                    <div class="public-document-body">
+                        <h3>Beëindiging van de opdracht</h3>
+                        <p>{{ $confirmation->termination_terms }}</p>
+                    </div>
+                @endif
+
                 @if ($confirmation->terms_path)
                     <div class="public-document-body">
                         <h3>Algemene voorwaarden</h3>
-                        <p>{{ $confirmation->terms_original_name ?: basename($confirmation->terms_path) }} is meegestuurd als bijlage.</p>
+                        <p>{{ $confirmation->terms_original_name ?: basename($confirmation->terms_path) }} is meegestuurd als bijlage en is van toepassing op deze opdracht.</p>
                     </div>
                 @endif
             </article>
@@ -115,7 +131,7 @@
 
                         <label class="checkbox-field" for="accept_terms">
                             <input id="accept_terms" name="accept_terms" type="checkbox" value="1" required>
-                            <span>Ik ga akkoord met de inhoud van deze opdrachtbevestiging.</span>
+                            <span>Ik ga akkoord met de inhoud van deze opdrachtbevestiging@if ($confirmation->terms_path) en de bijgevoegde algemene voorwaarden@endif.</span>
                         </label>
 
                         <button type="submit" class="btn btn-primary">Akkoord geven</button>

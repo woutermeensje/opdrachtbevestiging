@@ -18,10 +18,13 @@ Akkoord geven:
 Referentie: {{ $confirmation->reference }}
 Titel: {{ $confirmation->title }}
 @if ($confirmation->agreement_date !== null)
-Opdrachtdatum: {{ $confirmation->agreement_date->format('d-m-Y') }}
+Startdatum: {{ $confirmation->agreement_date->format('d-m-Y') }}
+@endif
+@if (filled($confirmation->duration))
+Duur van de opdracht: {{ $confirmation->duration }}
 @endif
 @if ($totalValue > 0)
-Waarde: EUR {{ number_format($totalValue, 2, ',', '.') }}
+Vergoeding: EUR {{ number_format($totalValue, 2, ',', '.') }} ({{ $confirmation->valueVatLabel() }})
 @endif
 @if ($confirmation->expires_at !== null)
 Vervaldatum: {{ $confirmation->expires_at->format('d-m-Y') }}
@@ -52,6 +55,15 @@ Omschrijving van de opdracht
 @if ($confirmation->defaultAgreementsText() !== '')
 Basis afspraken
 {{ $confirmation->defaultAgreementsText() }}
+@endif
+
+@if (filled($confirmation->termination_terms))
+Beëindiging van de opdracht
+{{ $confirmation->termination_terms }}
+@endif
+
+@if ($confirmation->terms_path)
+Op deze opdracht zijn de bijgevoegde algemene voorwaarden van toepassing.
 @endif
 
 Met vriendelijke groet,

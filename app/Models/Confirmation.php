@@ -23,7 +23,9 @@ class Confirmation extends Model
         'client_email',
         'client_kvk_number',
         'description',
+        'termination_terms',
         'total_value',
+        'value_vat_type',
         'public_token',
         'status',
         'sender_name',
@@ -54,6 +56,7 @@ class Confirmation extends Model
         'pdf_mime_type',
         'pdf_generated_at',
         'agreement_date',
+        'duration',
         'sent_at',
         'signed_at',
         'expires_at',
@@ -120,6 +123,11 @@ class Confirmation extends Model
     public function defaultAgreementsText(): string
     {
         return self::richTextToPlainText($this->defaultAgreementsHtml());
+    }
+
+    public function valueVatLabel(): string
+    {
+        return $this->value_vat_type === 'incl' ? 'incl. BTW' : 'excl. BTW';
     }
 
     public static function richTextToPlainText(?string $html): string

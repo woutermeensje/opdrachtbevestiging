@@ -242,7 +242,7 @@ img {
 .button-primary {
     background-color: #FBFAF8;
     border: 1px solid #dedede;
-    color: #7C5CFA;
+    color: #003B73;
 }
 
 .button-green,

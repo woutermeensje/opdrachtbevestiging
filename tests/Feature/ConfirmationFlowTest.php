@@ -107,13 +107,106 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('name="attachment"', false)
             ->assertSee('name="quote"', false)
             ->assertSee('Verzenden')
-            ->assertSee('Bedrijfslogo')
-            ->assertSee('Titel opdrachtbevestiging')
-            ->assertSee('Inhoud opdrachtbevestiging')
-            ->assertSee('Basis afspraken')
-            ->assertSee('Uploads')
-            ->assertDontSee('name="total_value"', false)
+            ->assertSee('Verzend test')
+            ->assertSee('Vaste gegevens')
+            ->assertSee('name="agreement_date"', false)
+            ->assertSee('name="duration"', false)
+            ->assertSee('name="total_value"', false)
+            ->assertSee('name="value_vat_type"', false)
+            ->assertSee('name="termination_terms"', false)
             ->assertDontSee('name="status"', false);
+    }
+
+    public function test_confirmation_captures_scope_details_and_shows_them_in_email(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'title' => 'Nieuwe website opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Ontwikkeling van een website.</p>',
+                'agreement_date' => '2026-08-01',
+                'duration' => '3 maanden',
+                'total_value' => '1250.50',
+                'value_vat_type' => 'incl',
+                'termination_terms' => 'Beide partijen kunnen schriftelijk opzeggen met een termijn van 1 maand.',
+            ]);
+
+        $confirmation = Confirmation::query()->first();
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+        $this->assertSame('2026-08-01', $confirmation->agreement_date->toDateString());
+        $this->assertSame('3 maanden', $confirmation->duration);
+        $this->assertSame('1250.50', $confirmation->total_value);
+        $this->assertSame('incl', $confirmation->value_vat_type);
+        $this->assertSame('Beide partijen kunnen schriftelijk opzeggen met een termijn van 1 maand.', $confirmation->termination_terms);
+
+        Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
+            $mail->assertSeeInHtml('3 maanden');
+            $mail->assertSeeInHtml('incl. BTW');
+            $mail->assertSeeInHtml('Beide partijen kunnen schriftelijk opzeggen');
+
+            return $mail->hasTo($confirmation->client_email);
+        });
+    }
+
+    public function test_authenticated_user_can_send_test_confirmation_to_self(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create([
+            'email' => 'wouter@example.test',
+        ]);
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_first_name' => 'Sanne',
+            'contact_last_name' => 'Jansen',
+            'contact_email' => 'sanne@acme.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'title' => 'Nieuwe website opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Ontwikkeling van een website.</p>',
+                'submit_action' => 'test',
+            ]);
+
+        $confirmation = Confirmation::query()->first();
+
+        $response
+            ->assertRedirect(route('dashboard.confirmations.show', $confirmation))
+            ->assertSessionHas('status');
+
+        $this->assertSame('concept', $confirmation->status);
+        $this->assertNull($confirmation->sent_at);
+        $this->assertNotNull($confirmation->pdf_path);
+
+        Storage::disk('local')->assertExists($confirmation->pdf_path);
+
+        Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation, $user): bool {
+            $mail->assertSeeInHtml('Ontwikkeling van een website.');
+            $mail->assertHasAttachment(
+                Attachment::fromStorageDisk('local', $confirmation->pdf_path)
+                    ->as($confirmation->pdf_original_name)
+                    ->withMime('application/pdf')
+            );
+
+            return $mail->hasTo($user->email) && ! $mail->hasTo($confirmation->client_email);
+        });
     }
 
     public function test_authenticated_user_can_create_confirmation_with_attachment_and_quote(): void

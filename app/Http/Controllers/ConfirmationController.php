@@ -49,8 +49,14 @@ class ConfirmationController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'contact_id' => ['required', 'integer'],
             'description' => ['required', 'string'],
+            'agreement_date' => ['nullable', 'date'],
+            'duration' => ['nullable', 'string', 'max:255'],
+            'total_value' => ['nullable', 'numeric', 'min:0'],
+            'value_vat_type' => ['nullable', 'in:excl,incl'],
+            'termination_terms' => ['nullable', 'string', 'max:2000'],
             'attachment' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg', 'max:10240'],
             'quote' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg', 'max:10240'],
+            'submit_action' => ['nullable', 'string', 'in:send,test'],
         ], [], [
             'attachment' => 'bijlage',
             'quote' => 'offerte',
@@ -77,7 +83,11 @@ class ConfirmationController extends Controller
             'client_email' => $contact->contact_email,
             'client_kvk_number' => $contact->kvk_number,
             'description' => $description,
-            'total_value' => 0,
+            'termination_terms' => $validated['termination_terms'] ?? null,
+            'agreement_date' => $validated['agreement_date'] ?? null,
+            'duration' => $validated['duration'] ?? null,
+            'total_value' => $validated['total_value'] ?? 0,
+            'value_vat_type' => $validated['value_vat_type'] ?? 'excl',
             'public_token' => Str::random(40),
             'status' => 'concept',
             'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
@@ -97,6 +107,15 @@ class ConfirmationController extends Controller
 
         try {
             $this->pdfService->generate($confirmation);
+
+            if (($validated['submit_action'] ?? 'send') === 'test') {
+                $this->sendTestConfirmationEmail($confirmation);
+
+                return redirect()
+                    ->route('dashboard.confirmations.show', $confirmation)
+                    ->with('status', 'Testmail is verzonden naar '.$request->user()->email.'. De opdrachtbevestiging staat nog als concept.');
+            }
+
             $this->sendConfirmationEmail($confirmation);
         } catch (Throwable $exception) {
             return redirect()
@@ -196,6 +215,12 @@ class ConfirmationController extends Controller
     {
         Mail::to($confirmation->client_email)
             ->cc($confirmation->user->email)
+            ->send(new ConfirmationInvitationMail($confirmation));
+    }
+
+    private function sendTestConfirmationEmail(Confirmation $confirmation): void
+    {
+        Mail::to($confirmation->user->email)
             ->send(new ConfirmationInvitationMail($confirmation));
     }
 

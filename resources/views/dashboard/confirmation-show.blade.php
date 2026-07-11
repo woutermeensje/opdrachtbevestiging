@@ -60,7 +60,7 @@
             'title' => 'Status en waarde',
             'slot' => '
                 <p><strong>Status:</strong> '.e($confirmation->status).'</p>
-                <p><strong>Waarde:</strong> EUR '.e(number_format((float) $confirmation->total_value, 2, ',', '.')).'</p>
+                <p><strong>Vergoeding:</strong> EUR '.e(number_format((float) $confirmation->total_value, 2, ',', '.')).' ('.e($confirmation->valueVatLabel()).')</p>
                 <p><strong>Online voorbeeld:</strong> <a href="'.e($confirmation->publicUrl()).'" target="_blank" rel="noopener noreferrer">Open document</a></p>
                 '.$pdfLine.'
                 <div class="dashboard-panel-actions">
@@ -78,7 +78,8 @@
         @include('partials.dashboard.panel', [
             'title' => 'Belangrijke data',
             'slot' => '
-                <p><strong>Opdrachtdatum:</strong> '.e(optional($confirmation->agreement_date)->format('d-m-Y') ?? '-').'</p>
+                <p><strong>Startdatum:</strong> '.e(optional($confirmation->agreement_date)->format('d-m-Y') ?? '-').'</p>
+                <p><strong>Duur van de opdracht:</strong> '.e($confirmation->duration ?: '-').'</p>
                 <p><strong>Verzenddatum:</strong> '.e(optional($confirmation->sent_at)->format('d-m-Y') ?? '-').'</p>
                 <p><strong>Akkoorddatum:</strong> '.e(optional($confirmation->signed_at)->format('d-m-Y') ?? '-').'</p>
                 <p><strong>Vervaldatum:</strong> '.e(optional($confirmation->expires_at)->format('d-m-Y') ?? '-').'</p>
@@ -95,6 +96,7 @@
             'title' => 'Vaste afspraken',
             'slot' => '
                 '.($confirmation->defaultAgreementsHtml() !== '' ? '<div class="dashboard-rich-content">'.$confirmation->defaultAgreementsHtml().'</div>' : '<p>Geen basis afspraken toegevoegd.</p>').'
+                <p><strong>Beëindiging van de opdracht:</strong> '.e($confirmation->termination_terms ?: '-').'</p>
                 '.$termsLine.'
             ',
         ])
