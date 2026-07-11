@@ -84,10 +84,10 @@
                     </div>
                 @endif
 
-                @if (filled($confirmation->termination_terms))
+                @if ($confirmation->terminationTermsHtml() !== '')
                     <div class="public-document-body">
                         <h3>Beëindiging van de opdracht</h3>
-                        <p>{{ $confirmation->termination_terms }}</p>
+                        <div class="dashboard-rich-content">{!! $confirmation->terminationTermsHtml() !!}</div>
                     </div>
                 @endif
 

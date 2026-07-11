@@ -109,6 +109,11 @@ select:focus {
     top: 2rem;
 }
 
+.dashboard-panel.dashboard-create-side-panel {
+    background: none;
+    border: none;
+}
+
 .upload-block-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

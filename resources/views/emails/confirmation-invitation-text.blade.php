@@ -57,9 +57,9 @@ Basis afspraken
 {{ $confirmation->defaultAgreementsText() }}
 @endif
 
-@if (filled($confirmation->termination_terms))
+@if ($confirmation->terminationTermsText() !== '')
 Beëindiging van de opdracht
-{{ $confirmation->termination_terms }}
+{{ $confirmation->terminationTermsText() }}
 @endif
 
 @if ($confirmation->terms_path)

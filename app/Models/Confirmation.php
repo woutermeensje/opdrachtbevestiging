@@ -130,6 +130,16 @@ class Confirmation extends Model
         return $this->value_vat_type === 'incl' ? 'incl. BTW' : 'excl. BTW';
     }
 
+    public function terminationTermsHtml(): string
+    {
+        return self::sanitizeDescription($this->termination_terms) ?? '';
+    }
+
+    public function terminationTermsText(): string
+    {
+        return self::richTextToPlainText($this->terminationTermsHtml());
+    }
+
     public static function richTextToPlainText(?string $html): string
     {
         $html = str_replace(

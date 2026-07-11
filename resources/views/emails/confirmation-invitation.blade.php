@@ -99,10 +99,10 @@
                     </div>
                 @endif
 
-                @if (filled($confirmation->termination_terms))
+                @if ($confirmation->terminationTermsHtml() !== '')
                     <div style="padding:20px 22px;border-top:1px solid #dedede;">
                         <p style="margin:0 0 10px;font-size:12px;line-height:1.4;color:#333333;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Beëindiging van de opdracht</p>
-                        <p style="margin:0;font-size:15px;line-height:1.7;color:#333333;">{{ $confirmation->termination_terms }}</p>
+                        <div style="margin:0;font-size:15px;line-height:1.7;color:#333333;">{!! $confirmation->terminationTermsHtml() !!}</div>
                     </div>
                 @endif
 

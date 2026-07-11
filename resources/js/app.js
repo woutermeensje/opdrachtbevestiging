@@ -190,10 +190,12 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
         quill.clipboard.dangerouslyPasteHTML(initialContent);
     }
 
+    let hasAttemptedSubmit = false;
+
     const syncInput = () => {
         const isEmpty = quill.getText().trim() === '';
         input.value = isEmpty ? '' : quill.getSemanticHTML();
-        quill.container.classList.toggle('is-invalid', isRequired && isEmpty);
+        quill.container.classList.toggle('is-invalid', hasAttemptedSubmit && isRequired && isEmpty);
     };
 
     quill.on('text-change', syncInput);
@@ -202,6 +204,8 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
         syncInput();
 
         if (isRequired && quill.getText().trim() === '') {
+            hasAttemptedSubmit = true;
+            syncInput();
             event.preventDefault();
             quill.focus();
         }
