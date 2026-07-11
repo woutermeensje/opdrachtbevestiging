@@ -61,5 +61,9 @@
         @case('check')
             <path d="M20 6 9 17l-5-5"></path>
             @break
+
+        @case('chevron-down')
+            <path d="m6 9 6 6 6-6"></path>
+            @break
     @endswitch
 </svg>

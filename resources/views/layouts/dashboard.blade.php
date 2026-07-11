@@ -16,7 +16,16 @@
 
         <div class="dashboard-workspace">
             <header class="dashboard-topbar">
-                <a href="{{ route('dashboard.create') }}" class="dashboard-topbar-action">Opdrachtbevestiging maken</a>
+                <details class="dashboard-topbar-create">
+                    <summary class="dashboard-topbar-action">
+                        <span>Aanmaken</span>
+                        @include('partials.icons.icon', ['name' => 'chevron-down', 'size' => 16, 'class' => 'dashboard-topbar-action-icon'])
+                    </summary>
+                    <div class="dashboard-topbar-menu">
+                        <a href="{{ route('dashboard.create') }}">Opdrachtbevestiging</a>
+                        <a href="{{ route('dashboard.contacts.create') }}">Opdrachtgever</a>
+                    </div>
+                </details>
             </header>
 
             <main class="dashboard-main">
