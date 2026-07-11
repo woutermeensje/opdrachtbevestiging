@@ -152,7 +152,6 @@ h4, h5, h6 {
 }
 
 /* Paragraphs & lists */
-p,
 li {
   font-family: var(--font-text);
   font-size: 15px;
@@ -161,6 +160,10 @@ li {
 }
 
 p {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 300;
+  color: #333;
   margin: 0 0 12px;
 }
 

@@ -12,21 +12,21 @@
     @include('partials.forms.errors')
 
     <div class="dashboard-create-layout">
-        <section class="dashboard-panel dashboard-create-form-panel">
-            <h2>Nieuwe opdrachtgever</h2>
-
+        <div class="dashboard-create-form-panel">
             <form method="POST" action="{{ route('dashboard.contacts.store') }}" class="dashboard-form">
                 @csrf
 
-                <div class="profile-form-section">
-                    <h3>Bedrijfsgegevens</h3>
+                <section class="dashboard-panel dashboard-panel-wide">
+                    <h2>Bedrijfsgegevens</h2>
 
-                    <label for="company_name">Bedrijfsnaam</label>
-                    <input id="company_name" name="company_name" type="text" value="{{ old('company_name') }}" required>
-                </div>
+                    <div>
+                        <label for="company_name">Bedrijfsnaam</label>
+                        <input id="company_name" name="company_name" type="text" value="{{ old('company_name') }}" required>
+                    </div>
+                </section>
 
-                <div class="profile-form-section">
-                    <h3>Adresgegevens</h3>
+                <section class="dashboard-panel dashboard-panel-wide">
+                    <h2>Adresgegevens</h2>
 
                     <div class="grid-2">
                         <div>
@@ -49,10 +49,10 @@
                             <input id="city" name="city" type="text" value="{{ old('city') }}" required>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="profile-form-section">
-                    <h3>Contactgegevens</h3>
+                <section class="dashboard-panel dashboard-panel-wide">
+                    <h2>Contactgegevens</h2>
 
                     <div class="grid-2">
                         <div>
@@ -75,13 +75,13 @@
                             <input id="contact_phone" name="contact_phone" type="text" value="{{ old('contact_phone') }}" required>
                         </div>
                     </div>
-                </div>
+                </section>
 
                 <div class="actions actions-end">
                     <button type="submit" class="btn btn-primary">Opdrachtgever opslaan</button>
                 </div>
             </form>
-        </section>
+        </div>
 
         @include('partials.dashboard.panel', [
             'title' => 'E-mailontvanger',

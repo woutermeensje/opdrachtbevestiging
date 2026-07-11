@@ -66,25 +66,6 @@ select:focus {
     min-height: 132px;
 }
 
-.profile-form-section {
-    padding-top: 1.75rem;
-    margin-top: 1.75rem;
-    margin-bottom: 1.75rem;
-    border-top: 1px solid #dedede;
-}
-
-.profile-form-section:first-child {
-    padding-top: 0;
-    margin-top: 0;
-    border-top: 0;
-}
-
-.profile-form-section h3 {
-    margin: 0 0 0.85rem;
-    font-family: var(--font-text);
-    font-size: 1rem;
-}
-
 .profile-file-current {
     margin: 0.45rem 0 0;
     color: var(--color-text-subtle);
