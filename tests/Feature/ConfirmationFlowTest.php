@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Mail\ConfirmationInvitationMail;
 use App\Mail\ConfirmationRetractionMail;
+use App\Mail\ConfirmationSignedMail;
 use App\Models\Confirmation;
 use App\Models\Contact;
 use App\Models\User;
@@ -502,6 +503,7 @@ class ConfirmationFlowTest extends TestCase
     public function test_public_recipient_can_accept_confirmation(): void
     {
         Storage::fake('local');
+        Mail::fake();
 
         $confirmation = Confirmation::factory()->create([
             'status' => 'verzonden',
@@ -514,7 +516,7 @@ class ConfirmationFlowTest extends TestCase
             'signer_signature_data' => $this->signatureDataUri(),
         ]);
 
-        $response->assertRedirect(route('confirmations.public.show', $confirmation->public_token));
+        $response->assertRedirect(route('confirmations.public.signed', $confirmation->public_token));
 
         $confirmation->refresh();
 
@@ -526,6 +528,26 @@ class ConfirmationFlowTest extends TestCase
 
         Storage::disk('local')->assertExists($confirmation->signer_signature_path);
         Storage::disk('local')->assertExists($confirmation->pdf_path);
+
+        Mail::assertSent(ConfirmationSignedMail::class, function (ConfirmationSignedMail $mail) use ($confirmation): bool {
+            return $mail->confirmation->is($confirmation) && $mail->forClient === true && $mail->hasTo($confirmation->client_email);
+        });
+
+        Mail::assertSent(ConfirmationSignedMail::class, function (ConfirmationSignedMail $mail) use ($confirmation): bool {
+            return $mail->confirmation->is($confirmation) && $mail->forClient === false && $mail->hasTo($confirmation->user->email);
+        });
+
+        $this->get(route('confirmations.public.show', $confirmation->public_token))
+            ->assertRedirect(route('confirmations.public.signed', $confirmation->public_token));
+
+        $this->get(route('confirmations.public.signed', $confirmation->public_token))
+            ->assertOk()
+            ->assertSee('Download PDF')
+            ->assertSee('Account aanmaken');
+
+        $this->get(route('confirmations.public.pdf', $confirmation->public_token))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/pdf');
     }
 
     public function test_public_recipient_must_draw_signature_to_accept_confirmation(): void

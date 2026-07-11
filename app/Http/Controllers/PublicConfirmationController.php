@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConfirmationSignedMail;
 use App\Models\Confirmation;
 use App\Services\ConfirmationPdfService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class PublicConfirmationController extends Controller
 {
@@ -16,11 +21,15 @@ class PublicConfirmationController extends Controller
         private readonly ConfirmationPdfService $pdfService,
     ) {}
 
-    public function show(string $token): View
+    public function show(string $token): View|RedirectResponse
     {
         $confirmation = Confirmation::query()
             ->where('public_token', $token)
             ->firstOrFail();
+
+        if ($confirmation->status === 'getekend') {
+            return redirect()->route('confirmations.public.signed', $token);
+        }
 
         if ($confirmation->viewed_at === null) {
             $confirmation->forceFill([
@@ -31,6 +40,36 @@ class PublicConfirmationController extends Controller
         return view('confirmations.public-show', [
             'confirmation' => $confirmation,
         ]);
+    }
+
+    public function signed(string $token): View|RedirectResponse
+    {
+        $confirmation = Confirmation::query()
+            ->where('public_token', $token)
+            ->firstOrFail();
+
+        if ($confirmation->status !== 'getekend') {
+            return redirect()->route('confirmations.public.show', $token);
+        }
+
+        return view('confirmations.public-signed', [
+            'confirmation' => $confirmation,
+        ]);
+    }
+
+    public function downloadPdf(string $token): StreamedResponse
+    {
+        $confirmation = Confirmation::query()
+            ->where('public_token', $token)
+            ->firstOrFail();
+
+        abort_unless($confirmation->hasPdf(), 404);
+
+        return Storage::disk('local')->download(
+            $confirmation->pdf_path,
+            $confirmation->pdf_original_name ?: $confirmation->pdfDownloadName(),
+            ['Content-Type' => $confirmation->pdf_mime_type ?: 'application/pdf'],
+        );
     }
 
     public function accept(Request $request, string $token): RedirectResponse
@@ -61,9 +100,27 @@ class PublicConfirmationController extends Controller
 
         $this->pdfService->generate($confirmation);
 
+        $this->sendSignedConfirmationEmails($confirmation);
+
         return redirect()
-            ->route('confirmations.public.show', $confirmation->public_token)
+            ->route('confirmations.public.signed', $confirmation->public_token)
             ->with('status', 'Het akkoord op de opdrachtbevestiging is vastgelegd.');
+    }
+
+    private function sendSignedConfirmationEmails(Confirmation $confirmation): void
+    {
+        try {
+            Mail::to($confirmation->client_email)
+                ->send(new ConfirmationSignedMail($confirmation, forClient: true));
+
+            Mail::to($confirmation->user->email)
+                ->send(new ConfirmationSignedMail($confirmation, forClient: false));
+        } catch (Throwable $exception) {
+            Log::error('Verzenden van de getekende opdrachtbevestiging is mislukt.', [
+                'confirmation_id' => $confirmation->id,
+                'exception' => $exception->getMessage(),
+            ]);
+        }
     }
 
     private function storeSignatureImage(Confirmation $confirmation, string $signatureData): string

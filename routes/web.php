@@ -54,6 +54,8 @@ Route::get('/tarieven', [PageController::class, 'tariffs'])->name('pages.tariffs
 Route::get('/contact', [PageController::class, 'contact'])->name('pages.contact');
 Route::get('/opdrachtbevestiging/{token}', [PublicConfirmationController::class, 'show'])->name('confirmations.public.show');
 Route::post('/opdrachtbevestiging/{token}/akkoord', [PublicConfirmationController::class, 'accept'])->name('confirmations.public.accept');
+Route::get('/opdrachtbevestiging/{token}/getekend', [PublicConfirmationController::class, 'signed'])->name('confirmations.public.signed');
+Route::get('/opdrachtbevestiging/{token}/pdf', [PublicConfirmationController::class, 'downloadPdf'])->name('confirmations.public.pdf');
 Route::post('/kvk/lookup', KvkLookupController::class)->name('kvk.lookup');
 Route::post('/kvk/search', KvkSearchController::class)->name('kvk.search');
 
