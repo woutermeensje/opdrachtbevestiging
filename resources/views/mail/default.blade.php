@@ -10,7 +10,7 @@ body *:not(html):not(style):not(br):not(tr):not(code) {
 
 body {
     -webkit-text-size-adjust: none;
-    background-color: #ffffff;
+    background-color: #FBFAF8;
     color: #52525b;
     height: 100%;
     line-height: 1.4;
@@ -240,9 +240,9 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #FBFAF8;
-    border: 1px solid #dedede;
-    color: #003B73;
+    background-color: #003B73;
+    border: 1px solid #003B73;
+    color: #ffffff;
 }
 
 .button-green,

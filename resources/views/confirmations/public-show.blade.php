@@ -47,7 +47,7 @@
 
                         <label class="checkbox-field" for="accept_terms">
                             <input id="accept_terms" name="accept_terms" type="checkbox" value="1" required>
-                            <span>Ik ga akkoord met de inhoud van deze opdrachtbevestiging@if ($confirmation->terms_path) en de bijgevoegde algemene voorwaarden@endif.</span>
+                            <span>Ik ga akkoord met de inhoud van deze opdrachtbevestiging{{ $confirmation->terms_path ? ' en de bijgevoegde algemene voorwaarden' : '' }}.</span>
                         </label>
 
                         <button type="submit" class="btn btn-primary">Akkoord geven</button>
