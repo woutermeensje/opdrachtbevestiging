@@ -25,9 +25,12 @@ class ConfirmationInvitationMail extends Mailable
             ? [new Address($this->confirmation->sender_email, $this->confirmation->sender_name)]
             : [];
 
+        $senderCompany = $this->confirmation->senderCompanyDisplayName();
+
         return new Envelope(
+            from: new Address(config('mail.from.address'), $senderCompany.' via '.config('mail.from.name')),
             replyTo: $replyTo,
-            subject: 'Opdrachtbevestiging '.$this->confirmation->reference.': '.$this->confirmation->title,
+            subject: 'Opdrachtbevestiging van '.$senderCompany,
         );
     }
 

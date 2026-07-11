@@ -107,7 +107,11 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('name="attachment"', false)
             ->assertSee('name="quote"', false)
             ->assertSee('Verzenden')
-            ->assertSee('Vaste gegevens')
+            ->assertSee('Bedrijfslogo')
+            ->assertSee('Titel opdrachtbevestiging')
+            ->assertSee('Inhoud opdrachtbevestiging')
+            ->assertSee('Basis afspraken')
+            ->assertSee('Uploads')
             ->assertDontSee('name="total_value"', false)
             ->assertDontSee('name="status"', false);
     }
@@ -320,7 +324,7 @@ class ConfirmationFlowTest extends TestCase
         Storage::disk('local')->assertExists($confirmation->pdf_path);
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
-            $mail->assertHasSubject('Opdrachtbevestiging OB-SENDTEST: Nieuwe website opdracht');
+            $mail->assertHasSubject('Opdrachtbevestiging van Studio Wouter');
             $mail->assertSeeInHtml('Deze e-mail bevat de volledige opdrachtbevestiging');
             $mail->assertSeeInHtml('Akkoord geven');
             $mail->assertSeeInHtml('Ontwikkeling van een marketingwebsite.');

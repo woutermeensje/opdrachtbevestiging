@@ -1,8 +1,14 @@
 @php
     $items = [
         ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home'],
-        ['route' => 'dashboard.create', 'label' => 'Aanmaken', 'icon' => 'plus-square'],
-        ['route' => 'dashboard.confirmations', 'label' => 'Opdrachtbevestigingen', 'icon' => 'file-text'],
+        [
+            'route' => 'dashboard.confirmations',
+            'label' => 'Opdrachtbevestigingen',
+            'icon' => 'file-text',
+            'children' => [
+                ['route' => 'dashboard.create', 'label' => 'Opdrachtbevestiging toevoegen'],
+            ],
+        ],
         [
             'route' => 'dashboard.contacts',
             'label' => 'Opdrachtgevers',

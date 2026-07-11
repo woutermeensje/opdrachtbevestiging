@@ -163,6 +163,63 @@ document.querySelectorAll('[data-step-form]').forEach((stepForm) => {
     syncSteps();
 });
 
+document.querySelectorAll('[data-confirmation-document-form]').forEach((form) => {
+    const contactSelect = form.querySelector('[data-contact-select]');
+    const contactPreview = form.querySelector('[data-contact-preview]');
+
+    if (!contactSelect || !contactPreview) {
+        return;
+    }
+
+    const addLine = (text, strong = false) => {
+        if (!text) {
+            return;
+        }
+
+        const line = document.createElement('p');
+
+        if (strong) {
+            const strongEl = document.createElement('strong');
+            strongEl.textContent = text;
+            line.appendChild(strongEl);
+        } else {
+            line.textContent = text;
+        }
+
+        contactPreview.appendChild(line);
+    };
+
+    const renderContact = () => {
+        const option = contactSelect.selectedOptions[0];
+        contactPreview.innerHTML = '';
+
+        if (!option || option.value === '') {
+            const placeholder = document.createElement('p');
+            placeholder.className = 'confirmation-placeholder';
+            placeholder.textContent = 'Kies een opdrachtgever';
+            contactPreview.appendChild(placeholder);
+            return;
+        }
+
+        addLine(option.dataset.company, true);
+        addLine(option.dataset.name || '-');
+
+        (option.dataset.address || '')
+            .split('\n')
+            .filter(Boolean)
+            .forEach((line) => addLine(line));
+
+        addLine(option.dataset.email);
+
+        if (option.dataset.kvk) {
+            addLine(`KVK: ${option.dataset.kvk}`);
+        }
+    };
+
+    contactSelect.addEventListener('change', renderContact);
+    renderContact();
+});
+
 document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
     const editorEl = wrapper.querySelector('[data-quill-editor]');
     const input = wrapper.querySelector('[data-quill-input]');
