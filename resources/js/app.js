@@ -1,4 +1,6 @@
 import './bootstrap';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 
 document.querySelectorAll('[data-kvk-form]').forEach((kvkForm) => {
     const kvkInput = kvkForm.querySelector('[data-kvk-number]');
@@ -161,41 +163,47 @@ document.querySelectorAll('[data-step-form]').forEach((stepForm) => {
     syncSteps();
 });
 
-document.querySelectorAll('[data-rich-editor-wrapper]').forEach((wrapper) => {
-    const editor = wrapper.querySelector('[data-rich-editor]');
-    const input = wrapper.querySelector('[data-rich-editor-input]');
+document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
+    const editorEl = wrapper.querySelector('[data-quill-editor]');
+    const input = wrapper.querySelector('[data-quill-input]');
     const form = wrapper.closest('form');
 
-    if (!editor || !input) {
+    if (!editorEl || !input) {
         return;
     }
 
-    const syncInput = () => {
-        input.value = editor.innerHTML.trim();
-        editor.classList.toggle('is-invalid', editor.dataset.richRequired === 'true' && editor.textContent.trim() === '');
-    };
+    const initialContent = input.value.trim();
+    const isRequired = editorEl.dataset.quillRequired === 'true';
 
-    wrapper.querySelectorAll('[data-rich-command]').forEach((button) => {
-        button.addEventListener('mousedown', (event) => {
-            event.preventDefault();
-        });
-
-        button.addEventListener('click', () => {
-            editor.focus();
-            document.execCommand(button.dataset.richCommand, false);
-            syncInput();
-        });
+    const quill = new Quill(editorEl, {
+        theme: 'snow',
+        placeholder: editorEl.dataset.quillPlaceholder ?? '',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+            ],
+        },
     });
 
-    editor.addEventListener('input', syncInput);
-    editor.addEventListener('blur', syncInput);
+    if (initialContent !== '') {
+        quill.clipboard.dangerouslyPasteHTML(initialContent);
+    }
+
+    const syncInput = () => {
+        const isEmpty = quill.getText().trim() === '';
+        input.value = isEmpty ? '' : quill.getSemanticHTML();
+        quill.container.classList.toggle('is-invalid', isRequired && isEmpty);
+    };
+
+    quill.on('text-change', syncInput);
 
     form?.addEventListener('submit', (event) => {
         syncInput();
 
-        if (editor.dataset.richRequired === 'true' && editor.textContent.trim() === '') {
+        if (isRequired && quill.getText().trim() === '') {
             event.preventDefault();
-            editor.focus();
+            quill.focus();
         }
     });
 

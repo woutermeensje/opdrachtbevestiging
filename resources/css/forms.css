@@ -170,61 +170,57 @@ select:focus {
     margin-top: 0.6rem;
 }
 
-.rich-editor-field {
+.quill-field {
     margin-bottom: 0.7rem;
 }
 
-.rich-editor-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    padding: 0.45rem;
-    border: 1px solid #dedede;
+.quill-editor-input {
+    display: none;
+}
+
+.quill-field .ql-toolbar.ql-snow {
+    border: 1px solid var(--field-border);
     border-bottom: 0;
     border-radius: var(--radius-default) var(--radius-default) 0 0;
     background: var(--color-bg);
-}
-
-.rich-editor-toolbar button {
-    min-height: 2rem;
-    padding: 0.3rem 0.55rem;
-    border: 1px solid #dedede;
-    border-radius: 5px;
-    background: #ffffff;
-    color: var(--color-text);
     font-family: var(--font-ui);
-    font-size: 0.84rem;
-    cursor: pointer;
 }
 
-.rich-editor-toolbar button:hover {
-    border-color: #dedede;
-}
-
-.rich-editor {
-    min-height: 220px;
-    padding: 0.75rem;
-    border: 1px solid #dedede;
+.quill-field .ql-container.ql-snow {
+    border: 1px solid var(--field-border);
     border-radius: 0 0 var(--radius-default) var(--radius-default);
     background: var(--field-bg);
+}
+
+.quill-field .ql-editor {
+    min-height: 220px;
     color: var(--color-text);
     font-family: var(--font-text);
     font-size: 0.95rem;
     line-height: 1.6;
-    outline: none;
 }
 
-.rich-editor:focus {
-    border-color: #dedede;
-    box-shadow: var(--field-shadow-focus);
+.quill-field .ql-editor.ql-blank::before {
+    color: var(--color-text-subtle);
+    font-style: normal;
 }
 
-.rich-editor.is-invalid {
-    border-color: #dedede;
+.quill-field .ql-container.ql-snow.is-invalid {
+    border-color: var(--color-danger);
 }
 
-.rich-editor-input {
-    display: none;
+.quill-field .ql-snow.ql-toolbar button:hover,
+.quill-field .ql-snow .ql-toolbar button:hover,
+.quill-field .ql-snow.ql-toolbar button.ql-active,
+.quill-field .ql-snow .ql-toolbar button.ql-active {
+    color: var(--color-primary);
+}
+
+.quill-field .ql-snow.ql-toolbar button:hover .ql-stroke,
+.quill-field .ql-snow .ql-toolbar button:hover .ql-stroke,
+.quill-field .ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.quill-field .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+    stroke: var(--color-primary);
 }
 
 .form-steps {

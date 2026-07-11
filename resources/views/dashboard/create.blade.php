@@ -38,17 +38,10 @@
                         <input id="title" name="title" type="text" value="'.e(old('title')).'" required>
                     </div>
 
-                    <div class="rich-editor-field" data-rich-editor-wrapper>
+                    <div class="quill-field" data-quill-field>
                         <label for="description_editor">Tekstblok</label>
-                        <div class="rich-editor-toolbar" aria-label="Opmaak">
-                            <button type="button" data-rich-command="bold"><strong>B</strong></button>
-                            <button type="button" data-rich-command="italic"><em>I</em></button>
-                            <button type="button" data-rich-command="underline"><u>U</u></button>
-                            <button type="button" data-rich-command="insertUnorderedList">Lijst</button>
-                            <button type="button" data-rich-command="insertOrderedList">1. Lijst</button>
-                        </div>
-                        <div id="description_editor" class="rich-editor" contenteditable="true" data-rich-editor data-rich-required="true">'.(\App\Models\Confirmation::sanitizeDescription(old('description')) ?? '').'</div>
-                        <textarea id="description" name="description" class="rich-editor-input" data-rich-editor-input>'.e(old('description')).'</textarea>
+                        <div id="description_editor" class="quill-editor" data-quill-editor data-quill-required="true" data-quill-placeholder="Beschrijf de opdracht...">'.(\App\Models\Confirmation::sanitizeDescription(old('description')) ?? '').'</div>
+                        <textarea id="description" name="description" class="quill-editor-input" data-quill-input>'.e(old('description')).'</textarea>
                     </div>
 
                     <div>

@@ -14,9 +14,15 @@
     <div class="dashboard-shell">
         @include('partials.dashboard.sidebar')
 
-        <main class="dashboard-main">
-            @yield('content')
-        </main>
+        <div class="dashboard-workspace">
+            <header class="dashboard-topbar">
+                <a href="{{ route('dashboard.create') }}" class="dashboard-topbar-action">Opdrachtbevestiging maken</a>
+            </header>
+
+            <main class="dashboard-main">
+                @yield('content')
+            </main>
+        </div>
     </div>
 </body>
 </html>

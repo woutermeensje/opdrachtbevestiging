@@ -56,22 +56,22 @@
 
                     <div class="grid-2">
                         <div>
-                            <label for="contact_first_name">Voornaam contactpersoon</label>
+                            <label for="contact_first_name">Voornaam</label>
                             <input id="contact_first_name" name="contact_first_name" type="text" value="{{ old('contact_first_name') }}" required>
                         </div>
                         <div>
-                            <label for="contact_last_name">Achternaam contactpersoon</label>
+                            <label for="contact_last_name">Achternaam</label>
                             <input id="contact_last_name" name="contact_last_name" type="text" value="{{ old('contact_last_name') }}" required>
                         </div>
                     </div>
 
                     <div class="grid-2">
                         <div>
-                            <label for="contact_email">E-mailadres contactpersoon</label>
+                            <label for="contact_email">E-mailadres</label>
                             <input id="contact_email" name="contact_email" type="email" value="{{ old('contact_email') }}" required>
                         </div>
                         <div>
-                            <label for="contact_phone">Telefoonnummer contactpersoon</label>
+                            <label for="contact_phone">Telefoonnummer</label>
                             <input id="contact_phone" name="contact_phone" type="text" value="{{ old('contact_phone') }}" required>
                         </div>
                     </div>

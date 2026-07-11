@@ -118,17 +118,10 @@
                         </div>
                     </div>
 
-                    <div class="rich-editor-field" data-rich-editor-wrapper>
+                    <div class="quill-field" data-quill-field>
                         <label for="default_agreements_editor">Basis afspraken</label>
-                        <div class="rich-editor-toolbar" aria-label="Opmaak">
-                            <button type="button" data-rich-command="bold"><strong>B</strong></button>
-                            <button type="button" data-rich-command="italic"><em>I</em></button>
-                            <button type="button" data-rich-command="underline"><u>U</u></button>
-                            <button type="button" data-rich-command="insertUnorderedList">Lijst</button>
-                            <button type="button" data-rich-command="insertOrderedList">1. Lijst</button>
-                        </div>
-                        <div id="default_agreements_editor" class="rich-editor" contenteditable="true" data-rich-editor>{!! $defaultAgreements !!}</div>
-                        <textarea id="default_agreements" name="default_agreements" class="rich-editor-input" data-rich-editor-input>{{ old('default_agreements', $user->default_agreements) }}</textarea>
+                        <div id="default_agreements_editor" class="quill-editor" data-quill-editor data-quill-placeholder="Bijvoorbeeld betalingstermijnen of annuleringsvoorwaarden...">{!! $defaultAgreements !!}</div>
+                        <textarea id="default_agreements" name="default_agreements" class="quill-editor-input" data-quill-input>{{ old('default_agreements', $user->default_agreements) }}</textarea>
                     </div>
                 </div>
 

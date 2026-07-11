@@ -102,7 +102,7 @@ class ConfirmationFlowTest extends TestCase
             ->assertOk()
             ->assertSee('enctype="multipart/form-data"', false)
             ->assertSee('name="title"', false)
-            ->assertSee('data-rich-editor', false)
+            ->assertSee('data-quill-editor', false)
             ->assertSee('name="contact_id"', false)
             ->assertSee('name="attachment"', false)
             ->assertSee('name="quote"', false)
