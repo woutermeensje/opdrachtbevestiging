@@ -16,6 +16,8 @@
 
         <div class="dashboard-workspace">
             <header class="dashboard-topbar">
+                <p class="dashboard-topbar-greeting">Welkom terug, {{ auth()->user()->first_name }}</p>
+
                 <details class="dashboard-topbar-create">
                     <summary class="dashboard-topbar-action">
                         <span>Aanmaken</span>

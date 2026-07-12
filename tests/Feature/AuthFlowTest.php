@@ -81,6 +81,12 @@ class AuthFlowTest extends TestCase
 
         $response->assertRedirect('/dashboard');
         $this->assertAuthenticatedAs($user);
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Welkom terug, Wouter');
     }
 
     public function test_inloggen_page_redirects_to_home(): void
