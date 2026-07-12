@@ -14,7 +14,7 @@
     $dividerStyle = 'margin-top:24px;padding-top:20px;border-top:1px solid #dedede;';
 @endphp
 <body bgcolor="{{ $themeBackground }}" style="margin:0;padding:0;background:{{ $themeBackground }};font-family:Poppins,Arial,Helvetica,sans-serif;color:#333333;">
-    <div style="width:100%;background:{{ $themeBackground }};padding:32px 16px;box-sizing:border-box;">
+    <div style="width:100%;background:{{ $themeBackground }};padding:64px 24px;box-sizing:border-box;">
         <div style="max-width:720px;margin:0 auto;">
             <div style="{{ $blockStyle }}">
                 <p style="margin:0 0 10px;font-size:13px;line-height:1.4;color:#003B73;text-transform:uppercase;letter-spacing:.06em;font-weight:700;">Opdrachtbevestiging</p>
