@@ -11,7 +11,7 @@
 
     @unless (auth()->user()->hasCompletedCompanyProfile())
         <div class="dashboard-notice dashboard-notice-warning">
-            Vul eerst je bedrijfsgegevens aan in <a href="{{ route('dashboard.profile') }}">Mijn profiel</a>. Pas daarna kun je opdrachtbevestigingen aanmaken en versturen.
+            Vul eerst je bedrijfsgegevens aan in <a href="{{ route('dashboard.profile.company') }}">Mijn profiel</a>. Pas daarna kun je opdrachtbevestigingen aanmaken en versturen.
         </div>
     @endunless
 

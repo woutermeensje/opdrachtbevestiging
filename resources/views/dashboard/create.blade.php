@@ -124,7 +124,7 @@
             'slot' => '
                 <p>Algemene voorwaarden, bedrijfslogo, bedrijfsgegevens en basis afspraken beheer je in Mijn profiel.</p>
                 <p>Die vaste gegevens worden automatisch toegevoegd aan nieuwe opdrachtbevestigingen en meegenomen in de PDF die bij het verzenden wordt gemaakt.</p>
-                <p><a href="'.e(route('dashboard.profile')).'" class="btn btn-secondary">Naar Mijn profiel</a></p>
+                <p><a href="'.e(route('dashboard.profile.documents')).'" class="btn btn-secondary">Naar vaste documentgegevens</a></p>
             ',
         ])
     </div>

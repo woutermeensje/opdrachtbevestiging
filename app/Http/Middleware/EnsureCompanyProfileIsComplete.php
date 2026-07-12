@@ -17,7 +17,7 @@ class EnsureCompanyProfileIsComplete
 
         if ($user && ! $user->hasCompletedCompanyProfile()) {
             return redirect()
-                ->route('dashboard.profile')
+                ->route('dashboard.profile.company')
                 ->with('status', 'Vul eerst je bedrijfsgegevens aan. Pas daarna kun je opdrachtbevestigingen versturen.');
         }
 

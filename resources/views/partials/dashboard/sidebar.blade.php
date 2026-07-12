@@ -17,7 +17,16 @@
                 ['route' => 'dashboard.contacts.create', 'label' => 'Opdrachtgever toevoegen'],
             ],
         ],
-        ['route' => 'dashboard.profile', 'label' => 'Mijn profiel', 'icon' => 'user-circle'],
+        [
+            'route' => 'dashboard.profile',
+            'label' => 'Mijn profiel',
+            'icon' => 'user-circle',
+            'children' => [
+                ['route' => 'dashboard.profile', 'label' => 'Mijn account'],
+                ['route' => 'dashboard.profile.company', 'label' => 'Bedrijfsgegevens'],
+                ['route' => 'dashboard.profile.documents', 'label' => 'Vaste documentgegevens'],
+            ],
+        ],
     ];
 @endphp
 

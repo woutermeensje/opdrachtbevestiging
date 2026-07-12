@@ -1,17 +1,17 @@
 @extends('layouts.dashboard', [
-    'title' => 'Mijn profiel',
+    'title' => 'Mijn account',
 ])
 
 @php
     $user = auth()->user();
-    $defaultAgreements = \App\Models\Confirmation::sanitizeDescription(old('default_agreements', $user->default_agreements)) ?? '';
+    $displayName = $user->name ?: trim($user->first_name.' '.$user->last_name);
 @endphp
 
 @section('content')
     @include('partials.dashboard.page-header', [
         'eyebrow' => 'Profiel',
-        'title' => 'Mijn profiel',
-        'text' => 'Beheer hier je persoonlijke gegevens, bedrijfsinformatie en vaste documentgegevens voor opdrachtbevestigingen.',
+        'title' => 'Mijn account',
+        'text' => 'Beheer je gebruikersnaam, contactgegevens en wachtwoord.',
     ])
 
     @include('partials.forms.errors')
@@ -20,119 +20,56 @@
         <div class="dashboard-notice">{{ session('status') }}</div>
     @endif
 
-    @unless ($user->hasCompletedCompanyProfile())
-        <div class="dashboard-notice dashboard-notice-warning">
-            Vul je bedrijfsgegevens hieronder in. Pas daarna kun je opdrachtbevestigingen aanmaken en versturen.
-        </div>
-    @endunless
+    <form method="POST" action="{{ route('dashboard.profile.account.update') }}" class="dashboard-form">
+        @csrf
 
-    <div class="dashboard-content-grid">
-        @include('partials.dashboard.panel', [
-            'title' => 'Gebruiker',
-            'slot' => '
-                <p><strong>Naam:</strong> '.e($user->first_name.' '.$user->last_name).'</p>
-                <p><strong>E-mail:</strong> '.e($user->email).'</p>
-                <p><strong>Telefoonnummer:</strong> '.e($user->phone_number ?: '-').'</p>
-            ',
-        ])
+        <section class="dashboard-panel dashboard-panel-wide">
+            <h2>Accountgegevens</h2>
 
-        <form method="POST" action="{{ route('dashboard.profile.update') }}" class="dashboard-form dashboard-panel-wide" enctype="multipart/form-data" data-kvk-form>
-            @csrf
+            <label for="name">Gebruikersnaam</label>
+            <input id="name" name="name" type="text" value="{{ old('name', $displayName) }}" required>
 
-            <section class="dashboard-panel dashboard-panel-wide">
-                <h2>Bedrijfsgegevens</h2>
-
-                <h3>KVK-gegevens</h3>
-
-                <div class="grid-kvk">
-                    <div>
-                        <label for="company_name">Bedrijfsnaam</label>
-                        <input id="company_name" type="text" value="{{ old('company_name', $user->company_name) }}" data-company-name data-kvk-search-url="{{ route('kvk.search') }}" list="profile-company-options" required>
-                        <datalist id="profile-company-options" data-company-options></datalist>
-                    </div>
-                    <div class="dashboard-inline-actions">
-                        <button type="button" class="btn btn-secondary" data-kvk-lookup data-kvk-url="{{ route('kvk.lookup') }}">KVK-gegevens ophalen</button>
-                    </div>
+            <div class="grid-2">
+                <div>
+                    <label for="first_name">Voornaam</label>
+                    <input id="first_name" name="first_name" type="text" value="{{ old('first_name', $user->first_name) }}" required>
                 </div>
-
-                <p class="dashboard-kvk-feedback" data-kvk-feedback></p>
-
-                <label for="kvk_number">KVK-nummer</label>
-                <input id="kvk_number" name="kvk_number" type="text" value="{{ old('kvk_number', $user->kvk_number) }}" data-kvk-target="kvk_number" required readonly>
-
-                <label for="company_name_confirmed">Bedrijfsnaam</label>
-                <input id="company_name_confirmed" name="company_name" type="text" value="{{ old('company_name', $user->company_name) }}" data-kvk-target="company_name" required>
-
-                <h3>Adresgegevens</h3>
-
-                <div class="grid-3">
-                    <div>
-                        <label for="street_name">Straat</label>
-                        <input id="street_name" name="street_name" type="text" value="{{ old('street_name', $user->street_name) }}" data-kvk-target="street_name">
-                    </div>
-                    <div>
-                        <label for="house_number">Huisnummer</label>
-                        <input id="house_number" name="house_number" type="text" value="{{ old('house_number', $user->house_number) }}" data-kvk-target="house_number">
-                    </div>
-                    <div>
-                        <label for="house_number_addition">Toevoeging</label>
-                        <input id="house_number_addition" name="house_number_addition" type="text" value="{{ old('house_number_addition', $user->house_number_addition) }}" data-kvk-target="house_number_addition">
-                    </div>
+                <div>
+                    <label for="last_name">Achternaam</label>
+                    <input id="last_name" name="last_name" type="text" value="{{ old('last_name', $user->last_name) }}" required>
                 </div>
-
-                <div class="grid-3">
-                    <div>
-                        <label for="postal_code">Postcode</label>
-                        <input id="postal_code" name="postal_code" type="text" value="{{ old('postal_code', $user->postal_code) }}" data-kvk-target="postal_code">
-                    </div>
-                    <div>
-                        <label for="city">Plaats</label>
-                        <input id="city" name="city" type="text" value="{{ old('city', $user->city) }}" data-kvk-target="city">
-                    </div>
-                    <div>
-                        <label for="country">Land</label>
-                        <input id="country" name="country" type="text" value="{{ old('country', $user->country) }}" data-kvk-target="country">
-                    </div>
-                </div>
-            </section>
-
-            <section class="dashboard-panel dashboard-panel-wide">
-                <h2>Vaste documentgegevens</h2>
-
-                <h3>Documenten</h3>
-
-                <div class="upload-block-grid">
-                    <div class="upload-block">
-                        <label for="company_logo">Bedrijfslogo</label>
-                        <input id="company_logo" name="company_logo" type="file" accept=".png,.jpg,.jpeg">
-                        <p class="form-help">PNG of JPG tot 4 MB.</p>
-                        @if ($user->company_logo_original_name)
-                            <p class="profile-file-current">Huidig bestand: {{ $user->company_logo_original_name }}</p>
-                        @endif
-                    </div>
-
-                    <div class="upload-block">
-                        <label for="terms">Algemene voorwaarden</label>
-                        <input id="terms" name="terms" type="file" accept=".pdf,.doc,.docx">
-                        <p class="form-help">PDF of Word-document tot 10 MB.</p>
-                        @if ($user->terms_original_name)
-                            <p class="profile-file-current">Huidig bestand: {{ $user->terms_original_name }}</p>
-                        @endif
-                    </div>
-                </div>
-
-                <h3>Basis afspraken</h3>
-
-                <div class="quill-field" data-quill-field>
-                    <label for="default_agreements_editor">Basis afspraken</label>
-                    <div id="default_agreements_editor" class="quill-editor" data-quill-editor data-quill-placeholder="Bijvoorbeeld betalingstermijnen of annuleringsvoorwaarden...">{!! $defaultAgreements !!}</div>
-                    <textarea id="default_agreements" name="default_agreements" class="quill-editor-input" data-quill-input>{{ old('default_agreements', $user->default_agreements) }}</textarea>
-                </div>
-            </section>
-
-            <div class="actions actions-end">
-                <button type="submit" class="btn btn-primary">Profiel opslaan</button>
             </div>
-        </form>
-    </div>
+
+            <label for="email">E-mailadres</label>
+            <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required>
+
+            <label for="phone_number">Telefoonnummer</label>
+            <input id="phone_number" name="phone_number" type="tel" value="{{ old('phone_number', $user->phone_number) }}" required>
+        </section>
+
+        <div class="actions actions-end">
+            <button type="submit" class="btn btn-primary">Accountgegevens opslaan</button>
+        </div>
+    </form>
+
+    <form method="POST" action="{{ route('dashboard.profile.password.update') }}" class="dashboard-form">
+        @csrf
+
+        <section class="dashboard-panel dashboard-panel-wide">
+            <h2>Wachtwoord</h2>
+
+            <label for="current_password">Huidig wachtwoord</label>
+            <input id="current_password" name="current_password" type="password" autocomplete="current-password" required>
+
+            <label for="password">Nieuw wachtwoord</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" required>
+
+            <label for="password_confirmation">Herhaal nieuw wachtwoord</label>
+            <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required>
+        </section>
+
+        <div class="actions actions-end">
+            <button type="submit" class="btn btn-secondary">Wachtwoord wijzigen</button>
+        </div>
+    </form>
 @endsection
