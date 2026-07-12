@@ -42,6 +42,8 @@
             <section class="dashboard-panel dashboard-panel-wide">
                 <h2>Bedrijfsgegevens</h2>
 
+                <h3>KVK-gegevens</h3>
+
                 <div class="grid-kvk">
                     <div>
                         <label for="company_name">Bedrijfsnaam</label>
@@ -60,6 +62,8 @@
 
                 <label for="company_name_confirmed">Bedrijfsnaam</label>
                 <input id="company_name_confirmed" name="company_name" type="text" value="{{ old('company_name', $user->company_name) }}" data-kvk-target="company_name" required>
+
+                <h3>Adresgegevens</h3>
 
                 <div class="grid-3">
                     <div>
@@ -95,6 +99,8 @@
             <section class="dashboard-panel dashboard-panel-wide">
                 <h2>Vaste documentgegevens</h2>
 
+                <h3>Documenten</h3>
+
                 <div class="upload-block-grid">
                     <div class="upload-block">
                         <label for="company_logo">Bedrijfslogo</label>
@@ -114,6 +120,8 @@
                         @endif
                     </div>
                 </div>
+
+                <h3>Basis afspraken</h3>
 
                 <div class="quill-field" data-quill-field>
                     <label for="default_agreements_editor">Basis afspraken</label>

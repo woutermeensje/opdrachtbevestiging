@@ -75,6 +75,8 @@ class ConfirmationFlowTest extends TestCase
             ->assertDownload($confirmation->pdf_original_name);
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
+            $mail->assertSeeInHtml('Hoi Sanne,');
+            $mail->assertSeeInText('Hoi Sanne,');
             $mail->assertSeeInHtml('accorderen');
             $mail->assertSeeInHtml($confirmation->publicUrl());
             $mail->assertHasAttachment(
@@ -415,6 +417,10 @@ class ConfirmationFlowTest extends TestCase
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
             $mail->assertHasSubject('Opdrachtbevestiging van Studio Wouter');
+            $mail->assertDontSeeInHtml($confirmation->title);
+            $mail->assertDontSeeInText($confirmation->title);
+            $mail->assertSeeInHtml('Hoi Sanne,');
+            $mail->assertSeeInText('Hoi Sanne,');
             $mail->assertSeeInHtml('heeft een opdrachtbevestiging opgesteld');
             $mail->assertSeeInHtml('accorderen');
             $mail->assertSeeInText($confirmation->publicUrl());

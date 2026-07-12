@@ -7,6 +7,8 @@
 </head>
 @php
     $recipientName = $confirmation->client_contact_name ?: $confirmation->client_name;
+    $recipientNameParts = preg_split('/\s+/', trim($recipientName));
+    $recipientFirstName = $recipientNameParts[0] ?? $recipientName;
     $senderCompany = $confirmation->senderCompanyDisplayName();
     $acceptUrl = $confirmation->publicUrl();
     $themeBackground = '#FBFAF8';
@@ -18,10 +20,7 @@
     <div style="width:100%;background:{{ $themeBackground }};padding:64px 24px;box-sizing:border-box;">
         <div style="max-width:720px;margin:0 auto;">
             <div style="{{ $blockStyle }}">
-                <p style="margin:0 0 10px;font-size:13px;line-height:1.4;color:#003B73;text-transform:uppercase;letter-spacing:.06em;font-weight:700;">Opdrachtbevestiging</p>
-                <h1 style="margin:0 0 20px;font-size:28px;line-height:1.2;color:#333333;font-weight:700;">{{ $confirmation->title }}</h1>
-
-                <p style="{{ $textStyle }}">Beste {{ $recipientName }},</p>
+                <p style="{{ $textStyle }}">Hoi {{ $recipientFirstName }},</p>
                 <p style="margin:0;font-size:15px;line-height:1.6;color:#333333;">{{ $senderCompany }} heeft een opdrachtbevestiging opgesteld! Je kan via <a href="{{ $acceptUrl }}" style="color:#003B73;font-weight:700;">deze link</a> de opdrachtbevestiging bekijken en accorderen.</p>
 
                 <p style="margin:20px 0 0;">

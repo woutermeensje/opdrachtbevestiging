@@ -357,6 +357,18 @@
     font-weight: 600;
 }
 
+.dashboard-panel h3 {
+    margin: 1.5rem 0 0.9rem;
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-muted, #555);
+}
+
+.dashboard-panel h3:first-of-type {
+    margin-top: 0;
+}
+
 .dashboard-panel p:last-child {
     margin-bottom: 0;
 }
