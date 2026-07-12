@@ -98,8 +98,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('/dashboard/mijn-profiel/wachtwoord', [DashboardController::class, 'updateAccountPassword'])->name('dashboard.profile.password.update');
     Route::get('/dashboard/mijn-profiel/bedrijfsgegevens', [DashboardController::class, 'companyProfile'])->name('dashboard.profile.company');
     Route::post('/dashboard/mijn-profiel/bedrijfsgegevens', [DashboardController::class, 'updateCompanyProfile'])->name('dashboard.profile.company.update');
-    Route::get('/dashboard/mijn-profiel/documentgegevens', [DashboardController::class, 'documentProfile'])->name('dashboard.profile.documents');
-    Route::post('/dashboard/mijn-profiel/documentgegevens', [DashboardController::class, 'updateDocumentProfile'])->name('dashboard.profile.documents.update');
+    Route::get('/dashboard/mijn-profiel/documenten', [DashboardController::class, 'documentProfile'])->name('dashboard.profile.documents');
+    Route::post('/dashboard/mijn-profiel/documenten', [DashboardController::class, 'updateDocumentProfile'])->name('dashboard.profile.documents.update');
+    Route::get('/dashboard/mijn-profiel/logo-huisstijl', [DashboardController::class, 'brandProfile'])->name('dashboard.profile.brand');
+    Route::post('/dashboard/mijn-profiel/logo-huisstijl', [DashboardController::class, 'updateBrandProfile'])->name('dashboard.profile.brand.update');
 
     Route::middleware('company.profile')->group(function (): void {
         Route::get('/dashboard/aanmaken', [ConfirmationController::class, 'create'])->name('dashboard.create');

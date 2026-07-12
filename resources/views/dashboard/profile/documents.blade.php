@@ -1,5 +1,5 @@
 @extends('layouts.dashboard', [
-    'title' => 'Vaste documentgegevens',
+    'title' => 'Documenten',
 ])
 
 @php
@@ -10,8 +10,8 @@
 @section('content')
     @include('partials.dashboard.page-header', [
         'eyebrow' => 'Profiel',
-        'title' => 'Vaste documentgegevens',
-        'text' => 'Beheer je logo, algemene voorwaarden en vaste afspraken voor nieuwe opdrachtbevestigingen.',
+        'title' => 'Documenten',
+        'text' => 'Beheer je algemene voorwaarden en vaste afspraken voor nieuwe opdrachtbevestigingen.',
     ])
 
     @include('partials.forms.errors')
@@ -24,26 +24,15 @@
         @csrf
 
         <section class="dashboard-panel dashboard-panel-wide">
-            <h2>Documenten</h2>
+            <h2>Algemene voorwaarden</h2>
 
-            <div class="upload-block-grid">
-                <div class="upload-block">
-                    <label for="company_logo">Bedrijfslogo</label>
-                    <input id="company_logo" name="company_logo" type="file" accept=".png,.jpg,.jpeg">
-                    <p class="form-help">PNG of JPG tot 4 MB.</p>
-                    @if ($user->company_logo_original_name)
-                        <p class="profile-file-current">Huidig bestand: {{ $user->company_logo_original_name }}</p>
-                    @endif
-                </div>
-
-                <div class="upload-block">
-                    <label for="terms">Algemene voorwaarden</label>
-                    <input id="terms" name="terms" type="file" accept=".pdf,.doc,.docx">
-                    <p class="form-help">PDF of Word-document tot 10 MB.</p>
-                    @if ($user->terms_original_name)
-                        <p class="profile-file-current">Huidig bestand: {{ $user->terms_original_name }}</p>
-                    @endif
-                </div>
+            <div class="upload-block">
+                <label for="terms">Bestand</label>
+                <input id="terms" name="terms" type="file" accept=".pdf,.doc,.docx">
+                <p class="form-help">PDF of Word-document tot 10 MB.</p>
+                @if ($user->terms_original_name)
+                    <p class="profile-file-current">Huidig bestand: {{ $user->terms_original_name }}</p>
+                @endif
             </div>
         </section>
 
@@ -58,7 +47,7 @@
         </section>
 
         <div class="actions actions-end">
-            <button type="submit" class="btn btn-primary">Documentgegevens opslaan</button>
+            <button type="submit" class="btn btn-primary">Documenten opslaan</button>
         </div>
     </form>
 @endsection

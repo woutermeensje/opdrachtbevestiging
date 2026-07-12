@@ -24,7 +24,8 @@
             'children' => [
                 ['route' => 'dashboard.profile', 'label' => 'Mijn account'],
                 ['route' => 'dashboard.profile.company', 'label' => 'Bedrijfsgegevens'],
-                ['route' => 'dashboard.profile.documents', 'label' => 'Vaste documentgegevens'],
+                ['route' => 'dashboard.profile.documents', 'label' => 'Documenten'],
+                ['route' => 'dashboard.profile.brand', 'label' => 'Logo & Huisstijl'],
             ],
         ],
     ];

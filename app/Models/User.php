@@ -34,6 +34,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'company_logo_path',
         'company_logo_original_name',
         'company_logo_mime_type',
+        'primary_color',
+        'secondary_color',
         'terms_path',
         'terms_original_name',
         'terms_mime_type',

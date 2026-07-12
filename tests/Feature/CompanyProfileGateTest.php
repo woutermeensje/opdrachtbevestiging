@@ -26,9 +26,11 @@ class CompanyProfileGateTest extends TestCase
             ->assertSee('Mijn profiel')
             ->assertSee('Mijn account')
             ->assertSee('Bedrijfsgegevens')
-            ->assertSee('Vaste documentgegevens')
+            ->assertSee('Documenten')
+            ->assertSee('Logo &amp; Huisstijl', false)
             ->assertSee(route('dashboard.profile.company'), false)
-            ->assertSee(route('dashboard.profile.documents'), false);
+            ->assertSee(route('dashboard.profile.documents'), false)
+            ->assertSee(route('dashboard.profile.brand'), false);
     }
 
     public function test_profile_subpages_render(): void
@@ -37,7 +39,8 @@ class CompanyProfileGateTest extends TestCase
 
         $this->actingAs($user)->get(route('dashboard.profile'))->assertOk()->assertSee('Mijn account');
         $this->actingAs($user)->get(route('dashboard.profile.company'))->assertOk()->assertSee('KVK-gegevens');
-        $this->actingAs($user)->get(route('dashboard.profile.documents'))->assertOk()->assertSee('Basis afspraken');
+        $this->actingAs($user)->get(route('dashboard.profile.documents'))->assertOk()->assertSee('Algemene voorwaarden')->assertSee('Basis afspraken');
+        $this->actingAs($user)->get(route('dashboard.profile.brand'))->assertOk()->assertSee('Logo &amp; Huisstijl', false)->assertSee('Primaire kleur');
     }
 
     public function test_user_can_update_account_details(): void
@@ -172,7 +175,7 @@ class CompanyProfileGateTest extends TestCase
         $this->actingAs($user)->get(route('dashboard.create'))->assertOk();
     }
 
-    public function test_user_can_store_document_defaults_on_profile(): void
+    public function test_user_can_store_documents_on_profile(): void
     {
         Storage::fake('local');
 
@@ -182,7 +185,6 @@ class CompanyProfileGateTest extends TestCase
             ->actingAs($user)
             ->withoutMiddleware(ValidateCsrfToken::class)
             ->post(route('dashboard.profile.documents.update'), [
-                'company_logo' => UploadedFile::fake()->create('logo.jpg', 12, 'image/jpeg'),
                 'terms' => UploadedFile::fake()->create('algemene-voorwaarden.pdf', 32, 'application/pdf'),
                 'default_agreements' => '<p>Betaling binnen <strong>14 dagen</strong>.</p><script>alert("x")</script>',
             ]);
@@ -190,11 +192,34 @@ class CompanyProfileGateTest extends TestCase
         $response->assertRedirect(route('dashboard.profile.documents'));
 
         $user->refresh();
-        $this->assertSame('logo.jpg', $user->company_logo_original_name);
         $this->assertSame('algemene-voorwaarden.pdf', $user->terms_original_name);
         $this->assertSame('<p>Betaling binnen <strong>14 dagen</strong>.</p>', $user->default_agreements);
 
-        Storage::disk('local')->assertExists($user->company_logo_path);
         Storage::disk('local')->assertExists($user->terms_path);
+    }
+
+    public function test_user_can_store_logo_and_brand_colors_on_profile(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->withoutMiddleware(ValidateCsrfToken::class)
+            ->post(route('dashboard.profile.brand.update'), [
+                'company_logo' => UploadedFile::fake()->create('logo.jpg', 12, 'image/jpeg'),
+                'primary_color' => '#123abc',
+                'secondary_color' => '#f8fafc',
+            ]);
+
+        $response->assertRedirect(route('dashboard.profile.brand'));
+
+        $user->refresh();
+        $this->assertSame('logo.jpg', $user->company_logo_original_name);
+        $this->assertSame('#123ABC', $user->primary_color);
+        $this->assertSame('#F8FAFC', $user->secondary_color);
+
+        Storage::disk('local')->assertExists($user->company_logo_path);
     }
 }

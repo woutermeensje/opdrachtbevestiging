@@ -62,6 +62,12 @@ select:focus {
     box-shadow: var(--field-shadow-focus);
 }
 
+input[type='color'] {
+    min-height: 44px;
+    padding: 0.2rem;
+    cursor: pointer;
+}
+
 .dashboard-form textarea {
     min-height: 132px;
 }

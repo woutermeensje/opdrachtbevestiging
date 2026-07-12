@@ -79,6 +79,11 @@ class DashboardController extends Controller
         return view('dashboard.profile.documents');
     }
 
+    public function brandProfile(): View
+    {
+        return view('dashboard.profile.brand');
+    }
+
     public function updateCompanyProfile(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -104,7 +109,6 @@ class DashboardController extends Controller
     public function updateDocumentProfile(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'company_logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg', 'max:4096'],
             'terms' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
             'default_agreements' => ['nullable', 'string'],
         ]);
@@ -114,7 +118,6 @@ class DashboardController extends Controller
         ];
 
         $uploadedFiles = array_filter([
-            'company_logo' => $this->storeProfileDocument($request->file('company_logo'), $request, 'logo', 'company_logo'),
             'terms' => $this->storeProfileDocument($request->file('terms'), $request, 'algemene-voorwaarden', 'terms'),
         ]);
 
@@ -124,7 +127,31 @@ class DashboardController extends Controller
 
         return redirect()
             ->route('dashboard.profile.documents')
-            ->with('status', 'Je vaste documentgegevens zijn opgeslagen.');
+            ->with('status', 'Je documenten zijn opgeslagen.');
+    }
+
+    public function updateBrandProfile(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'company_logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg', 'max:4096'],
+            'primary_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'secondary_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+        ]);
+
+        $uploadedFiles = array_filter([
+            'company_logo' => $this->storeProfileDocument($request->file('company_logo'), $request, 'logo', 'company_logo'),
+        ]);
+
+        $request->user()
+            ->forceFill(array_merge([
+                'primary_color' => strtoupper($validated['primary_color']),
+                'secondary_color' => strtoupper($validated['secondary_color']),
+            ], collect($uploadedFiles)->collapse()->all()))
+            ->save();
+
+        return redirect()
+            ->route('dashboard.profile.brand')
+            ->with('status', 'Je logo en huisstijl zijn opgeslagen.');
     }
 
     /**
