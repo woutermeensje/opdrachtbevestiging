@@ -20,7 +20,7 @@
         <div class="dashboard-notice">{{ session('status') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('dashboard.profile.documents.update') }}" class="dashboard-form" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('dashboard.profile.documents.update') }}" class="dashboard-form dashboard-profile-form" enctype="multipart/form-data">
         @csrf
 
         <section class="dashboard-panel dashboard-panel-wide">

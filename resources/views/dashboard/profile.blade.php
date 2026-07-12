@@ -20,7 +20,7 @@
         <div class="dashboard-notice">{{ session('status') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('dashboard.profile.account.update') }}" class="dashboard-form">
+    <form method="POST" action="{{ route('dashboard.profile.account.update') }}" class="dashboard-form dashboard-profile-form">
         @csrf
 
         <section class="dashboard-panel dashboard-panel-wide">
@@ -52,7 +52,7 @@
         </div>
     </form>
 
-    <form method="POST" action="{{ route('dashboard.profile.password.update') }}" class="dashboard-form">
+    <form method="POST" action="{{ route('dashboard.profile.password.update') }}" class="dashboard-form dashboard-profile-form">
         @csrf
 
         <section class="dashboard-panel dashboard-panel-wide">

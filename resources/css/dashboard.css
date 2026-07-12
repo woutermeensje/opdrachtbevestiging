@@ -350,6 +350,11 @@
     margin-bottom: 1rem;
 }
 
+.dashboard-profile-form {
+    width: 65%;
+    max-width: 100%;
+}
+
 .dashboard-panel h2 {
     margin: 0 0 1.1rem;
     font-family: var(--font-heading);
@@ -540,6 +545,10 @@
     .dashboard-metrics,
     .dashboard-content-grid {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-profile-form {
+        width: 100%;
     }
 
     .public-confirmation-layout,

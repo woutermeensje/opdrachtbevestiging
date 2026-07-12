@@ -25,7 +25,7 @@
         </div>
     @endunless
 
-    <form method="POST" action="{{ route('dashboard.profile.company.update') }}" class="dashboard-form" data-kvk-form>
+    <form method="POST" action="{{ route('dashboard.profile.company.update') }}" class="dashboard-form dashboard-profile-form" data-kvk-form>
         @csrf
 
         <section class="dashboard-panel dashboard-panel-wide">
