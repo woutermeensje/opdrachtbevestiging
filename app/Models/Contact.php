@@ -37,6 +37,11 @@ class Contact extends Model
         return $this->hasMany(Confirmation::class);
     }
 
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(Quote::class);
+    }
+
     public function contactName(): string
     {
         return trim($this->contact_first_name.' '.$this->contact_last_name);

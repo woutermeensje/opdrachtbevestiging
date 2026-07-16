@@ -12,6 +12,7 @@ use App\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\PublicConfirmationController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\VerifyEmailController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard/opdrachtbevestigingen', [ConfirmationController::class, 'index'])->name('dashboard.confirmations');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/pdf', [ConfirmationController::class, 'downloadPdf'])->name('dashboard.confirmations.pdf');
+    Route::get('/dashboard/offertes', [QuoteController::class, 'index'])->name('dashboard.quotes');
+    Route::get('/dashboard/offertes/aanmaken', [QuoteController::class, 'create'])->middleware('company.profile')->name('dashboard.quotes.create');
+    Route::get('/dashboard/offertes/{quote}', [QuoteController::class, 'show'])->name('dashboard.quotes.show');
+    Route::get('/dashboard/offertes/{quote}/pdf', [QuoteController::class, 'downloadPdf'])->name('dashboard.quotes.pdf');
     Route::get('/dashboard/opdrachtgever', [ContactController::class, 'index'])->name('dashboard.contacts');
     Route::get('/dashboard/opdrachtgever/toevoegen', [ContactController::class, 'create'])->name('dashboard.contacts.create');
     Route::post('/dashboard/opdrachtgever/toevoegen', [ContactController::class, 'store'])->name('dashboard.contacts.store');
@@ -108,5 +113,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::post('/dashboard/aanmaken', [ConfirmationController::class, 'store'])->name('dashboard.create.store');
         Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
         Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/intrekken', [ConfirmationController::class, 'retract'])->name('dashboard.confirmations.retract');
+
+        Route::post('/dashboard/offertes/aanmaken', [QuoteController::class, 'store'])->name('dashboard.quotes.create.store');
+        Route::post('/dashboard/offertes/{quote}/verzenden', [QuoteController::class, 'send'])->name('dashboard.quotes.send');
+        Route::post('/dashboard/offertes/{quote}/geaccepteerd', [QuoteController::class, 'markAccepted'])->name('dashboard.quotes.accept');
+        Route::post('/dashboard/offertes/{quote}/afgewezen', [QuoteController::class, 'markRejected'])->name('dashboard.quotes.reject');
     });
 });

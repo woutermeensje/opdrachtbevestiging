@@ -2,6 +2,15 @@
     $items = [
         ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home'],
         [
+            'route' => 'dashboard.quotes',
+            'label' => 'Offertes',
+            'icon' => 'file-plus',
+            'children' => [
+                ['route' => 'dashboard.quotes', 'label' => 'Mijn offertes'],
+                ['route' => 'dashboard.quotes.create', 'label' => 'Offerte aanmaken'],
+            ],
+        ],
+        [
             'route' => 'dashboard.confirmations',
             'label' => 'Opdrachtbevestigingen',
             'icon' => 'file-text',

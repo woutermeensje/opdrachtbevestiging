@@ -31,6 +31,13 @@
             <path d="M10 9H8"></path>
             @break
 
+        @case('file-plus')
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <path d="M14 2v6h6"></path>
+            <path d="M12 12v6"></path>
+            <path d="M9 15h6"></path>
+            @break
+
         @case('user-circle')
             <circle cx="12" cy="8" r="4"></circle>
             <path d="M6 20a6 6 0 0 1 12 0"></path>
