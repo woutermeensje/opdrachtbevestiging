@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'title' => 'Tarieven | Opdrachtbevestiging.nl',
-    'metaDescription' => 'Bekijk de tarieven van Opdrachtbevestiging.nl: Freelancer, Business en Maatwerk voor professioneel opdrachtbevestigingen versturen.',
+    'metaDescription' => 'Bekijk de tarieven van Opdrachtbevestiging.nl: probeer 14 dagen gratis, kies maandelijks of neem het voordelige jaarabonnement.',
     'canonical' => route('pages.tariffs'),
     'mainClass' => 'tariffs-page',
 ])
@@ -8,55 +8,58 @@
 @php
     $plans = [
         [
-            'name' => 'Freelancer',
-            'eyebrow' => 'Voor zelfstandigen',
-            'price' => '€275',
-            'priceNote' => 'excl. 21% btw per jaar',
-            'description' => "Voor zzp'ers die opdrachtbevestigingen snel, zorgvuldig en professioneel willen vastleggen.",
+            'name' => '14 dagen gratis',
+            'eyebrow' => 'Kennismaken',
+            'price' => 'Gratis',
+            'priceNote' => 'maximaal 2 opdrachtbevestigingen versturen',
+            'description' => 'Ontdek rustig hoe je opdrachtbevestigingen aanmaakt, verstuurt en digitaal laat accorderen.',
             'features' => [
-                'Onbeperkt opdrachtbevestigingen aanmaken',
-                'Opdrachtgevers en contactpersonen beheren',
-                'Digitaal akkoord per e-mail',
-                'PDF-opdrachtbevestiging met eigen bedrijfsgegevens',
-                'Bijlagen en offertes meesturen',
+                'Maximaal 2 opdrachtbevestigingen versturen',
+                'Incl. Kamer van Koophandel API',
+                'Accordering trails',
+                'Domein extensies',
+                'Geen juridische kennis nodig',
             ],
-            'cta' => 'Start als freelancer',
+            'cta' => 'Probeer gratis',
             'route' => route('register'),
             'featured' => false,
+            'badge' => null,
         ],
         [
-            'name' => 'Business',
-            'eyebrow' => 'Voor groeiende teams',
-            'price' => '€475',
-            'priceNote' => 'excl. 21% btw per jaar',
-            'description' => 'Voor bedrijven die vaker opdrachten bevestigen en meer grip willen op afspraken, status en documenten.',
+            'name' => 'Maandelijks',
+            'eyebrow' => 'Flexibel starten',
+            'price' => '€19,95',
+            'priceNote' => 'excl. 21% btw per maand',
+            'description' => 'Voor professionals die doorlopend opdrachtbevestigingen willen versturen zonder direct jaarlijks vast te leggen.',
             'features' => [
-                'Alles uit Freelancer',
-                'Professionele offerte- en opdrachtflow',
-                'Eigen huisstijl en logo op documenten',
-                'Vaste afspraken en algemene voorwaarden beheren',
-                'Geschikt voor structureel gebruik binnen je organisatie',
+                'Onbeperkt opdrachtbevestigingen versturen',
+                'Incl. Kamer van Koophandel API',
+                'Accordering trails',
+                'Domein extensies',
+                'Geen juridische kennis nodig',
             ],
-            'cta' => 'Kies Business',
+            'cta' => 'Kies maandelijks',
+            'route' => route('register'),
+            'featured' => false,
+            'badge' => null,
+        ],
+        [
+            'name' => 'Jaarlijks',
+            'eyebrow' => 'Meeste voordeel',
+            'price' => '€199',
+            'priceNote' => 'excl. 21% btw per jaar',
+            'description' => 'Voor wie het platform structureel gebruikt en voordeliger uit wil zijn dan maandelijks betalen.',
+            'features' => [
+                'Bespaar €40,40 per jaar',
+                'Incl. Kamer van Koophandel API',
+                'Accordering trails',
+                'Domein extensies',
+                'Geen juridische kennis nodig',
+            ],
+            'cta' => 'Kies jaarlijks',
             'route' => route('register'),
             'featured' => true,
-        ],
-        [
-            'name' => 'Maatwerk',
-            'eyebrow' => 'Voor specifieke wensen',
-            'price' => 'Op offerte',
-            'priceNote' => 'afgestemd op inrichting en gebruik',
-            'description' => 'Voor organisaties met extra wensen rond processen, inrichting, templates of ondersteuning.',
-            'features' => [
-                'Advies over inrichting en workflow',
-                'Afstemming op interne processen',
-                'Mogelijkheid tot aanvullende documenttemplates',
-                'Ondersteuning bij implementatie',
-                'Voorstel op basis van jouw situatie',
-            ],
-            'cta' => 'Vraag offerte aan',
-            'route' => route('pages.contact'),
-            'featured' => false,
+            'badge' => 'Meeste voordeel',
         ],
     ];
 @endphp
@@ -66,7 +69,7 @@
         <div class="container">
             <p class="page-eyebrow">Tarieven</p>
             <h1>Kies het pakket dat past bij je opdrachtflow</h1>
-            <p class="tariffs-intro">Werk met duidelijke afspraken, professionele documenten en digitale akkoordroutes. Alle prijzen zijn jaarprijzen exclusief 21% btw.</p>
+            <p class="tariffs-intro">Start gratis en stap daarna over op maandelijks of jaarlijks gebruik. Betaalde pakketten zijn exclusief 21% btw.</p>
         </div>
     </section>
 
@@ -75,8 +78,8 @@
             <div class="tariffs-grid">
                 @foreach ($plans as $plan)
                     <article class="tariff-plan{{ $plan['featured'] ? ' tariff-plan-featured' : '' }}">
-                        @if ($plan['featured'])
-                            <p class="tariff-badge">Meest gekozen</p>
+                        @if ($plan['badge'])
+                            <p class="tariff-badge">{{ $plan['badge'] }}</p>
                         @endif
 
                         <div class="tariff-plan-header">
@@ -107,7 +110,7 @@
             </div>
 
             <div class="tariffs-note">
-                <p><strong>Alle pakketten worden per 12 maanden gefactureerd.</strong> Twijfel je tussen Business en Maatwerk? Dan is Maatwerk handig wanneer je vooraf proces- of templatewensen wilt afstemmen.</p>
+                <p><strong>Jaarlijks is voordeliger.</strong> Twaalf maanden los kost €239,40 excl. btw. Met jaarlijks betaal je €199 excl. btw en houd je €40,40 voordeel.</p>
             </div>
         </div>
     </section>
