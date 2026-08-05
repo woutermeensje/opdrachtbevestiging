@@ -1,4 +1,4 @@
-<section class="auth-card">
+<section class="auth-card auth-card-login">
     <h1 class="form-title">Inloggen</h1>
     <p class="form-subtitle">Log in om je opdrachtbevestigingen te beheren.</p>
 

@@ -16,7 +16,7 @@
     margin: 0 0 0.9rem;
     color: #333;
     font-family: var(--font-heading);
-    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-size: clamp(calc(2rem - 12px), calc(5vw - 12px), calc(3.4rem - 12px));
     font-weight: 800;
     line-height: 1.08;
 }

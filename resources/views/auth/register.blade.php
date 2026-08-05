@@ -9,7 +9,7 @@
 @section('content')
     @include('partials.auth.homepage-link')
     @include('partials.auth.brand')
-    <section class="auth-card">
+    <section class="auth-card auth-card-register">
         <h1 class="form-title">Account aanmaken</h1>
         <p class="form-subtitle">Registreer je met je naam, e-mailadres en telefoonnummer.</p>
 

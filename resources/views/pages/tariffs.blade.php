@@ -68,7 +68,7 @@
     <section class="tariffs-hero">
         <div class="container">
             <p class="page-eyebrow">Tarieven</p>
-            <h1>Kies het pakket dat past bij je opdrachtflow</h1>
+            <h1>Stuur vandaag nog een opdrachtbevestiging.</h1>
             <p class="tariffs-intro">Start gratis en stap daarna over op maandelijks of jaarlijks gebruik. Betaalde pakketten zijn exclusief 21% btw.</p>
         </div>
     </section>
