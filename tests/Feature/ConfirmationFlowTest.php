@@ -441,6 +441,37 @@ class ConfirmationFlowTest extends TestCase
             ->assertDontSee('Andere klant');
     }
 
+    public function test_dashboard_uses_same_confirmation_overview_content(): void
+    {
+        $user = User::factory()->create();
+        $confirmation = Confirmation::factory()->create([
+            'user_id' => $user->id,
+            'reference' => 'OB-2026-001',
+            'client_name' => 'Eigen klant',
+            'client_contact_name' => 'Sanne Jansen',
+            'client_email' => 'sanne@example.test',
+            'agreement_date' => '2026-08-01',
+            'sent_at' => '2026-08-02 10:00:00',
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Opdrachtbevestigingen')
+            ->assertSee('Referentie')
+            ->assertSee('Opdrachtgever')
+            ->assertSee('Opdrachtdatum')
+            ->assertSee('Verzenddatum')
+            ->assertSee('PDF')
+            ->assertSee('OB-2026-001')
+            ->assertSee('Eigen klant')
+            ->assertSee('Sanne Jansen')
+            ->assertSee('01-08-2026')
+            ->assertSee('02-08-2026')
+            ->assertSee(route('dashboard.confirmations.show', $confirmation), false);
+    }
+
     public function test_user_cannot_view_another_users_confirmation(): void
     {
         $user = User::factory()->create();
