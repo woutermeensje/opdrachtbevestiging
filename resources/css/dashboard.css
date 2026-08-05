@@ -367,7 +367,7 @@
 
 .dashboard-index-page .dashboard-table th {
     color: #333;
-    font-size: calc(0.82rem - 1px);
+    font-size: calc(0.82rem + 1px);
     font-family: var(--font-ui);
     font-weight: 700;
     text-transform: none;
@@ -383,6 +383,13 @@
 .dashboard-index-page .dashboard-status {
     font-family: var(--font-ui);
     font-weight: 600;
+}
+
+.dashboard-index-page .dashboard-table td:nth-child(1),
+.dashboard-index-page .dashboard-table td:nth-child(2),
+.dashboard-index-page .dashboard-table td:nth-child(2) strong,
+.dashboard-index-page .dashboard-table td:nth-child(5) {
+    font-weight: 400;
 }
 
 .dashboard-index-page .dashboard-table-subtle,
