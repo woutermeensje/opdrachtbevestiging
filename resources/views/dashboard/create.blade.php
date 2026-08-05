@@ -92,31 +92,6 @@
 
                     @include('partials.dashboard.confirmation-specifications-form')
 
-                    <div class="grid-2">
-                        <div>
-                            <label for="agreement_date">Startdatum</label>
-                            <input id="agreement_date" name="agreement_date" type="date" value="{{ old('agreement_date') }}">
-                        </div>
-                        <div>
-                            <label for="duration">Duur van de opdracht</label>
-                            <input id="duration" name="duration" type="text" value="{{ old('duration') }}" placeholder="Bv. 3 maanden of t/m 31-12-2026">
-                        </div>
-                    </div>
-
-                    <div class="grid-2">
-                        <div>
-                            <label for="total_value">Overeengekomen vergoeding</label>
-                            <input id="total_value" name="total_value" type="number" step="0.01" min="0" value="{{ old('total_value') }}" placeholder="0,00">
-                        </div>
-                        <div>
-                            <label for="value_vat_type">BTW</label>
-                            <select id="value_vat_type" name="value_vat_type">
-                                <option value="excl" @selected(old('value_vat_type', 'excl') === 'excl')>Excl. BTW</option>
-                                <option value="incl" @selected(old('value_vat_type') === 'incl')>Incl. BTW</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <div class="quill-field" data-quill-field>
                         <label for="termination_terms_editor">Beëindiging van de opdracht</label>
                         <div id="termination_terms_editor" class="quill-editor" data-quill-editor data-quill-placeholder="Bv. Beide partijen kunnen de opdracht schriftelijk opzeggen met een opzegtermijn van 1 maand.">{!! \App\Models\Confirmation::sanitizeDescription(old('termination_terms')) ?? '' !!}</div>

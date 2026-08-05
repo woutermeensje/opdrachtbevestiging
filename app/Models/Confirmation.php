@@ -104,7 +104,9 @@ class Confirmation extends Model
             'planning' => [
                 'label' => 'Planning',
                 'fields' => [
+                    'start_date' => ['label' => 'Startdatum', 'type' => 'date'],
                     'end_date' => ['label' => 'Einddatum', 'type' => 'date'],
+                    'expected_duration' => ['label' => 'Verwachte duur', 'type' => 'text'],
                     'total_hours' => ['label' => 'Totaal aantal uren', 'type' => 'number', 'step' => '0.25'],
                     'workdays' => ['label' => 'Werkdagen', 'type' => 'text'],
                     'working_hours' => ['label' => 'Werktijden', 'type' => 'text'],
@@ -131,6 +133,7 @@ class Confirmation extends Model
                         ],
                     ],
                     'vat_percentage' => ['label' => 'BTW-percentage', 'type' => 'number', 'step' => '0.01'],
+                    'total_amount' => ['label' => 'Totaalbedrag', 'type' => 'number', 'step' => '0.01'],
                     'maximum_budget' => ['label' => 'Maximum budget', 'type' => 'number', 'step' => '0.01'],
                     'currency' => ['label' => 'Valuta', 'type' => 'text'],
                     'payment_term' => ['label' => 'Betaaltermijn', 'type' => 'text'],
