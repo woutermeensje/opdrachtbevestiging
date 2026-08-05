@@ -17,7 +17,7 @@
                     <td>{{ $confirmation->reference }}</td>
                     <td>
                         <strong>{{ $confirmation->client_name }}</strong>
-                        <div class="dashboard-table-subtle">{{ $confirmation->client_contact_name ?: $confirmation->client_email }}</div>
+                        <div class="dashboard-table-subtle dashboard-table-client-contact">{{ $confirmation->client_contact_name ?: $confirmation->client_email }}</div>
                     </td>
                     <td><span class="dashboard-status dashboard-status-{{ $confirmation->status }}">{{ ucfirst($confirmation->status) }}</span></td>
                     <td>{{ optional($confirmation->agreement_date)->format('d-m-Y') ?? '-' }}</td>
