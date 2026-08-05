@@ -79,6 +79,11 @@ class DashboardController extends Controller
         return view('dashboard.profile.documents');
     }
 
+    public function agreementsProfile(): View
+    {
+        return view('dashboard.profile.agreements');
+    }
+
     public function brandProfile(): View
     {
         return view('dashboard.profile.brand');
@@ -108,26 +113,39 @@ class DashboardController extends Controller
 
     public function updateDocumentProfile(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'terms' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
-            'default_agreements' => ['nullable', 'string'],
         ]);
-
-        $profileData = [
-            'default_agreements' => Confirmation::sanitizeDescription($validated['default_agreements'] ?? null),
-        ];
 
         $uploadedFiles = array_filter([
             'terms' => $this->storeProfileDocument($request->file('terms'), $request, 'algemene-voorwaarden', 'terms'),
         ]);
 
         $request->user()
-            ->forceFill(array_merge($profileData, collect($uploadedFiles)->collapse()->all()))
+            ->forceFill(collect($uploadedFiles)->collapse()->all())
             ->save();
 
         return redirect()
             ->route('dashboard.profile.documents')
             ->with('status', 'Je documenten zijn opgeslagen.');
+    }
+
+    public function updateAgreementsProfile(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'default_agreements' => ['nullable', 'string'],
+        ] + Confirmation::specificationValidationRules('default_specifications'));
+
+        $request->user()
+            ->forceFill([
+                'default_agreements' => Confirmation::sanitizeDescription($validated['default_agreements'] ?? null),
+                'default_specifications' => Confirmation::normalizeSpecifications($validated['default_specifications'] ?? []),
+            ])
+            ->save();
+
+        return redirect()
+            ->route('dashboard.profile.agreements')
+            ->with('status', 'Je basis afspraken zijn opgeslagen.');
     }
 
     public function updateBrandProfile(Request $request): RedirectResponse

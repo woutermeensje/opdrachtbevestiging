@@ -205,6 +205,71 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Alle pagina&#039;s responsive.', false);
     }
 
+    public function test_create_confirmation_form_prefills_default_specifications(): void
+    {
+        $user = User::factory()->create([
+            'default_specifications' => [
+                'travel_expenses' => [
+                    'compensation' => 'yes',
+                    'mileage_compensation' => '0,23 per kilometer',
+                ],
+            ],
+        ]);
+
+        Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard.create'))
+            ->assertOk()
+            ->assertSee('name="specifications[travel_expenses][compensation]"', false)
+            ->assertSee('value="yes" selected', false)
+            ->assertSee('value="0,23 per kilometer"', false);
+    }
+
+    public function test_confirmation_uses_default_specifications_when_not_submitted(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create([
+            'default_specifications' => [
+                'travel_expenses' => [
+                    'compensation' => 'yes',
+                    'mileage_compensation' => '0,23 per kilometer',
+                ],
+                'legal' => [
+                    'nda' => 'yes',
+                ],
+            ],
+        ]);
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'title' => 'Nieuwe website opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Ontwikkeling van een website.</p>',
+                'submit_action' => 'test',
+            ]);
+
+        $confirmation = Confirmation::query()->firstOrFail();
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+        $this->assertSame('yes', $confirmation->specifications['travel_expenses']['compensation']);
+        $this->assertSame('0,23 per kilometer', $confirmation->specifications['travel_expenses']['mileage_compensation']);
+        $this->assertSame('yes', $confirmation->specifications['legal']['nda']);
+    }
+
     public function test_confirmation_captures_scope_details(): void
     {
         Mail::fake();

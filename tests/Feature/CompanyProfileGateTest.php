@@ -27,9 +27,11 @@ class CompanyProfileGateTest extends TestCase
             ->assertSee('Mijn account')
             ->assertSee('Bedrijfsgegevens')
             ->assertSee('Documenten')
+            ->assertSee('Basis afspraken')
             ->assertSee('Logo &amp; Huisstijl', false)
             ->assertSee(route('dashboard.profile.company'), false)
             ->assertSee(route('dashboard.profile.documents'), false)
+            ->assertSee(route('dashboard.profile.agreements'), false)
             ->assertSee(route('dashboard.profile.brand'), false);
     }
 
@@ -39,7 +41,8 @@ class CompanyProfileGateTest extends TestCase
 
         $this->actingAs($user)->get(route('dashboard.profile'))->assertOk()->assertSee('Mijn account');
         $this->actingAs($user)->get(route('dashboard.profile.company'))->assertOk()->assertSee('KVK-gegevens');
-        $this->actingAs($user)->get(route('dashboard.profile.documents'))->assertOk()->assertSee('Algemene voorwaarden')->assertSee('Basis afspraken');
+        $this->actingAs($user)->get(route('dashboard.profile.documents'))->assertOk()->assertSee('Algemene voorwaarden')->assertDontSee('name="default_agreements"', false);
+        $this->actingAs($user)->get(route('dashboard.profile.agreements'))->assertOk()->assertSee('Basis afspraken')->assertSee('Standaard specificaties')->assertSee('Reiskosten');
         $this->actingAs($user)->get(route('dashboard.profile.brand'))->assertOk()->assertSee('Logo &amp; Huisstijl', false)->assertSee('Primaire kleur');
     }
 
@@ -186,16 +189,47 @@ class CompanyProfileGateTest extends TestCase
             ->withoutMiddleware(ValidateCsrfToken::class)
             ->post(route('dashboard.profile.documents.update'), [
                 'terms' => UploadedFile::fake()->create('algemene-voorwaarden.pdf', 32, 'application/pdf'),
-                'default_agreements' => '<p>Betaling binnen <strong>14 dagen</strong>.</p><script>alert("x")</script>',
             ]);
 
         $response->assertRedirect(route('dashboard.profile.documents'));
 
         $user->refresh();
         $this->assertSame('algemene-voorwaarden.pdf', $user->terms_original_name);
-        $this->assertSame('<p>Betaling binnen <strong>14 dagen</strong>.</p>', $user->default_agreements);
 
         Storage::disk('local')->assertExists($user->terms_path);
+    }
+
+    public function test_user_can_store_default_agreements_on_profile(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->withoutMiddleware(ValidateCsrfToken::class)
+            ->post(route('dashboard.profile.agreements.update'), [
+                'default_agreements' => '<p>Betaling binnen <strong>14 dagen</strong>.</p><script>alert("x")</script>',
+                'default_specifications' => [
+                    'travel_expenses' => [
+                        'compensation' => 'yes',
+                        'mileage_compensation' => '0,23 per kilometer',
+                    ],
+                    'materials' => [
+                        'laptop_provided' => 'no',
+                    ],
+                    'legal' => [
+                        'nda' => 'yes',
+                    ],
+                ],
+            ]);
+
+        $response->assertRedirect(route('dashboard.profile.agreements'));
+
+        $user->refresh();
+        $this->assertSame('<p>Betaling binnen <strong>14 dagen</strong>.</p>', $user->default_agreements);
+        $this->assertSame('yes', $user->default_specifications['travel_expenses']['compensation']);
+        $this->assertSame('0,23 per kilometer', $user->default_specifications['travel_expenses']['mileage_compensation']);
+        $this->assertSame('no', $user->default_specifications['materials']['laptop_provided']);
+        $this->assertSame('yes', $user->default_specifications['legal']['nda']);
     }
 
     public function test_user_can_store_logo_and_brand_colors_on_profile(): void

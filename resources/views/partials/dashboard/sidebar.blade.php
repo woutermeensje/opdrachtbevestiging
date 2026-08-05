@@ -34,6 +34,7 @@
                 ['route' => 'dashboard.profile', 'label' => 'Mijn account'],
                 ['route' => 'dashboard.profile.company', 'label' => 'Bedrijfsgegevens'],
                 ['route' => 'dashboard.profile.documents', 'label' => 'Documenten'],
+                ['route' => 'dashboard.profile.agreements', 'label' => 'Basis afspraken'],
                 ['route' => 'dashboard.profile.brand', 'label' => 'Logo & Huisstijl'],
             ],
         ],

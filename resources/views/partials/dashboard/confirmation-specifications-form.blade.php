@@ -1,6 +1,8 @@
 @php
     $specificationSections = \App\Models\Confirmation::specificationSections();
-    $oldSpecifications = old('specifications', []);
+    $specificationName = $name ?? 'specifications';
+    $specificationIdPrefix = $idPrefix ?? str_replace(['[', ']', '.'], '_', $specificationName);
+    $specificationValues = old($specificationName, $values ?? []);
 @endphp
 
 <div class="confirmation-specifications">
@@ -8,7 +10,7 @@
         @php
             $sectionHasValue = collect($section['fields'])
                 ->keys()
-                ->contains(fn (string $fieldKey): bool => filled(data_get($oldSpecifications, $sectionKey.'.'.$fieldKey)));
+                ->contains(fn (string $fieldKey): bool => filled(data_get($specificationValues, $sectionKey.'.'.$fieldKey)));
         @endphp
 
         <details class="confirmation-specification-section" @if ($sectionHasValue) open @endif>
@@ -17,9 +19,9 @@
             <div class="confirmation-specification-grid">
                 @foreach ($section['fields'] as $fieldKey => $field)
                     @php
-                        $fieldId = 'specifications_'.$sectionKey.'_'.$fieldKey;
-                        $fieldName = 'specifications['.$sectionKey.']['.$fieldKey.']';
-                        $fieldValue = old('specifications.'.$sectionKey.'.'.$fieldKey);
+                        $fieldId = $specificationIdPrefix.'_'.$sectionKey.'_'.$fieldKey;
+                        $fieldName = $specificationName.'['.$sectionKey.']['.$fieldKey.']';
+                        $fieldValue = data_get($specificationValues, $sectionKey.'.'.$fieldKey);
                         $fieldType = $field['type'] ?? 'text';
                     @endphp
 

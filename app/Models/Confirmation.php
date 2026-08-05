@@ -236,14 +236,14 @@ class Confirmation extends Model
     /**
      * @return array<string, array<int, mixed>>
      */
-    public static function specificationValidationRules(): array
+    public static function specificationValidationRules(string $root = 'specifications'): array
     {
         $rules = [
-            'specifications' => ['nullable', 'array'],
+            $root => ['nullable', 'array'],
         ];
 
         foreach (self::specificationSections() as $sectionKey => $section) {
-            $rules['specifications.'.$sectionKey] = ['nullable', 'array'];
+            $rules[$root.'.'.$sectionKey] = ['nullable', 'array'];
 
             foreach ($section['fields'] as $fieldKey => $field) {
                 $fieldRules = ['nullable'];
@@ -262,7 +262,7 @@ class Confirmation extends Model
                     $fieldRules[] = ($field['type'] ?? 'text') === 'textarea' ? 'max:2000' : 'max:255';
                 }
 
-                $rules['specifications.'.$sectionKey.'.'.$fieldKey] = $fieldRules;
+                $rules[$root.'.'.$sectionKey.'.'.$fieldKey] = $fieldRules;
             }
         }
 

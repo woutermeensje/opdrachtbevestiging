@@ -90,7 +90,9 @@
                         <textarea id="description" name="description" class="quill-editor-input" data-quill-input>{{ old('description') }}</textarea>
                     </div>
 
-                    @include('partials.dashboard.confirmation-specifications-form')
+                    @include('partials.dashboard.confirmation-specifications-form', [
+                        'values' => auth()->user()->default_specifications ?? [],
+                    ])
 
                     <div class="quill-field" data-quill-field>
                         <label for="termination_terms_editor">Beëindiging van de opdracht</label>
@@ -133,7 +135,7 @@
             'slot' => '
                 <p>Algemene voorwaarden, bedrijfsgegevens, basis afspraken, logo en huisstijl beheer je in Mijn profiel.</p>
                 <p>Die vaste gegevens worden automatisch toegevoegd aan nieuwe opdrachtbevestigingen en meegenomen in de PDF die bij het verzenden wordt gemaakt.</p>
-                <p><a href="'.e(route('dashboard.profile.documents')).'" class="btn btn-secondary">Naar documenten</a></p>
+                <p><a href="'.e(route('dashboard.profile.agreements')).'" class="btn btn-secondary">Naar basis afspraken</a></p>
             ',
         ])
     </div>

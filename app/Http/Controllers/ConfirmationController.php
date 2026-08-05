@@ -70,6 +70,11 @@ class ConfirmationController extends Controller
                 ->withErrors(['description' => 'Vul het tekstblok in.']);
         }
 
+        $specifications = Confirmation::normalizeSpecifications(array_replace_recursive(
+            $request->user()->normalizedDefaultSpecifications(),
+            $validated['specifications'] ?? [],
+        ));
+
         $contact = $request->user()
             ->contacts()
             ->findOrFail($validated['contact_id']);
@@ -84,7 +89,7 @@ class ConfirmationController extends Controller
             'client_kvk_number' => $contact->kvk_number,
             'description' => $description,
             'termination_terms' => Confirmation::sanitizeDescription($validated['termination_terms'] ?? null),
-            'specifications' => Confirmation::normalizeSpecifications($validated['specifications'] ?? []),
+            'specifications' => $specifications,
             'agreement_date' => $validated['agreement_date'] ?? null,
             'duration' => $validated['duration'] ?? null,
             'total_value' => $validated['total_value'] ?? 0,

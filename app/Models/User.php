@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'terms_original_name',
         'terms_mime_type',
         'default_agreements',
+        'default_specifications',
         'email',
         'password',
     ];
@@ -63,6 +64,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'default_specifications' => 'array',
             'password' => 'hashed',
         ];
     }
@@ -113,5 +115,13 @@ class User extends Authenticatable implements MustVerifyEmail
     public function defaultAgreementsHtml(): string
     {
         return Confirmation::sanitizeDescription($this->default_agreements) ?? '';
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    public function normalizedDefaultSpecifications(): array
+    {
+        return Confirmation::normalizeSpecifications($this->default_specifications ?? []);
     }
 }

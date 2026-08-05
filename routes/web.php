@@ -107,6 +107,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('/dashboard/mijn-profiel/bedrijfsgegevens', [DashboardController::class, 'updateCompanyProfile'])->name('dashboard.profile.company.update');
     Route::get('/dashboard/mijn-profiel/documenten', [DashboardController::class, 'documentProfile'])->name('dashboard.profile.documents');
     Route::post('/dashboard/mijn-profiel/documenten', [DashboardController::class, 'updateDocumentProfile'])->name('dashboard.profile.documents.update');
+    Route::get('/dashboard/mijn-profiel/basis-afspraken', [DashboardController::class, 'agreementsProfile'])->name('dashboard.profile.agreements');
+    Route::post('/dashboard/mijn-profiel/basis-afspraken', [DashboardController::class, 'updateAgreementsProfile'])->name('dashboard.profile.agreements.update');
     Route::get('/dashboard/mijn-profiel/logo-huisstijl', [DashboardController::class, 'brandProfile'])->name('dashboard.profile.brand');
     Route::post('/dashboard/mijn-profiel/logo-huisstijl', [DashboardController::class, 'updateBrandProfile'])->name('dashboard.profile.brand.update');
 
