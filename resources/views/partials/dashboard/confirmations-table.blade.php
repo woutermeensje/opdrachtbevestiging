@@ -1,11 +1,10 @@
 <div class="dashboard-table-wrap">
-    <table class="dashboard-table">
+    <table class="dashboard-table dashboard-confirmations-table">
         <thead>
             <tr>
                 <th>Referentie</th>
                 <th>Opdrachtgever</th>
                 <th>Status</th>
-                <th>Opdrachtdatum</th>
                 <th>Verzenddatum</th>
                 <th>PDF</th>
                 <th></th>
@@ -17,10 +16,8 @@
                     <td>{{ $confirmation->reference }}</td>
                     <td>
                         <strong>{{ $confirmation->client_name }}</strong>
-                        <div class="dashboard-table-subtle dashboard-table-client-contact">{{ $confirmation->client_contact_name ?: $confirmation->client_email }}</div>
                     </td>
                     <td><span class="dashboard-status dashboard-status-{{ $confirmation->status }}">{{ ucfirst($confirmation->status) }}</span></td>
-                    <td>{{ optional($confirmation->agreement_date)->format('d-m-Y') ?? '-' }}</td>
                     <td>{{ optional($confirmation->sent_at)->format('d-m-Y') ?? '-' }}</td>
                     <td>
                         @if ($confirmation->hasPdf())

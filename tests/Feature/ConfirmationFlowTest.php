@@ -438,6 +438,8 @@ class ConfirmationFlowTest extends TestCase
         $response
             ->assertOk()
             ->assertSee($ownConfirmation->client_name)
+            ->assertDontSee('Opdrachtdatum')
+            ->assertDontSee($ownConfirmation->client_contact_name ?: $ownConfirmation->client_email)
             ->assertDontSee('Andere klant');
     }
 
@@ -461,14 +463,14 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Opdrachtbevestigingen')
             ->assertSee('Referentie')
             ->assertSee('Opdrachtgever')
-            ->assertSee('Opdrachtdatum')
             ->assertSee('Verzenddatum')
             ->assertSee('PDF')
             ->assertSee('OB-2026-001')
             ->assertSee('Eigen klant')
-            ->assertSee('Sanne Jansen')
-            ->assertSee('01-08-2026')
             ->assertSee('02-08-2026')
+            ->assertDontSee('Opdrachtdatum')
+            ->assertDontSee('Sanne Jansen')
+            ->assertDontSee('01-08-2026')
             ->assertSee(route('dashboard.confirmations.show', $confirmation), false);
     }
 
