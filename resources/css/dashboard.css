@@ -173,10 +173,10 @@
     border: none;
     border-radius: 8px;
     background: transparent;
-    color: var(--color-text-subtle);
+    color: #333;
     font-family: var(--font-ui);
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: 0;
     text-decoration: none;
     transition: background-color 0.15s ease, color 0.15s ease;
@@ -220,10 +220,10 @@
 .dashboard-nav-sublink {
     padding: 0.4rem 0.75rem;
     border-radius: 8px;
-    color: var(--color-text-subtle);
+    color: #333;
     font-family: var(--font-ui);
     font-size: 0.8rem;
-    font-weight: 500;
+    font-weight: 400;
     text-decoration: none;
     transition: background-color 0.15s ease, color 0.15s ease;
 }
@@ -374,6 +374,11 @@
 }
 
 .dashboard-index-page .dashboard-table-client-contact {
+    display: none;
+}
+
+.dashboard-index-page .dashboard-table th:nth-child(4),
+.dashboard-index-page .dashboard-table td:nth-child(4) {
     display: none;
 }
 

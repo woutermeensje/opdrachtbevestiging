@@ -25,6 +25,7 @@
                     </summary>
                     <div class="dashboard-topbar-menu">
                         <a href="{{ route('dashboard.create') }}">Opdrachtbevestiging</a>
+                        <a href="{{ route('dashboard.quotes.create') }}">Offerte</a>
                         <a href="{{ route('dashboard.contacts.create') }}">Opdrachtgever</a>
                     </div>
                 </details>
