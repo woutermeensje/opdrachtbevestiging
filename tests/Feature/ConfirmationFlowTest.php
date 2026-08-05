@@ -113,6 +113,11 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('data-contact-search-option', false)
             ->assertSee('Acme B.V.')
             ->assertSee('sanne@acme.test')
+            ->assertSee('Algemene gegevens')
+            ->assertSee('Financiële afspraken')
+            ->assertSee('Urenregistratie')
+            ->assertSee('name="specifications[general][client_reference]"', false)
+            ->assertSee('name="specifications[financial][rate_unit]"', false)
             ->assertSee('name="attachment"', false)
             ->assertSee('name="quote"', false)
             ->assertSee('Verzenden')
@@ -124,6 +129,77 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('name="value_vat_type"', false)
             ->assertSee('name="termination_terms"', false)
             ->assertDontSee('name="status"', false);
+    }
+
+    public function test_confirmation_stores_and_displays_optional_specifications(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'title' => 'Nieuwe website opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Ontwikkeling van een website.</p>',
+                'specifications' => [
+                    'general' => [
+                        'client_reference' => 'INK-2026-42',
+                        'project_name' => 'Website vernieuwing',
+                    ],
+                    'planning' => [
+                        'end_date' => '2026-09-30',
+                        'extension_possible' => 'yes',
+                    ],
+                    'financial' => [
+                        'rate_unit' => 'per_hour',
+                        'additional_work_allowed' => 'no',
+                    ],
+                    'work' => [
+                        'acceptance_criteria' => "Livegang na akkoord opdrachtgever.\nAlle pagina's responsive.",
+                    ],
+                ],
+                'submit_action' => 'test',
+            ]);
+
+        $confirmation = Confirmation::query()->firstOrFail();
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+        $this->assertSame('INK-2026-42', $confirmation->specifications['general']['client_reference']);
+        $this->assertSame('Website vernieuwing', $confirmation->specifications['general']['project_name']);
+        $this->assertSame('yes', $confirmation->specifications['planning']['extension_possible']);
+        $this->assertArrayNotHasKey('attachments', $confirmation->specifications);
+
+        $filledSections = $confirmation->filledSpecificationSections();
+
+        $this->assertSame('Algemene gegevens', $filledSections[0]['label']);
+        $this->assertSame('Referentie opdrachtgever', $filledSections[0]['fields'][0]['label']);
+        $this->assertSame('INK-2026-42', $filledSections[0]['fields'][0]['value']);
+        $this->assertSame('Per uur', $filledSections[2]['fields'][0]['value']);
+        $this->assertSame('Nee', $filledSections[2]['fields'][1]['value']);
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard.confirmations.show', $confirmation))
+            ->assertOk()
+            ->assertSee('Aanvullende specificaties')
+            ->assertSee('Website vernieuwing')
+            ->assertSee('Per uur');
+
+        $this
+            ->get(route('confirmations.public.show', $confirmation->public_token))
+            ->assertOk()
+            ->assertSee('Aanvullende specificaties')
+            ->assertSee('Referentie opdrachtgever')
+            ->assertSee('INK-2026-42')
+            ->assertSee('Alle pagina&#039;s responsive.', false);
     }
 
     public function test_confirmation_captures_scope_details(): void

@@ -59,6 +59,13 @@
         <div class="dashboard-rich-content">{!! $confirmation->descriptionHtml() !!}</div>
     </div>
 
+    @if ($confirmation->hasSpecifications())
+        <div class="public-document-body">
+            <h3>Aanvullende specificaties</h3>
+            @include('partials.confirmations.specifications', ['confirmation' => $confirmation])
+        </div>
+    @endif
+
     @if ($confirmation->defaultAgreementsHtml() !== '')
         <div class="public-document-body">
             <h3>Basis afspraken</h3>

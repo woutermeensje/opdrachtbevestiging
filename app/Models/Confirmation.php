@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -24,6 +25,7 @@ class Confirmation extends Model
         'client_kvk_number',
         'description',
         'termination_terms',
+        'specifications',
         'total_value',
         'value_vat_type',
         'public_token',
@@ -72,6 +74,7 @@ class Confirmation extends Model
     {
         return [
             'total_value' => 'decimal:2',
+            'specifications' => 'array',
             'agreement_date' => 'date',
             'sent_at' => 'datetime',
             'signed_at' => 'datetime',
@@ -79,6 +82,284 @@ class Confirmation extends Model
             'viewed_at' => 'datetime',
             'pdf_generated_at' => 'datetime',
         ];
+    }
+
+    /**
+     * @return array<string, array{label: string, fields: array<string, array<string, mixed>>}>
+     */
+    public static function specificationSections(): array
+    {
+        return [
+            'general' => [
+                'label' => 'Algemene gegevens',
+                'fields' => [
+                    'assignment_number' => ['label' => 'Opdrachtnummer', 'type' => 'text'],
+                    'client_reference' => ['label' => 'Referentie opdrachtgever', 'type' => 'text'],
+                    'project_name' => ['label' => 'Projectnaam', 'type' => 'text'],
+                    'work_location' => ['label' => 'Locatie werkzaamheden', 'type' => 'text'],
+                    'department' => ['label' => 'Afdeling', 'type' => 'text'],
+                    'cost_center' => ['label' => 'Kostenplaats', 'type' => 'text'],
+                ],
+            ],
+            'planning' => [
+                'label' => 'Planning',
+                'fields' => [
+                    'end_date' => ['label' => 'Einddatum', 'type' => 'date'],
+                    'total_hours' => ['label' => 'Totaal aantal uren', 'type' => 'number', 'step' => '0.25'],
+                    'workdays' => ['label' => 'Werkdagen', 'type' => 'text'],
+                    'working_hours' => ['label' => 'Werktijden', 'type' => 'text'],
+                    'deadline' => ['label' => 'Deadline', 'type' => 'date'],
+                    'extension_possible' => ['label' => 'Mogelijkheid tot verlenging', 'type' => 'yes_no'],
+                ],
+            ],
+            'financial' => [
+                'label' => 'Financiële afspraken',
+                'fields' => [
+                    'rate' => ['label' => 'Tarief', 'type' => 'number', 'step' => '0.01'],
+                    'rate_unit' => [
+                        'label' => 'Tariefeenheid',
+                        'type' => 'select',
+                        'options' => [
+                            'per_hour' => 'Per uur',
+                            'per_day' => 'Per dag',
+                            'per_week' => 'Per week',
+                            'per_month' => 'Per maand',
+                            'fixed_amount' => 'Vast bedrag',
+                            'per_item' => 'Per stuk',
+                            'per_project' => 'Per project',
+                            'per_kilometer' => 'Per kilometer',
+                        ],
+                    ],
+                    'vat_percentage' => ['label' => 'BTW-percentage', 'type' => 'number', 'step' => '0.01'],
+                    'maximum_budget' => ['label' => 'Maximum budget', 'type' => 'number', 'step' => '0.01'],
+                    'currency' => ['label' => 'Valuta', 'type' => 'text'],
+                    'payment_term' => ['label' => 'Betaaltermijn', 'type' => 'text'],
+                    'invoice_frequency' => [
+                        'label' => 'Factuurfrequentie',
+                        'type' => 'select',
+                        'options' => [
+                            'weekly' => 'Wekelijks',
+                            'monthly' => 'Maandelijks',
+                            'after_delivery' => 'Na oplevering',
+                            'per_phase' => 'Per fase',
+                        ],
+                    ],
+                    'additional_work_allowed' => ['label' => 'Meerwerk toegestaan', 'type' => 'yes_no'],
+                    'additional_work_rate' => ['label' => 'Meerwerktarief', 'type' => 'text'],
+                    'advance_payment' => ['label' => 'Voorschot', 'type' => 'text'],
+                ],
+            ],
+            'work' => [
+                'label' => 'Werkzaamheden',
+                'fields' => [
+                    'role' => ['label' => 'Functie', 'type' => 'text'],
+                    'project' => ['label' => 'Project', 'type' => 'text'],
+                    'desired_result' => ['label' => 'Gewenst resultaat', 'type' => 'textarea'],
+                    'delivery_moment' => ['label' => 'Oplevermoment', 'type' => 'text'],
+                    'acceptance_criteria' => ['label' => 'Acceptatiecriteria', 'type' => 'textarea'],
+                    'required_skills' => ['label' => 'Benodigde vaardigheden', 'type' => 'textarea'],
+                ],
+            ],
+            'time_tracking' => [
+                'label' => 'Urenregistratie',
+                'fields' => [
+                    'required' => ['label' => 'Urenregistratie verplicht', 'type' => 'yes_no'],
+                    'client_approval_required' => ['label' => 'Goedkeuring opdrachtgever vereist', 'type' => 'yes_no'],
+                    'declaration_via' => ['label' => 'Declaratie via', 'type' => 'text'],
+                    'max_hours_per_week' => ['label' => 'Maximaal aantal uren per week', 'type' => 'number', 'step' => '0.25'],
+                    'overtime_allowed' => ['label' => 'Overwerk toegestaan', 'type' => 'yes_no'],
+                    'overtime_rate' => ['label' => 'Overwerktarief', 'type' => 'text'],
+                ],
+            ],
+            'travel_expenses' => [
+                'label' => 'Reiskosten',
+                'fields' => [
+                    'compensation' => ['label' => 'Reiskostenvergoeding', 'type' => 'yes_no'],
+                    'mileage_compensation' => ['label' => 'Kilometervergoeding', 'type' => 'text'],
+                    'public_transport_compensation' => ['label' => 'OV-vergoeding', 'type' => 'text'],
+                    'parking_costs' => ['label' => 'Parkeerkosten', 'type' => 'text'],
+                    'hotel_costs' => ['label' => 'Hotelkosten', 'type' => 'text'],
+                    'meal_allowance' => ['label' => 'Maaltijdvergoeding', 'type' => 'text'],
+                    'other_expenses' => ['label' => 'Overige onkosten', 'type' => 'textarea'],
+                    'maximum_claim_amount' => ['label' => 'Maximum declaratiebedrag', 'type' => 'number', 'step' => '0.01'],
+                ],
+            ],
+            'materials' => [
+                'label' => 'Materialen',
+                'fields' => [
+                    'laptop_provided' => ['label' => 'Laptop verstrekt', 'type' => 'yes_no'],
+                    'phone_provided' => ['label' => 'Telefoon verstrekt', 'type' => 'yes_no'],
+                    'car_provided' => ['label' => 'Auto verstrekt', 'type' => 'yes_no'],
+                    'clothing_ppe' => ['label' => "Kleding/PBM's", 'type' => 'text'],
+                    'software_licenses' => ['label' => 'Softwarelicenties', 'type' => 'textarea'],
+                    'access_pass' => ['label' => 'Toegangspas', 'type' => 'yes_no'],
+                    'keys' => ['label' => 'Sleutels', 'type' => 'yes_no'],
+                ],
+            ],
+            'legal' => [
+                'label' => 'Juridisch',
+                'fields' => [
+                    'terms_apply' => ['label' => 'Algemene voorwaarden van toepassing', 'type' => 'yes_no'],
+                    'nda' => ['label' => 'Geheimhoudingsverklaring (NDA)', 'type' => 'yes_no'],
+                    'gdpr_agreements' => ['label' => 'AVG-afspraken', 'type' => 'textarea'],
+                    'non_compete' => ['label' => 'Concurrentiebeding', 'type' => 'yes_no'],
+                    'non_solicitation' => ['label' => 'Relatiebeding', 'type' => 'yes_no'],
+                    'intellectual_property' => ['label' => 'Intellectueel eigendom', 'type' => 'textarea'],
+                    'liability' => ['label' => 'Aansprakelijkheid', 'type' => 'textarea'],
+                    'insurance' => ['label' => 'Verzekeringen', 'type' => 'textarea'],
+                    'safety_regulations' => ['label' => 'Veiligheidsvoorschriften', 'type' => 'textarea'],
+                ],
+            ],
+            'contact' => [
+                'label' => 'Contact',
+                'fields' => [
+                    'client_phone' => ['label' => 'Telefoonnummer opdrachtgever', 'type' => 'text'],
+                    'sender_phone' => ['label' => 'Telefoonnummer opdrachtnemer', 'type' => 'text'],
+                ],
+            ],
+            'attachments' => [
+                'label' => 'Bijlagen',
+                'fields' => [
+                    'nda_document' => ['label' => 'NDA', 'type' => 'text'],
+                    'planning_document' => ['label' => 'Planning', 'type' => 'text'],
+                    'drawings' => ['label' => 'Tekeningen', 'type' => 'text'],
+                    'specifications' => ['label' => 'Specificaties', 'type' => 'text'],
+                    'other_documents' => ['label' => 'Overige documenten', 'type' => 'textarea'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, array<int, mixed>>
+     */
+    public static function specificationValidationRules(): array
+    {
+        $rules = [
+            'specifications' => ['nullable', 'array'],
+        ];
+
+        foreach (self::specificationSections() as $sectionKey => $section) {
+            $rules['specifications.'.$sectionKey] = ['nullable', 'array'];
+
+            foreach ($section['fields'] as $fieldKey => $field) {
+                $fieldRules = ['nullable'];
+
+                if (($field['type'] ?? 'text') === 'date') {
+                    $fieldRules[] = 'date';
+                } elseif (($field['type'] ?? 'text') === 'number') {
+                    $fieldRules[] = 'numeric';
+                    $fieldRules[] = 'min:0';
+                } elseif (($field['type'] ?? 'text') === 'yes_no') {
+                    $fieldRules[] = 'in:yes,no';
+                } elseif (($field['type'] ?? 'text') === 'select') {
+                    $fieldRules[] = 'in:'.implode(',', array_keys($field['options'] ?? []));
+                } else {
+                    $fieldRules[] = 'string';
+                    $fieldRules[] = ($field['type'] ?? 'text') === 'textarea' ? 'max:2000' : 'max:255';
+                }
+
+                $rules['specifications.'.$sectionKey.'.'.$fieldKey] = $fieldRules;
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $input
+     * @return array<string, array<string, string>>
+     */
+    public static function normalizeSpecifications(?array $input): array
+    {
+        $normalized = [];
+
+        foreach (self::specificationSections() as $sectionKey => $section) {
+            foreach ($section['fields'] as $fieldKey => $field) {
+                $value = data_get($input, $sectionKey.'.'.$fieldKey);
+
+                if ($value === null || $value === '') {
+                    continue;
+                }
+
+                $value = is_string($value) ? trim(strip_tags($value)) : (string) $value;
+
+                if ($value === '') {
+                    continue;
+                }
+
+                $normalized[$sectionKey][$fieldKey] = $value;
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return array<int, array{label: string, fields: array<int, array{label: string, value: string, multiline: bool}>}>
+     */
+    public function filledSpecificationSections(): array
+    {
+        $sections = [];
+        $values = $this->specifications ?? [];
+
+        foreach (self::specificationSections() as $sectionKey => $section) {
+            $fields = [];
+
+            foreach ($section['fields'] as $fieldKey => $field) {
+                $value = data_get($values, $sectionKey.'.'.$fieldKey);
+
+                if ($value === null || $value === '') {
+                    continue;
+                }
+
+                $fields[] = [
+                    'label' => $field['label'],
+                    'value' => self::formatSpecificationValue($value, $field),
+                    'multiline' => ($field['type'] ?? 'text') === 'textarea',
+                ];
+            }
+
+            if ($fields !== []) {
+                $sections[] = [
+                    'label' => $section['label'],
+                    'fields' => $fields,
+                ];
+            }
+        }
+
+        return $sections;
+    }
+
+    public function hasSpecifications(): bool
+    {
+        return $this->filledSpecificationSections() !== [];
+    }
+
+    /**
+     * @param  array<string, mixed>  $field
+     */
+    private static function formatSpecificationValue(mixed $value, array $field): string
+    {
+        $type = $field['type'] ?? 'text';
+
+        if ($type === 'yes_no') {
+            return $value === 'yes' ? 'Ja' : 'Nee';
+        }
+
+        if ($type === 'select') {
+            return $field['options'][$value] ?? (string) $value;
+        }
+
+        if ($type === 'date') {
+            try {
+                return Carbon::parse($value)->format('d-m-Y');
+            } catch (\Throwable) {
+                return (string) $value;
+            }
+        }
+
+        return (string) $value;
     }
 
     public function user(): BelongsTo

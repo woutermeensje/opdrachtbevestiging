@@ -92,6 +92,13 @@
             'slot' => '<div class="dashboard-rich-content">'.$confirmation->descriptionHtml().'</div>',
         ])
 
+        @if ($confirmation->hasSpecifications())
+            @include('partials.dashboard.panel', [
+                'title' => 'Aanvullende specificaties',
+                'slot' => view('partials.confirmations.specifications', ['confirmation' => $confirmation])->render(),
+            ])
+        @endif
+
         @include('partials.dashboard.panel', [
             'title' => 'Vaste afspraken',
             'slot' => '

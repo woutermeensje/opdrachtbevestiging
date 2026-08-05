@@ -90,6 +90,8 @@
                         <textarea id="description" name="description" class="quill-editor-input" data-quill-input>{{ old('description') }}</textarea>
                     </div>
 
+                    @include('partials.dashboard.confirmation-specifications-form')
+
                     <div class="grid-2">
                         <div>
                             <label for="agreement_date">Startdatum</label>

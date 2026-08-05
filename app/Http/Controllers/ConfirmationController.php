@@ -57,7 +57,7 @@ class ConfirmationController extends Controller
             'attachment' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg', 'max:10240'],
             'quote' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg', 'max:10240'],
             'submit_action' => ['nullable', 'string', 'in:send,test'],
-        ], [], [
+        ] + Confirmation::specificationValidationRules(), [], [
             'attachment' => 'bijlage',
             'quote' => 'offerte',
         ]);
@@ -84,6 +84,7 @@ class ConfirmationController extends Controller
             'client_kvk_number' => $contact->kvk_number,
             'description' => $description,
             'termination_terms' => Confirmation::sanitizeDescription($validated['termination_terms'] ?? null),
+            'specifications' => Confirmation::normalizeSpecifications($validated['specifications'] ?? []),
             'agreement_date' => $validated['agreement_date'] ?? null,
             'duration' => $validated['duration'] ?? null,
             'total_value' => $validated['total_value'] ?? 0,

@@ -110,6 +110,33 @@
             padding-left: 18px;
         }
 
+        .confirmation-specifications-summary-section {
+            margin-bottom: 12px;
+        }
+
+        .confirmation-specifications-summary-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .confirmation-specifications-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .confirmation-specifications-table th,
+        .confirmation-specifications-table td {
+            padding: 5px 0;
+            border-top: 1px solid #dedede;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .confirmation-specifications-table th {
+            width: 34%;
+            padding-right: 12px;
+            color: #666666;
+        }
+
         .signature-box {
             min-height: 110px;
             margin-top: 10px;
@@ -198,6 +225,13 @@
         <h2>Omschrijving van de opdracht</h2>
         <div class="rich-content">{!! $confirmation->descriptionHtml() !!}</div>
     </div>
+
+    @if ($confirmation->hasSpecifications())
+        <div class="box">
+            <h2>Aanvullende specificaties</h2>
+            @include('partials.confirmations.specifications', ['confirmation' => $confirmation])
+        </div>
+    @endif
 
     @if ($confirmation->defaultAgreementsHtml() !== '')
         <div class="box">

@@ -166,6 +166,69 @@ input[type='color'] {
     margin-bottom: 1.35rem;
 }
 
+.confirmation-specifications {
+    display: grid;
+    gap: 0.65rem;
+    margin: -0.35rem 0 1.35rem;
+}
+
+.confirmation-specification-section {
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    background: var(--color-bg);
+}
+
+.confirmation-specification-section summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0.75rem 2.6rem 0.75rem 0.9rem;
+    color: var(--color-text);
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.25;
+    list-style: none;
+}
+
+.confirmation-specification-section summary::-webkit-details-marker {
+    display: none;
+}
+
+.confirmation-specification-section summary::after {
+    content: '+';
+    position: absolute;
+    right: 0.95rem;
+    top: 50%;
+    color: var(--color-primary);
+    font-size: 1.15rem;
+    line-height: 1;
+    transform: translateY(-50%);
+}
+
+.confirmation-specification-section[open] summary::after {
+    content: '-';
+}
+
+.confirmation-specification-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    padding: 0 0.9rem 0.9rem;
+}
+
+.confirmation-specification-grid input,
+.confirmation-specification-grid textarea,
+.confirmation-specification-grid select {
+    margin-bottom: 0;
+}
+
+.confirmation-specification-field-wide {
+    grid-column: 1 / -1;
+}
+
 .quill-editor-input {
     display: none;
 }
@@ -458,6 +521,11 @@ input[type='color'] {
     .grid-kvk,
     .grid-address,
     .upload-block-grid { grid-template-columns: 1fr; gap: 0; }
+
+    .confirmation-specification-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
 
     .actions,
     .actions-end,

@@ -365,14 +365,6 @@
     font-size: 14px;
 }
 
-.dashboard-index-page .dashboard-panel-wide h2 {
-    margin: -1.4rem -1.4rem 1.4rem;
-    padding: 1rem 1.4rem;
-    background: #f5f6f8;
-    border-bottom: 1px solid #dedede;
-    border-radius: 5px 5px 0 0;
-}
-
 .dashboard-index-page .dashboard-table th {
     color: #333;
     font-size: calc(0.82rem + 1px);
@@ -454,7 +446,11 @@
 }
 
 .dashboard-panel h2 {
-    margin: 0 0 1.1rem;
+    margin: -1.4rem -1.4rem 1.4rem;
+    padding: 1rem 1.4rem;
+    background: #f5f6f8;
+    border-bottom: 1px solid #dedede;
+    border-radius: 5px 5px 0 0;
     font-family: var(--font-heading);
     font-size: 18px;
     font-weight: 600;
@@ -537,6 +533,38 @@
     width: 1%;
     text-align: right;
     white-space: nowrap;
+}
+
+.confirmation-specifications-summary {
+    display: grid;
+    gap: 1rem;
+}
+
+.confirmation-specifications-summary-section h3 {
+    margin: 0 0 0.55rem;
+    font-size: 1rem;
+}
+
+.confirmation-specifications-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.confirmation-specifications-table th,
+.confirmation-specifications-table td {
+    padding: 0.55rem 0;
+    border-top: 1px solid #dedede;
+    vertical-align: top;
+    text-align: left;
+}
+
+.confirmation-specifications-table th {
+    width: 34%;
+    padding-right: 1rem;
+    color: var(--color-text-subtle);
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    font-weight: 700;
 }
 
 .dashboard-status {
