@@ -511,36 +511,36 @@
     font-size: 0.8rem;
     font-weight: 700;
     color: #ffffff;
-    background: #6b7280;
+    background: #7c3aed;
     border: 1px solid transparent;
 }
 
 .dashboard-status-concept {
-    background: #6b7280;
+    background: #7c3aed;
 }
 
 .dashboard-status-wacht-op-akkoord {
-    background: #d97706;
+    background: #f59e0b;
 }
 
 .dashboard-status-verzonden {
-    background: var(--color-primary);
+    background: #2563eb;
 }
 
 .dashboard-status-getekend {
-    background: #047857;
+    background: #16a34a;
 }
 
 .dashboard-status-ingetrokken {
-    background: var(--color-danger);
+    background: #ef4444;
 }
 
 .dashboard-status-geaccepteerd {
-    background: #047857;
+    background: #16a34a;
 }
 
 .dashboard-status-afgewezen {
-    background: var(--color-danger);
+    background: #ef4444;
 }
 
 .public-confirmation-layout {
