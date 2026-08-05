@@ -13,7 +13,7 @@
         <div class="dashboard-notice">{{ session('status') }}</div>
     @endif
 
-    <div class="actions actions-end">
+    <div class="actions actions-end dashboard-list-actions">
         <a href="{{ route('dashboard.contacts.create') }}" class="btn btn-primary">Opdrachtgever toevoegen</a>
     </div>
 

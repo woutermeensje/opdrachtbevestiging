@@ -96,6 +96,9 @@ class ConfirmationFlowTest extends TestCase
         Contact::factory()->create([
             'user_id' => $user->id,
             'company_name' => 'Acme B.V.',
+            'contact_first_name' => 'Sanne',
+            'contact_last_name' => 'Jansen',
+            'contact_email' => 'sanne@acme.test',
         ]);
 
         $response = $this->actingAs($user)->get(route('dashboard.create'));
@@ -106,6 +109,10 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('name="title"', false)
             ->assertSee('data-quill-editor', false)
             ->assertSee('name="contact_id"', false)
+            ->assertSee('data-contact-search', false)
+            ->assertSee('data-contact-search-option', false)
+            ->assertSee('Acme B.V.')
+            ->assertSee('sanne@acme.test')
             ->assertSee('name="attachment"', false)
             ->assertSee('name="quote"', false)
             ->assertSee('Verzenden')
@@ -648,6 +655,108 @@ class ConfirmationFlowTest extends TestCase
             'company_name' => 'Voorbeeld B.V.',
             'contact_email' => 'piet@example.test',
         ]);
+    }
+
+    public function test_contacts_overview_links_to_contact_edit_page(): void
+    {
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Voorbeeld B.V.',
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard.contacts'))
+            ->assertOk()
+            ->assertSee('Bewerken')
+            ->assertSee(route('dashboard.contacts.edit', $contact), false);
+    }
+
+    public function test_contact_edit_page_prefills_existing_details(): void
+    {
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Voorbeeld B.V.',
+            'contact_first_name' => 'Piet',
+            'contact_email' => 'piet@example.test',
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard.contacts.edit', $contact))
+            ->assertOk()
+            ->assertSee('Opdrachtgever bewerken')
+            ->assertSee('Voorbeeld B.V.')
+            ->assertSee('piet@example.test')
+            ->assertSee('Wijzigingen opslaan');
+    }
+
+    public function test_authenticated_user_can_update_a_contact(): void
+    {
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Oude naam B.V.',
+            'contact_email' => 'oud@example.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('dashboard.contacts.update', $contact), [
+                'company_name' => 'Nieuwe naam B.V.',
+                'kvk_number' => '12345678',
+                'street_name' => 'Herengracht',
+                'house_number' => '10',
+                'house_number_addition' => 'B',
+                'postal_code' => '1015AB',
+                'city' => 'Amsterdam',
+                'country' => 'Nederland',
+                'contact_first_name' => 'Anne',
+                'contact_last_name' => 'Jansen',
+                'contact_email' => 'anne@example.test',
+                'contact_phone' => '0698765432',
+            ]);
+
+        $response->assertRedirect(route('dashboard.contacts'));
+
+        $this->assertDatabaseHas('contacts', [
+            'id' => $contact->id,
+            'user_id' => $user->id,
+            'company_name' => 'Nieuwe naam B.V.',
+            'house_number_addition' => 'B',
+            'contact_email' => 'anne@example.test',
+            'contact_phone' => '0698765432',
+        ]);
+    }
+
+    public function test_user_cannot_update_another_users_contact(): void
+    {
+        $user = User::factory()->create();
+        $otherContact = Contact::factory()->create([
+            'company_name' => 'Ander bedrijf B.V.',
+            'contact_email' => 'ander@example.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('dashboard.contacts.update', $otherContact), [
+                'company_name' => 'Ongewenste wijziging B.V.',
+                'street_name' => 'Herengracht',
+                'house_number' => '10',
+                'postal_code' => '1015AB',
+                'city' => 'Amsterdam',
+                'contact_first_name' => 'Anne',
+                'contact_last_name' => 'Jansen',
+                'contact_email' => 'anne@example.test',
+                'contact_phone' => '0698765432',
+            ]);
+
+        $response->assertNotFound();
+
+        $this->assertSame('Ander bedrijf B.V.', $otherContact->fresh()->company_name);
+        $this->assertSame('ander@example.test', $otherContact->fresh()->contact_email);
     }
 
     private function signatureDataUri(): string

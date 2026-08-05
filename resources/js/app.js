@@ -163,6 +163,196 @@ document.querySelectorAll('[data-step-form]').forEach((stepForm) => {
     syncSteps();
 });
 
+document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
+    const input = contactSearch.querySelector('[data-contact-search-input]');
+    const valueInput = contactSearch.querySelector('[data-contact-search-value]');
+    const results = contactSearch.querySelector('[data-contact-search-results]');
+    const emptyState = contactSearch.querySelector('[data-contact-search-empty]');
+    const optionElements = Array.from(contactSearch.querySelectorAll('[data-contact-search-option]'));
+    const form = contactSearch.closest('form');
+    const maxResults = 8;
+
+    if (!input || !valueInput || !results) {
+        return;
+    }
+
+    let visibleOptions = [];
+    let activeIndex = -1;
+
+    const normalise = (value) => value.toLocaleLowerCase('nl-NL');
+
+    const openList = () => {
+        results.hidden = false;
+        input.setAttribute('aria-expanded', 'true');
+    };
+
+    const closeList = () => {
+        results.hidden = true;
+        input.setAttribute('aria-expanded', 'false');
+        input.removeAttribute('aria-activedescendant');
+        activeIndex = -1;
+
+        optionElements.forEach((option) => {
+            option.classList.remove('is-active');
+        });
+    };
+
+    const setActiveOption = (index) => {
+        optionElements.forEach((option) => {
+            option.classList.remove('is-active');
+        });
+
+        activeIndex = index;
+
+        const option = visibleOptions[activeIndex];
+
+        if (!option) {
+            input.removeAttribute('aria-activedescendant');
+            return;
+        }
+
+        option.classList.add('is-active');
+        input.setAttribute('aria-activedescendant', option.id);
+        option.scrollIntoView({ block: 'nearest' });
+    };
+
+    const markSelectedOption = () => {
+        optionElements.forEach((option) => {
+            const isSelected = option.dataset.contactId === valueInput.value;
+
+            option.classList.toggle('is-selected', isSelected);
+            option.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        });
+    };
+
+    const selectOption = (option) => {
+        valueInput.value = option.dataset.contactId ?? '';
+        input.value = option.dataset.contactLabel ?? '';
+        input.setCustomValidity('');
+        markSelectedOption();
+        closeList();
+    };
+
+    const filterOptions = () => {
+        const query = input.value.trim();
+
+        optionElements.forEach((option) => {
+            option.hidden = true;
+            option.classList.remove('is-active');
+        });
+
+        if (query.length < 1) {
+            if (emptyState) {
+                emptyState.hidden = true;
+            }
+
+            closeList();
+            return;
+        }
+
+        const normalisedQuery = normalise(query);
+        visibleOptions = optionElements
+            .filter((option) => normalise(option.dataset.contactSearchText ?? '').includes(normalisedQuery))
+            .slice(0, maxResults);
+
+        if (emptyState) {
+            emptyState.hidden = visibleOptions.length > 0;
+        }
+
+        visibleOptions.forEach((option) => {
+            option.hidden = false;
+        });
+
+        openList();
+        setActiveOption(visibleOptions.length > 0 ? 0 : -1);
+    };
+
+    input.addEventListener('input', () => {
+        const selectedOption = optionElements.find((option) => option.dataset.contactId === valueInput.value);
+
+        if (!selectedOption || input.value !== selectedOption.dataset.contactLabel) {
+            valueInput.value = '';
+            markSelectedOption();
+        }
+
+        input.setCustomValidity('');
+        filterOptions();
+    });
+
+    input.addEventListener('focus', () => {
+        filterOptions();
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeList();
+            return;
+        }
+
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+
+            if (results.hidden) {
+                filterOptions();
+            }
+
+            if (visibleOptions.length === 0) {
+                return;
+            }
+
+            const direction = event.key === 'ArrowDown' ? 1 : -1;
+            const nextIndex = (activeIndex + direction + visibleOptions.length) % visibleOptions.length;
+            setActiveOption(nextIndex);
+        }
+
+        if (event.key === 'Enter' && !results.hidden && visibleOptions[activeIndex]) {
+            event.preventDefault();
+            selectOption(visibleOptions[activeIndex]);
+        }
+    });
+
+    input.addEventListener('blur', () => {
+        window.setTimeout(closeList, 120);
+    });
+
+    input.addEventListener('invalid', () => {
+        if (!valueInput.value) {
+            input.setCustomValidity('Kies een opdrachtgever uit de lijst.');
+        }
+    });
+
+    optionElements.forEach((option) => {
+        option.addEventListener('mousedown', (event) => {
+            event.preventDefault();
+        });
+
+        option.addEventListener('click', () => {
+            selectOption(option);
+            input.focus();
+        });
+    });
+
+    form?.addEventListener('submit', (event) => {
+        if (valueInput.value) {
+            input.setCustomValidity('');
+            return;
+        }
+
+        input.setCustomValidity('Kies een opdrachtgever uit de lijst.');
+        input.reportValidity();
+        event.preventDefault();
+    });
+
+    const initialOption = optionElements.find((option) => option.dataset.contactId === valueInput.value);
+
+    if (initialOption) {
+        selectOption(initialOption);
+    } else {
+        markSelectedOption();
+        closeList();
+    }
+});
+
 document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
     const editorEl = wrapper.querySelector('[data-quill-editor]');
     const input = wrapper.querySelector('[data-quill-input]');

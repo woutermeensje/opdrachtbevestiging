@@ -24,6 +24,10 @@
             ',
         ])
     @else
+    @php
+        $selectedContactId = old('contact_id');
+        $selectedContact = $selectedContactId ? $contacts->firstWhere('id', (int) $selectedContactId) : null;
+    @endphp
 
     <div class="dashboard-create-layout">
         <div class="dashboard-create-form-panel">
@@ -33,14 +37,42 @@
                 <section class="dashboard-panel dashboard-panel-wide">
                     <h2>Opdrachtgever selecteren</h2>
 
-                    <div>
-                        <label for="contact_id">Opdrachtgever</label>
-                        <select id="contact_id" name="contact_id" required>
-                            <option value="">Kies een opdrachtgever</option>
+                    <div class="contact-search" data-contact-search>
+                        <label for="contact_search">Opdrachtgever</label>
+                        <input
+                            id="contact_search"
+                            class="contact-search-input"
+                            type="search"
+                            value="{{ $selectedContact?->company_name }}"
+                            placeholder="Zoek opdrachtgever"
+                            autocomplete="off"
+                            role="combobox"
+                            aria-autocomplete="list"
+                            aria-expanded="false"
+                            aria-controls="contact_search_results"
+                            data-contact-search-input
+                            required
+                        >
+                        <input id="contact_id" name="contact_id" type="hidden" value="{{ $selectedContact?->id }}" data-contact-search-value>
+
+                        <div id="contact_search_results" class="contact-search-results" role="listbox" data-contact-search-results hidden>
                             @foreach ($contacts as $contact)
-                                <option value="{{ $contact->id }}" @selected(old('contact_id') == $contact->id)>{{ $contact->company_name }}</option>
+                                <button
+                                    id="contact_search_option_{{ $contact->id }}"
+                                    type="button"
+                                    class="contact-search-option"
+                                    role="option"
+                                    data-contact-search-option
+                                    data-contact-id="{{ $contact->id }}"
+                                    data-contact-label="{{ $contact->company_name }}"
+                                    data-contact-search-text="{{ collect([$contact->company_name, $contact->contactName(), $contact->contact_email, $contact->city])->filter()->implode(' ') }}"
+                                >
+                                    <strong>{{ $contact->company_name }}</strong>
+                                    <span>{{ collect([$contact->contactName(), $contact->contact_email, $contact->city])->filter()->implode(' - ') }}</span>
+                                </button>
                             @endforeach
-                        </select>
+                            <div class="contact-search-empty" data-contact-search-empty hidden>Geen opdrachtgever gevonden</div>
+                        </div>
                     </div>
                 </section>
 

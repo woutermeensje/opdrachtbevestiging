@@ -496,6 +496,13 @@
     font-size: 0.85rem;
 }
 
+.dashboard-table th.dashboard-table-actions,
+.dashboard-table td.dashboard-table-actions {
+    width: 1%;
+    text-align: right;
+    white-space: nowrap;
+}
+
 .dashboard-status {
     display: inline-flex;
     align-items: center;
@@ -503,36 +510,37 @@
     padding: 0.28rem 0.6rem;
     font-size: 0.8rem;
     font-weight: 700;
-    background: #ffffff;
-    border: 1px solid #dedede;
+    color: #ffffff;
+    background: #6b7280;
+    border: 1px solid transparent;
 }
 
 .dashboard-status-concept {
-    color: #4b5563;
+    background: #6b7280;
 }
 
 .dashboard-status-wacht-op-akkoord {
-    color: #92400e;
+    background: #d97706;
 }
 
 .dashboard-status-verzonden {
-    color: color-mix(in srgb, var(--color-primary) 70%, black);
+    background: var(--color-primary);
 }
 
 .dashboard-status-getekend {
-    color: #047857;
+    background: #047857;
 }
 
 .dashboard-status-ingetrokken {
-    color: var(--color-danger);
+    background: var(--color-danger);
 }
 
 .dashboard-status-geaccepteerd {
-    color: #047857;
+    background: #047857;
 }
 
 .dashboard-status-afgewezen {
-    color: var(--color-danger);
+    background: var(--color-danger);
 }
 
 .public-confirmation-layout {

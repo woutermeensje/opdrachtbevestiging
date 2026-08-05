@@ -98,6 +98,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard/opdrachtgever', [ContactController::class, 'index'])->name('dashboard.contacts');
     Route::get('/dashboard/opdrachtgever/toevoegen', [ContactController::class, 'create'])->name('dashboard.contacts.create');
     Route::post('/dashboard/opdrachtgever/toevoegen', [ContactController::class, 'store'])->name('dashboard.contacts.store');
+    Route::get('/dashboard/opdrachtgever/{contact}/bewerken', [ContactController::class, 'edit'])->name('dashboard.contacts.edit');
+    Route::patch('/dashboard/opdrachtgever/{contact}/bewerken', [ContactController::class, 'update'])->name('dashboard.contacts.update');
     Route::get('/dashboard/mijn-profiel', [DashboardController::class, 'profile'])->name('dashboard.profile');
     Route::post('/dashboard/mijn-profiel/account', [DashboardController::class, 'updateAccountProfile'])->name('dashboard.profile.account.update');
     Route::post('/dashboard/mijn-profiel/wachtwoord', [DashboardController::class, 'updateAccountPassword'])->name('dashboard.profile.password.update');

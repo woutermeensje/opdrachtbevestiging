@@ -6,6 +6,7 @@
                 <th>Contactpersoon</th>
                 <th>Adres</th>
                 <th>Telefoon</th>
+                <th class="dashboard-table-actions"></th>
             </tr>
         </thead>
         <tbody>
@@ -23,6 +24,9 @@
                         </div>
                     </td>
                     <td>{{ $contact->contact_phone ?: '-' }}</td>
+                    <td class="dashboard-table-actions">
+                        <a href="{{ route('dashboard.contacts.edit', $contact) }}" class="btn btn-secondary btn-small">Bewerken</a>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
