@@ -229,7 +229,7 @@ class CompanyProfileGateTest extends TestCase
         $this->assertSame('yes', $user->default_specifications['travel_expenses']['compensation']);
         $this->assertSame('0,23 per kilometer', $user->default_specifications['travel_expenses']['mileage_compensation']);
         $this->assertSame('no', $user->default_specifications['materials']['laptop_provided']);
-        $this->assertSame('yes', $user->default_specifications['legal']['nda']);
+        $this->assertArrayNotHasKey('legal', $user->default_specifications);
     }
 
     public function test_user_can_store_logo_and_brand_colors_on_profile(): void

@@ -115,12 +115,22 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('sanne@acme.test')
             ->assertSee('Algemene gegevens')
             ->assertSee('Financiële afspraken')
-            ->assertSee('Urenregistratie')
+            ->assertSee('Reiskosten')
+            ->assertSee('Materialen')
+            ->assertDontSee('Werkzaamheden')
+            ->assertDontSee('Urenregistratie')
+            ->assertDontSee('Juridisch')
+            ->assertDontSee('Bijlagen')
             ->assertSee('name="specifications[general][client_reference]"', false)
             ->assertSee('name="specifications[planning][start_date]"', false)
             ->assertSee('name="specifications[planning][expected_duration]"', false)
             ->assertSee('name="specifications[financial][rate_unit]"', false)
             ->assertSee('name="specifications[financial][total_amount]"', false)
+            ->assertDontSee('name="specifications[work][acceptance_criteria]"', false)
+            ->assertDontSee('name="specifications[time_tracking][required]"', false)
+            ->assertDontSee('name="specifications[legal][nda]"', false)
+            ->assertDontSee('name="specifications[contact][client_phone]"', false)
+            ->assertDontSee('name="specifications[attachments][nda_document]"', false)
             ->assertSee('name="attachment"', false)
             ->assertSee('name="quote"', false)
             ->assertSee('Verzenden')
@@ -165,8 +175,8 @@ class ConfirmationFlowTest extends TestCase
                         'rate_unit' => 'per_hour',
                         'additional_work_allowed' => 'no',
                     ],
-                    'work' => [
-                        'acceptance_criteria' => "Livegang na akkoord opdrachtgever.\nAlle pagina's responsive.",
+                    'materials' => [
+                        'software_licenses' => "CMS-licentie door opdrachtgever.\nFigma-toegang wordt verstrekt.",
                     ],
                 ],
                 'submit_action' => 'test',
@@ -178,6 +188,10 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('INK-2026-42', $confirmation->specifications['general']['client_reference']);
         $this->assertSame('Website vernieuwing', $confirmation->specifications['general']['project_name']);
         $this->assertSame('yes', $confirmation->specifications['planning']['extension_possible']);
+        $this->assertArrayNotHasKey('work', $confirmation->specifications);
+        $this->assertArrayNotHasKey('time_tracking', $confirmation->specifications);
+        $this->assertArrayNotHasKey('legal', $confirmation->specifications);
+        $this->assertArrayNotHasKey('contact', $confirmation->specifications);
         $this->assertArrayNotHasKey('attachments', $confirmation->specifications);
 
         $filledSections = $confirmation->filledSpecificationSections();
@@ -194,7 +208,8 @@ class ConfirmationFlowTest extends TestCase
             ->assertOk()
             ->assertSee('Aanvullende specificaties')
             ->assertSee('Website vernieuwing')
-            ->assertSee('Per uur');
+            ->assertSee('Per uur')
+            ->assertSee('CMS-licentie door opdrachtgever.');
 
         $this
             ->get(route('confirmations.public.show', $confirmation->public_token))
@@ -202,7 +217,7 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Aanvullende specificaties')
             ->assertSee('Referentie opdrachtgever')
             ->assertSee('INK-2026-42')
-            ->assertSee('Alle pagina&#039;s responsive.', false);
+            ->assertSee('Figma-toegang wordt verstrekt.', false);
     }
 
     public function test_create_confirmation_form_prefills_default_specifications(): void
@@ -242,8 +257,8 @@ class ConfirmationFlowTest extends TestCase
                     'compensation' => 'yes',
                     'mileage_compensation' => '0,23 per kilometer',
                 ],
-                'legal' => [
-                    'nda' => 'yes',
+                'materials' => [
+                    'laptop_provided' => 'no',
                 ],
             ],
         ]);
@@ -267,7 +282,8 @@ class ConfirmationFlowTest extends TestCase
         $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
         $this->assertSame('yes', $confirmation->specifications['travel_expenses']['compensation']);
         $this->assertSame('0,23 per kilometer', $confirmation->specifications['travel_expenses']['mileage_compensation']);
-        $this->assertSame('yes', $confirmation->specifications['legal']['nda']);
+        $this->assertSame('no', $confirmation->specifications['materials']['laptop_provided']);
+        $this->assertArrayNotHasKey('legal', $confirmation->specifications);
     }
 
     public function test_confirmation_captures_scope_details(): void
@@ -414,6 +430,7 @@ class ConfirmationFlowTest extends TestCase
                     ->as('offerte.pdf')
                     ->withMime('application/pdf')
             );
+
             return $mail->hasTo($confirmation->client_email);
         });
     }

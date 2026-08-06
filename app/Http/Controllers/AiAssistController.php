@@ -119,10 +119,10 @@ class AiAssistController extends Controller
             $checkText = $this->message(
                 system: 'Je controleert Nederlandse zakelijke opdrachtbevestigingen op duidelijkheid en compleetheid. '
                     .'Geef geen juridisch advies en herschrijf de tekst niet. Controleer alleen of de afspraken begrijpelijk en volledig genoeg zijn. '
-                    .'Beoordeel minimaal: werkzaamheden/scope, planning, prijs of tarief, btw/betaalafspraken, opdrachtgever, opdrachtnemer, oplevering, meerwerk, verantwoordelijkheden, opzegging/annulering en akkoordproces. '
+                    .'Beoordeel minimaal: opdrachtbeschrijving/scope, planning, prijs of tarief, btw/betaalafspraken, reiskosten, materialen, opdrachtgever, opdrachtnemer, oplevering, meerwerk, verantwoordelijkheden, opzegging/annulering en akkoordproces. '
                     .'Gebruik alleen de aangeleverde informatie. Als iets ontbreekt, zeg dat concreet. '
                     .'Antwoord uitsluitend als geldige JSON zonder markdown, met deze vorm: '
-                    .'{"score":75,"summary":"Korte samenvatting","items":[{"label":"Werkzaamheden","status":"ok","message":"..."},{"label":"Betaling","status":"missing","message":"..."}]}. '
+                    .'{"score":75,"summary":"Korte samenvatting","items":[{"label":"Planning","status":"ok","message":"..."},{"label":"Betaling","status":"missing","message":"..."}]}. '
                     .'Gebruik alleen statuswaarden ok, warning of missing.',
                 content: "Opdrachtbeschrijving:\n{$plainText}\n\nFormuliercontext:\n{$formContext}",
                 maxTokens: 1800,

@@ -151,28 +151,6 @@ class Confirmation extends Model
                     'advance_payment' => ['label' => 'Voorschot', 'type' => 'text'],
                 ],
             ],
-            'work' => [
-                'label' => 'Werkzaamheden',
-                'fields' => [
-                    'role' => ['label' => 'Functie', 'type' => 'text'],
-                    'project' => ['label' => 'Project', 'type' => 'text'],
-                    'desired_result' => ['label' => 'Gewenst resultaat', 'type' => 'textarea'],
-                    'delivery_moment' => ['label' => 'Oplevermoment', 'type' => 'text'],
-                    'acceptance_criteria' => ['label' => 'Acceptatiecriteria', 'type' => 'textarea'],
-                    'required_skills' => ['label' => 'Benodigde vaardigheden', 'type' => 'textarea'],
-                ],
-            ],
-            'time_tracking' => [
-                'label' => 'Urenregistratie',
-                'fields' => [
-                    'required' => ['label' => 'Urenregistratie verplicht', 'type' => 'yes_no'],
-                    'client_approval_required' => ['label' => 'Goedkeuring opdrachtgever vereist', 'type' => 'yes_no'],
-                    'declaration_via' => ['label' => 'Declaratie via', 'type' => 'text'],
-                    'max_hours_per_week' => ['label' => 'Maximaal aantal uren per week', 'type' => 'number', 'step' => '0.25'],
-                    'overtime_allowed' => ['label' => 'Overwerk toegestaan', 'type' => 'yes_no'],
-                    'overtime_rate' => ['label' => 'Overwerktarief', 'type' => 'text'],
-                ],
-            ],
             'travel_expenses' => [
                 'label' => 'Reiskosten',
                 'fields' => [
@@ -196,37 +174,6 @@ class Confirmation extends Model
                     'software_licenses' => ['label' => 'Softwarelicenties', 'type' => 'textarea'],
                     'access_pass' => ['label' => 'Toegangspas', 'type' => 'yes_no'],
                     'keys' => ['label' => 'Sleutels', 'type' => 'yes_no'],
-                ],
-            ],
-            'legal' => [
-                'label' => 'Juridisch',
-                'fields' => [
-                    'terms_apply' => ['label' => 'Algemene voorwaarden van toepassing', 'type' => 'yes_no'],
-                    'nda' => ['label' => 'Geheimhoudingsverklaring (NDA)', 'type' => 'yes_no'],
-                    'gdpr_agreements' => ['label' => 'AVG-afspraken', 'type' => 'textarea'],
-                    'non_compete' => ['label' => 'Concurrentiebeding', 'type' => 'yes_no'],
-                    'non_solicitation' => ['label' => 'Relatiebeding', 'type' => 'yes_no'],
-                    'intellectual_property' => ['label' => 'Intellectueel eigendom', 'type' => 'textarea'],
-                    'liability' => ['label' => 'Aansprakelijkheid', 'type' => 'textarea'],
-                    'insurance' => ['label' => 'Verzekeringen', 'type' => 'textarea'],
-                    'safety_regulations' => ['label' => 'Veiligheidsvoorschriften', 'type' => 'textarea'],
-                ],
-            ],
-            'contact' => [
-                'label' => 'Contact',
-                'fields' => [
-                    'client_phone' => ['label' => 'Telefoonnummer opdrachtgever', 'type' => 'text'],
-                    'sender_phone' => ['label' => 'Telefoonnummer opdrachtnemer', 'type' => 'text'],
-                ],
-            ],
-            'attachments' => [
-                'label' => 'Bijlagen',
-                'fields' => [
-                    'nda_document' => ['label' => 'NDA', 'type' => 'text'],
-                    'planning_document' => ['label' => 'Planning', 'type' => 'text'],
-                    'drawings' => ['label' => 'Tekeningen', 'type' => 'text'],
-                    'specifications' => ['label' => 'Specificaties', 'type' => 'text'],
-                    'other_documents' => ['label' => 'Overige documenten', 'type' => 'textarea'],
                 ],
             ],
         ];
