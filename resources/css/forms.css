@@ -390,8 +390,14 @@ input[type='color'] {
     line-height: 1.6;
 }
 
-.quill-field .ql-editor p {
+.quill-field .ql-editor p,
+.quill-field .ql-editor li {
     margin: 0 0 0.75rem;
+    color: var(--color-text);
+    font-family: var(--font-text);
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.6;
 }
 
 .quill-field .ql-editor p:last-child {
@@ -416,11 +422,24 @@ input[type='color'] {
 .quill-field .ql-editor ol {
     margin: 0.25rem 0 0.85rem;
     padding-left: 1.35rem;
+    color: var(--color-text);
+    font-family: var(--font-text);
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
 .quill-field .ql-editor li {
     margin-bottom: 0.35rem;
     padding-left: 0.15rem;
+}
+
+.quill-field .ql-editor li::before,
+.quill-field .ql-editor li > .ql-ui::before {
+    color: var(--color-text);
+    font-family: var(--font-text);
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.6;
 }
 
 .quill-field .ql-editor li:last-child {
