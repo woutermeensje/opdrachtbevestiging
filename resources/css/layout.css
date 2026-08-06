@@ -3,7 +3,7 @@
 ================================ */
 
 .container {
-    width: min(1080px, 92vw);
+    width: min(1080px, calc(100% - 2rem));
     margin: 0 auto;
 }
 
@@ -17,7 +17,7 @@
 }
 
 .hero h1 {
-    font-size: clamp(1.175rem, 3.2vw, 2.375rem);
+    font-size: 2.35rem;
     margin: 0 0 1rem;
 }
 
@@ -51,18 +51,20 @@
 
 .page-hero h1 {
     margin: 0 0 0.8rem;
-    color: #333;
+    color: var(--color-text);
     font-family: var(--font-heading);
     font-size: 28px;
     font-weight: 800;
+    line-height: 1.15;
 }
 
 .page-intro {
     max-width: 720px;
-    color: #333;
+    color: var(--color-text-soft);
     font-family: var(--font-text);
     font-size: 1rem;
     font-weight: 400;
+    line-height: 1.65;
 }
 
 .page-content {
@@ -78,6 +80,8 @@
 .page-card h2 {
     margin: 0 0 0.8rem;
     font-size: 1.15rem;
+    font-family: var(--font-heading);
+    font-weight: 800;
 }
 
 .page-card p + h2 {
@@ -96,8 +100,8 @@
 }
 
 .pricing-card-featured {
-    border-color: #dedede;
-    background: #ffffff;
+    border-color: var(--color-primary);
+    background: var(--color-bg-white);
 }
 
 .pricing-card-wide {
@@ -111,10 +115,10 @@
 
 .pricing-amount {
     margin: 0;
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-size: 2.35rem;
     line-height: 1.1;
     font-weight: 700;
-    font-family: var(--font-sans);
+    font-family: var(--font-heading);
     color: var(--color-text);
 }
 
@@ -164,10 +168,15 @@
 
 .card {
     background: var(--color-card);
-    border: 1px solid #dedede;
-    border-radius: 5px;
-    padding: 1.2rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    padding: 1.25rem;
     box-shadow: var(--box-shadow-default);
+}
+
+.card p {
+    color: var(--color-text-soft);
+    line-height: 1.65;
 }
 
 .card h3 {
@@ -188,6 +197,18 @@
 }
 
 @media (max-width: 800px) {
+    .hero {
+        padding: 3.5rem 0 2.5rem;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .pricing-amount {
+        font-size: 2rem;
+    }
+
     .page-content-grid { grid-template-columns: 1fr; }
     .grid { grid-template-columns: 1fr; }
     .split-grid { grid-template-columns: 1fr; }

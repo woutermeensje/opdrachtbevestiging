@@ -38,6 +38,7 @@ return [
     'anthropic' => [
         'key' => env('ANTHROPIC_API_KEY'),
         'model' => env('ANTHROPIC_MODEL', 'claude-sonnet-5'),
+        'daily_limit' => env('AI_ASSIST_DAILY_LIMIT', 30),
     ],
 
 ];

@@ -27,8 +27,8 @@
     gap: 1rem;
     min-height: 72px;
     padding: 0 2rem;
-    background: #ffffff;
-    border-bottom: 1px solid #dedede;
+    background: var(--color-bg-white);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .dashboard-topbar-greeting {
@@ -52,7 +52,7 @@
     gap: 0.45rem;
     min-height: 42px;
     padding: 0.75rem 1rem;
-    border-radius: 5px;
+    border-radius: var(--radius-default);
     background: var(--color-primary);
     color: #ffffff;
     font-family: var(--font-ui);
@@ -93,16 +93,16 @@
     z-index: 30;
     min-width: 220px;
     padding: 0.35rem;
-    border: 1px solid #dedede;
-    border-radius: 5px;
-    background: #ffffff;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg-white);
+    box-shadow: var(--shadow-popover);
 }
 
 .dashboard-topbar-menu a {
     display: block;
     padding: 0.7rem 0.8rem;
-    border-radius: 5px;
+    border-radius: var(--radius-default);
     color: var(--color-text);
     font-family: var(--font-ui);
     font-size: 0.9rem;
@@ -120,8 +120,8 @@
     display: flex;
     flex-direction: column;
     padding: 0 1rem 1.25rem;
-    background: #ffffff;
-    border-right: 1px solid #dedede;
+    background: var(--color-bg-white);
+    border-right: 1px solid var(--color-border);
     position: sticky;
     top: 0;
     height: 100vh;
@@ -134,7 +134,7 @@
     align-items: center;
     padding: 0 0.75rem;
     margin-bottom: 0.75rem;
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .dashboard-brand:hover {
@@ -171,9 +171,9 @@
     width: 100%;
     padding: 0.6rem 0.75rem;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     background: transparent;
-    color: #333;
+    color: var(--color-text);
     font-family: var(--font-ui);
     font-size: 0.875rem;
     font-weight: 400;
@@ -202,7 +202,7 @@
     bottom: 0.35rem;
     width: 0;
     border-radius: 0 3px 3px 0;
-    border-left: 1px solid #dedede;
+    border-left: 3px solid var(--color-primary);
 }
 
 .dashboard-nav-group {
@@ -219,8 +219,8 @@
 
 .dashboard-nav-sublink {
     padding: 0.4rem 0.75rem;
-    border-radius: 8px;
-    color: #333;
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
     font-family: var(--font-ui);
     font-size: 0.8rem;
     font-weight: 400;
@@ -259,7 +259,7 @@
 .dashboard-logout {
     margin-top: auto;
     padding-top: 0.75rem;
-    border-top: 1px solid #dedede;
+    border-top: 1px solid var(--color-border);
 }
 
 .dashboard-logout-button {
@@ -285,10 +285,11 @@
 }
 
 .dashboard-metric-card {
-    background: #ffffff;
-    border: 1px solid #dedede;
-    border-radius: 5px;
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
     padding: 1rem 1.1rem;
+    box-shadow: var(--box-shadow-default);
 }
 
 .dashboard-metric-card strong {
@@ -321,7 +322,7 @@
 
 .dashboard-page-header h1 {
     margin: 0 0 0.6rem;
-    color: #333;
+    color: var(--color-text);
     font-family: var(--font-heading);
     font-size: 28px;
     font-weight: 800;
@@ -329,7 +330,7 @@
 
 .dashboard-page-text {
     max-width: 720px;
-    color: #333;
+    color: var(--color-text-soft);
     font-family: var(--font-text);
     font-size: 14px;
     font-weight: 300;
@@ -351,10 +352,11 @@
 }
 
 .dashboard-panel {
-    background: #ffffff;
-    border: 1px solid #dedede;
-    border-radius: 5px;
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
     padding: 1.4rem;
+    box-shadow: var(--box-shadow-default);
 }
 
 .dashboard-panel-wide {
@@ -369,9 +371,9 @@
 .dashboard-panel h2 {
     margin: -1.4rem -1.4rem 1.4rem;
     padding: 1rem 1.4rem;
-    background: #f5f6f8;
-    border-bottom: 1px solid #dedede;
-    border-radius: 5px 5px 0 0;
+    background: var(--color-surface-muted);
+    border-bottom: 1px solid var(--color-border);
+    border-radius: var(--radius-default) var(--radius-default) 0 0;
     font-family: var(--font-heading);
     font-size: 18px;
     font-weight: 600;
@@ -401,6 +403,10 @@
     margin-top: 0.75rem;
 }
 
+.dashboard-panel-actions .btn {
+    flex-shrink: 0;
+}
+
 .dashboard-action-form {
     margin: 0;
 }
@@ -408,16 +414,16 @@
 .dashboard-notice {
     margin-bottom: 1rem;
     padding: 0.9rem 1rem;
-    border: 1px solid #dedede;
-    border-radius: 5px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
     background: var(--color-bg);
-    color: #1f7a46;
+    color: var(--color-success-text);
 }
 
 .dashboard-notice-warning {
-    border-color: #dedede;
+    border-color: var(--color-border);
     background: var(--color-bg);
-    color: #92400e;
+    color: var(--color-warning-text);
 }
 
 .dashboard-billing-banner {
@@ -427,9 +433,10 @@
     gap: 1rem;
     margin-bottom: 1rem;
     padding: 0.9rem 1rem;
-    border: 1px solid #dedede;
-    border-radius: 5px;
-    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg-white);
+    box-shadow: var(--box-shadow-default);
 }
 
 .dashboard-billing-banner strong,
@@ -446,12 +453,12 @@
 }
 
 .dashboard-billing-banner span {
-    color: #333;
+    color: var(--color-text-soft);
     font-size: 0.85rem;
 }
 
 .dashboard-billing-banner-warning strong {
-    color: #92400e;
+    color: var(--color-warning-text);
 }
 
 .billing-status-panel {
@@ -467,13 +474,15 @@
 .billing-plan-card {
     position: relative;
     padding: 1.4rem;
-    border: 1px solid #dedede;
-    border-radius: 5px;
-    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg-white);
+    box-shadow: var(--box-shadow-default);
 }
 
 .billing-plan-card-featured {
     border-color: var(--color-primary);
+    box-shadow: 0 16px 40px rgba(0, 59, 115, 0.1);
 }
 
 .billing-plan-badge {
@@ -481,7 +490,7 @@
     align-items: center;
     margin: 0 0 0.75rem;
     padding: 0.28rem 0.55rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--color-primary);
     color: #ffffff;
     font-family: var(--font-ui);
@@ -535,7 +544,7 @@
 .dashboard-table th,
 .dashboard-table td {
     padding: 0.85rem 0.7rem;
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid var(--color-border);
     text-align: left;
     vertical-align: top;
 }
@@ -547,13 +556,21 @@
     font-weight: 700;
 }
 
+.dashboard-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.dashboard-table tbody tr:hover {
+    background: var(--color-bg);
+}
+
 .dashboard-table-subtle {
-    color: #8b95a5;
+    color: var(--color-text-subtle);
     font-size: 0.85rem;
 }
 
 .dashboard-confirmations-table th {
-    color: #333;
+    color: var(--color-text);
     font-family: var(--font-ui);
     font-size: calc(0.82rem + 1px);
     font-weight: 700;
@@ -600,7 +617,7 @@
 .confirmation-specifications-table th,
 .confirmation-specifications-table td {
     padding: 0.55rem 0;
-    border-top: 1px solid #dedede;
+    border-top: 1px solid var(--color-border);
     vertical-align: top;
     text-align: left;
 }
@@ -617,10 +634,11 @@
 .dashboard-status {
     display: inline-flex;
     align-items: center;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     padding: 0.28rem 0.6rem;
     font-size: 0.8rem;
     font-weight: 700;
+    line-height: 1;
     color: #ffffff;
     background: #7c3aed;
     border: 1px solid transparent;
@@ -688,7 +706,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     padding: 1rem 0;
-    border-top: 1px solid #dedede;
+    border-top: 1px solid var(--color-border);
 }
 
 .public-document-grid p:last-child,
@@ -698,13 +716,13 @@
 
 .public-document-body {
     padding-top: 1rem;
-    border-top: 1px solid #dedede;
+    border-top: 1px solid var(--color-border);
 }
 
 .public-account-cta {
     margin-top: 1.2rem;
     padding-top: 1.2rem;
-    border-top: 1px solid #dedede;
+    border-top: 1px solid var(--color-border);
 }
 
 .public-account-cta p:last-of-type {
@@ -720,7 +738,7 @@
         position: static;
         height: auto;
         border-right: 0;
-        border-bottom: 1px solid #dedede;
+        border-bottom: 1px solid var(--color-border);
     }
 
     .dashboard-main {
@@ -729,10 +747,22 @@
 
     .dashboard-topbar {
         padding: 0.85rem 1.25rem;
+        position: static;
     }
 
     .dashboard-topbar-greeting {
         font-size: 0.9rem;
+    }
+
+    .dashboard-topbar-action {
+        min-height: 38px;
+        padding: 0.65rem 0.8rem;
+        font-size: 0.88rem;
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+        padding: 0.75rem 0.65rem;
     }
 
     .dashboard-metrics,

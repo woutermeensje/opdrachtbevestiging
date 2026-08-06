@@ -6,6 +6,7 @@ use Anthropic\Client as AnthropicClient;
 use App\Models\Confirmation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AiAssistController extends Controller
 {
@@ -29,6 +30,19 @@ class AiAssistController extends Controller
         if (! $apiKey) {
             return response()->json(['message' => 'AI-assist is niet geconfigureerd.'], 500);
         }
+
+        $dailyLimit = (int) config('services.anthropic.daily_limit', 30);
+        $limiterKey = 'ai-assist:'.$request->user()->id;
+
+        if (RateLimiter::tooManyAttempts($limiterKey, $dailyLimit)) {
+            $hoursLeft = (int) ceil(RateLimiter::availableIn($limiterKey) / 3600);
+
+            return response()->json([
+                'message' => "Je hebt het dagelijkse maximum van {$dailyLimit} AI-assist-aanroepen bereikt. Probeer het over ongeveer {$hoursLeft} uur opnieuw.",
+            ], 429);
+        }
+
+        RateLimiter::hit($limiterKey, 86400);
 
         $client = new AnthropicClient(apiKey: $apiKey);
 
