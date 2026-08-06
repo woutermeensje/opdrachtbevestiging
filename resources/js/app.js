@@ -375,6 +375,7 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
             ],
         },
     });
+    wrapper.__quill = quill;
 
     if (initialContent !== '') {
         quill.clipboard.dangerouslyPasteHTML(initialContent);
@@ -424,6 +425,7 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
 
                     quill.setText('');
                     quill.clipboard.dangerouslyPasteHTML(data.html);
+                    syncInput();
                 } catch (error) {
                     status.textContent = error.message ?? 'Er ging iets mis, probeer het opnieuw.';
                 } finally {
@@ -443,6 +445,7 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
         input.value = isEmpty ? '' : quill.getSemanticHTML();
         quill.container.classList.toggle('is-invalid', hasAttemptedSubmit && isRequired && isEmpty);
     };
+    wrapper.__syncQuillInput = syncInput;
 
     quill.on('text-change', syncInput);
 
@@ -458,4 +461,228 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
     });
 
     syncInput();
+});
+
+document.querySelectorAll('[data-ai-toolkit]').forEach((panel) => {
+    const formSelector = panel.dataset.aiFormSelector;
+    const form = formSelector ? document.querySelector(formSelector) : null;
+    const briefInput = panel.querySelector('[data-ai-brief]');
+    const generateButton = panel.querySelector('[data-ai-generate]');
+    const checkButton = panel.querySelector('[data-ai-check]');
+    const status = panel.querySelector('[data-ai-status]');
+    const results = panel.querySelector('[data-ai-check-results]');
+    const descriptionWrapper = form?.querySelector('[data-ai-assist-context="opdrachtbeschrijving"]');
+    const descriptionEditor = descriptionWrapper?.__quill;
+
+    if (!form || !descriptionEditor) {
+        return;
+    }
+
+    const csrfToken = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+    const setStatus = (message, state = '') => {
+        if (!status) {
+            return;
+        }
+
+        status.textContent = message;
+        status.dataset.state = state;
+    };
+
+    const setBusy = (isBusy) => {
+        if (generateButton) {
+            generateButton.disabled = isBusy;
+        }
+
+        if (checkButton) {
+            checkButton.disabled = isBusy;
+        }
+    };
+
+    const postJson = async (url, payload) => {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': csrfToken(),
+            },
+            body: JSON.stringify(payload),
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(data.message ?? 'Er ging iets mis.');
+        }
+
+        return data;
+    };
+
+    const fieldLabel = (field) => {
+        if (field.id) {
+            const matchingLabel = Array.from(form.querySelectorAll('label')).find((label) => label.htmlFor === field.id);
+
+            if (matchingLabel) {
+                return matchingLabel.textContent.trim();
+            }
+        }
+
+        const localLabel = field.closest('div, section, details')?.querySelector('label');
+
+        if (localLabel) {
+            return localLabel.textContent.trim();
+        }
+
+        return (field.name || field.id || 'Veld').replace(/[_-]/g, ' ');
+    };
+
+    const fieldValue = (field) => {
+        if (field.type === 'checkbox' || field.type === 'radio') {
+            return field.checked ? (field.value || 'Ja') : '';
+        }
+
+        if (field.tagName === 'SELECT') {
+            return Array.from(field.selectedOptions)
+                .map((option) => option.textContent.trim())
+                .filter(Boolean)
+                .join(', ');
+        }
+
+        return field.value.trim();
+    };
+
+    const collectFormContext = () => {
+        const lines = [];
+        const fields = Array.from(form.querySelectorAll('input, select, textarea'));
+
+        fields.forEach((field) => {
+            if (
+                field.disabled
+                || field.matches('[type="hidden"], [type="file"], [type="password"], [type="submit"]')
+                || field.matches('[data-ai-brief], [data-quill-input]')
+                || ['_token', 'submit_action'].includes(field.name)
+            ) {
+                return;
+            }
+
+            const value = fieldValue(field);
+
+            if (value === '') {
+                return;
+            }
+
+            lines.push(`${fieldLabel(field)}: ${value}`);
+        });
+
+        return lines.join('\n');
+    };
+
+    const editorHtml = () => (
+        typeof descriptionEditor.getSemanticHTML === 'function'
+            ? descriptionEditor.getSemanticHTML()
+            : descriptionEditor.root.innerHTML
+    );
+
+    const replaceDescription = (html) => {
+        descriptionEditor.setText('');
+        descriptionEditor.clipboard.dangerouslyPasteHTML(html);
+        descriptionWrapper.__syncQuillInput?.();
+    };
+
+    const renderCheckResults = (data) => {
+        if (!results) {
+            return;
+        }
+
+        const score = document.createElement('p');
+        score.className = 'ai-check-score';
+        score.textContent = `Score: ${data.score ?? 0}/100`;
+
+        const summary = document.createElement('p');
+        summary.className = 'ai-check-summary';
+        summary.textContent = data.summary ?? 'Controle afgerond.';
+
+        const list = document.createElement('div');
+        list.className = 'ai-check-list';
+
+        const labels = {
+            ok: 'Compleet',
+            warning: 'Let op',
+            missing: 'Mist',
+        };
+
+        (data.items ?? []).forEach((item) => {
+            const itemEl = document.createElement('div');
+            const itemStatus = ['ok', 'warning', 'missing'].includes(item.status) ? item.status : 'warning';
+            itemEl.className = 'ai-check-item';
+            itemEl.dataset.status = itemStatus;
+
+            const heading = document.createElement('div');
+            heading.className = 'ai-check-item-heading';
+
+            const title = document.createElement('strong');
+            title.textContent = item.label ?? 'Aandachtspunt';
+
+            const badge = document.createElement('span');
+            badge.className = 'ai-check-status';
+            badge.textContent = labels[itemStatus] ?? 'Let op';
+
+            const message = document.createElement('p');
+            message.textContent = item.message ?? 'Controleer dit onderdeel.';
+
+            heading.append(title, badge);
+            itemEl.append(heading, message);
+            list.appendChild(itemEl);
+        });
+
+        results.replaceChildren(score, summary, list);
+        results.hidden = false;
+    };
+
+    generateButton?.addEventListener('click', async () => {
+        const brief = briefInput?.value.trim() ?? '';
+
+        if (brief === '') {
+            setStatus('Beschrijf kort wat de opdracht inhoudt.', 'error');
+            briefInput?.focus();
+            return;
+        }
+
+        setBusy(true);
+        setStatus('Concept wordt gemaakt...', 'loading');
+
+        try {
+            const data = await postJson(panel.dataset.aiGenerateUrl, {
+                brief,
+                form_context: collectFormContext(),
+            });
+
+            replaceDescription(data.html);
+            setStatus('Concept is ingevuld. Loop de afspraken nog even zorgvuldig na.', 'success');
+        } catch (error) {
+            setStatus(error.message ?? 'Concept maken is niet gelukt.', 'error');
+        } finally {
+            setBusy(false);
+        }
+    });
+
+    checkButton?.addEventListener('click', async () => {
+        descriptionWrapper.__syncQuillInput?.();
+        setBusy(true);
+        setStatus('Opdrachtbevestiging wordt gecontroleerd...', 'loading');
+
+        try {
+            const data = await postJson(panel.dataset.aiCheckUrl, {
+                text: editorHtml(),
+                form_context: collectFormContext(),
+            });
+
+            renderCheckResults(data);
+            setStatus('Controle afgerond.', 'success');
+        } catch (error) {
+            setStatus(error.message ?? 'Controle is niet gelukt.', 'error');
+        } finally {
+            setBusy(false);
+        }
+    });
 });

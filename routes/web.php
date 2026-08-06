@@ -131,6 +131,12 @@ Route::middleware(['auth', 'verified', 'billing.active'])->group(function (): vo
         Route::post('/dashboard/ai-assist/tekst', [AiAssistController::class, 'improveConfirmationText'])
             ->middleware('throttle:20,1')
             ->name('dashboard.ai-assist.text');
+        Route::post('/dashboard/ai-assist/concept', [AiAssistController::class, 'generateConfirmationDraft'])
+            ->middleware('throttle:20,1')
+            ->name('dashboard.ai-assist.concept');
+        Route::post('/dashboard/ai-assist/check', [AiAssistController::class, 'checkConfirmationCompleteness'])
+            ->middleware('throttle:20,1')
+            ->name('dashboard.ai-assist.check');
         Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
         Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/intrekken', [ConfirmationController::class, 'retract'])->name('dashboard.confirmations.retract');
 

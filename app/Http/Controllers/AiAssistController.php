@@ -7,6 +7,8 @@ use App\Models\Confirmation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use JsonException;
+use Throwable;
 
 class AiAssistController extends Controller
 {
@@ -25,9 +27,124 @@ class AiAssistController extends Controller
             return response()->json(['message' => 'Vul eerst een tekst in om te verbeteren.'], 422);
         }
 
-        $apiKey = config('services.anthropic.key');
+        if ($unavailable = $this->unavailableResponse($request)) {
+            return $unavailable;
+        }
 
-        if (! $apiKey) {
+        try {
+            $improvedText = $this->message(
+                system: 'Je bent een assistent die Nederlandse teksten voor zakelijke opdrachtbevestigingen verbetert. '
+                    .'Je krijgt een ruwe tekst van de gebruiker (context: '.($validated['context'] ?? 'opdrachtbevestiging').'). '
+                    .'Herschrijf deze tot een heldere, juridisch zorgvuldig geformuleerde en professioneel gestructureerde tekst in het Nederlands. '
+                    .'Behoud de inhoudelijke intentie en alle feitelijke details van de gebruiker; verzin geen nieuwe afspraken of bedragen. '
+                    .'Gebruik waar zinvol alinea\'s en opsommingen om de tekst overzichtelijk te maken. '
+                    .'Antwoord uitsluitend met de verbeterde tekst als HTML, en gebruik daarbij alleen de tags <p>, <br>, <strong>, <em>, <ul>, <ol> en <li>. '
+                    .'Geen inleiding, geen toelichting, geen markdown, geen andere HTML-tags.',
+                content: $plainText,
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json(['message' => 'AI-assist is tijdelijk niet beschikbaar. Probeer het later opnieuw.'], 502);
+        }
+
+        $improvedHtml = Confirmation::sanitizeDescription($improvedText);
+
+        if ($improvedHtml === null) {
+            return response()->json(['message' => 'Er kon geen verbeterde tekst worden gegenereerd.'], 502);
+        }
+
+        return response()->json(['html' => $improvedHtml]);
+    }
+
+    public function generateConfirmationDraft(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'brief' => ['required', 'string', 'max:4000'],
+            'form_context' => ['nullable', 'string', 'max:12000'],
+        ]);
+
+        if ($unavailable = $this->unavailableResponse($request)) {
+            return $unavailable;
+        }
+
+        try {
+            $draft = $this->message(
+                system: 'Je bent een assistent die Nederlandse opdrachtbevestigingen opstelt voor ondernemers. '
+                    .'Maak van de korte input een duidelijke opdrachtbeschrijving in professioneel Nederlands. '
+                    .'Gebruik uitsluitend feiten die de gebruiker of formuliercontext geeft. Verzin geen bedragen, datums, namen, looptijden of afspraken. '
+                    .'Als informatie ontbreekt, benoem die niet als fictieve afspraak en gebruik geen placeholders zoals [datum]. '
+                    .'Structuur mag bestaan uit korte alinea\'s en opsommingen. '
+                    .'Antwoord uitsluitend als veilige HTML met alleen <p>, <br>, <strong>, <em>, <ul>, <ol> en <li>. '
+                    .'Geen toelichting, geen markdown en geen andere HTML-tags.',
+                content: trim($validated['brief'])."\n\nFormuliercontext:\n".trim($validated['form_context'] ?? ''),
+                maxTokens: 1600,
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json(['message' => 'AI-assist is tijdelijk niet beschikbaar. Probeer het later opnieuw.'], 502);
+        }
+
+        $draftHtml = Confirmation::sanitizeDescription($draft);
+
+        if ($draftHtml === null) {
+            return response()->json(['message' => 'Er kon geen concepttekst worden gegenereerd.'], 502);
+        }
+
+        return response()->json(['html' => $draftHtml]);
+    }
+
+    public function checkConfirmationCompleteness(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'text' => ['nullable', 'string', 'max:8000'],
+            'form_context' => ['nullable', 'string', 'max:12000'],
+        ]);
+
+        $plainText = Confirmation::richTextToPlainText(
+            Confirmation::sanitizeDescription($validated['text'] ?? '')
+        );
+        $formContext = trim($validated['form_context'] ?? '');
+
+        if (trim($plainText.$formContext) === '') {
+            return response()->json(['message' => 'Vul eerst gegevens in om te controleren.'], 422);
+        }
+
+        if ($unavailable = $this->unavailableResponse($request)) {
+            return $unavailable;
+        }
+
+        try {
+            $checkText = $this->message(
+                system: 'Je controleert Nederlandse zakelijke opdrachtbevestigingen op duidelijkheid en compleetheid. '
+                    .'Geef geen juridisch advies en herschrijf de tekst niet. Controleer alleen of de afspraken begrijpelijk en volledig genoeg zijn. '
+                    .'Beoordeel minimaal: werkzaamheden/scope, planning, prijs of tarief, btw/betaalafspraken, opdrachtgever, opdrachtnemer, oplevering, meerwerk, verantwoordelijkheden, opzegging/annulering en akkoordproces. '
+                    .'Gebruik alleen de aangeleverde informatie. Als iets ontbreekt, zeg dat concreet. '
+                    .'Antwoord uitsluitend als geldige JSON zonder markdown, met deze vorm: '
+                    .'{"score":75,"summary":"Korte samenvatting","items":[{"label":"Werkzaamheden","status":"ok","message":"..."},{"label":"Betaling","status":"missing","message":"..."}]}. '
+                    .'Gebruik alleen statuswaarden ok, warning of missing.',
+                content: "Opdrachtbeschrijving:\n{$plainText}\n\nFormuliercontext:\n{$formContext}",
+                maxTokens: 1800,
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json(['message' => 'AI-assist is tijdelijk niet beschikbaar. Probeer het later opnieuw.'], 502);
+        }
+
+        $decoded = $this->decodeJson($checkText);
+
+        if (! is_array($decoded)) {
+            return response()->json(['message' => 'De AI-controle gaf geen bruikbaar resultaat terug.'], 502);
+        }
+
+        return response()->json($this->normaliseCheckResult($decoded));
+    }
+
+    private function unavailableResponse(Request $request): ?JsonResponse
+    {
+        if (! config('services.anthropic.key')) {
             return response()->json(['message' => 'AI-assist is niet geconfigureerd.'], 500);
         }
 
@@ -44,35 +161,79 @@ class AiAssistController extends Controller
 
         RateLimiter::hit($limiterKey, 86400);
 
-        $client = new AnthropicClient(apiKey: $apiKey);
+        return null;
+    }
+
+    private function message(string $system, string $content, int $maxTokens = 2048): string
+    {
+        $client = new AnthropicClient(apiKey: config('services.anthropic.key'));
 
         $response = $client->messages->create(
-            maxTokens: 2048,
+            maxTokens: $maxTokens,
             model: config('services.anthropic.model', 'claude-sonnet-5'),
             thinking: ['type' => 'disabled'],
-            system: 'Je bent een assistent die Nederlandse teksten voor zakelijke opdrachtbevestigingen verbetert. '
-                .'Je krijgt een ruwe tekst van de gebruiker (context: '.($validated['context'] ?? 'opdrachtbevestiging').'). '
-                .'Herschrijf deze tot een heldere, juridisch zorgvuldig geformuleerde en professioneel gestructureerde tekst in het Nederlands. '
-                .'Behoud de inhoudelijke intentie en alle feitelijke details van de gebruiker; verzin geen nieuwe afspraken of bedragen. '
-                .'Gebruik waar zinvol alinea\'s en opsommingen om de tekst overzichtelijk te maken. '
-                .'Antwoord uitsluitend met de verbeterde tekst als HTML, en gebruik daarbij alleen de tags <p>, <br>, <strong>, <em>, <ul>, <ol> en <li>. '
-                .'Geen inleiding, geen toelichting, geen markdown, geen andere HTML-tags.',
+            system: $system,
             messages: [
-                ['role' => 'user', 'content' => $plainText],
+                ['role' => 'user', 'content' => $content],
             ],
         );
 
-        $improvedText = collect($response->content)
+        return collect($response->content)
             ->filter(fn ($block) => $block->type === 'text')
             ->map(fn ($block) => $block->text)
             ->implode('');
+    }
 
-        $improvedHtml = Confirmation::sanitizeDescription($improvedText);
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function decodeJson(string $text): ?array
+    {
+        $json = trim($text);
+        $json = preg_replace('/^```(?:json)?|```$/m', '', $json) ?? $json;
+        $json = trim($json);
 
-        if ($improvedHtml === null) {
-            return response()->json(['message' => 'Er kon geen verbeterde tekst worden gegenereerd.'], 502);
+        try {
+            $decoded = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            if (! preg_match('/\{.*\}/s', $json, $matches)) {
+                return null;
+            }
+
+            try {
+                $decoded = json_decode($matches[0], true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException) {
+                return null;
+            }
         }
 
-        return response()->json(['html' => $improvedHtml]);
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $result
+     * @return array{score: int, summary: string, items: array<int, array{label: string, status: string, message: string}>}
+     */
+    private function normaliseCheckResult(array $result): array
+    {
+        $allowedStatuses = ['ok', 'warning', 'missing'];
+
+        return [
+            'score' => max(0, min(100, (int) ($result['score'] ?? 0))),
+            'summary' => trim(strip_tags((string) ($result['summary'] ?? 'Controle afgerond.'))),
+            'items' => collect($result['items'] ?? [])
+                ->filter(fn ($item): bool => is_array($item))
+                ->map(function (array $item) use ($allowedStatuses): array {
+                    $status = (string) ($item['status'] ?? 'warning');
+
+                    return [
+                        'label' => trim(strip_tags((string) ($item['label'] ?? 'Aandachtspunt'))),
+                        'status' => in_array($status, $allowedStatuses, true) ? $status : 'warning',
+                        'message' => trim(strip_tags((string) ($item['message'] ?? 'Controleer dit onderdeel.'))),
+                    ];
+                })
+                ->values()
+                ->all(),
+        ];
     }
 }

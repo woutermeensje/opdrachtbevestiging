@@ -31,7 +31,7 @@
 
     <div class="dashboard-create-layout">
         <div class="dashboard-create-form-panel">
-            <form method="POST" action="{{ route('dashboard.create.store') }}" class="dashboard-form" enctype="multipart/form-data">
+            <form id="confirmation_create_form" method="POST" action="{{ route('dashboard.create.store') }}" class="dashboard-form" enctype="multipart/form-data">
                 @csrf
 
                 <section class="dashboard-panel dashboard-panel-wide">
@@ -122,15 +122,42 @@
             </form>
         </div>
 
-        @include('partials.dashboard.panel', [
-            'title' => 'Vaste gegevens',
-            'class' => 'dashboard-create-side-panel',
-            'slot' => '
-                <p>Algemene voorwaarden, bedrijfsgegevens, basis afspraken, logo en huisstijl beheer je in Mijn profiel.</p>
-                <p>Die vaste gegevens worden automatisch toegevoegd aan nieuwe opdrachtbevestigingen en meegenomen in de PDF die bij het verzenden wordt gemaakt.</p>
-                <p><a href="'.e(route('dashboard.profile.agreements')).'" class="btn btn-secondary">Naar basis afspraken</a></p>
-            ',
-        ])
+        <div class="dashboard-create-side-column">
+            <section
+                class="dashboard-panel dashboard-ai-panel"
+                data-ai-toolkit
+                data-ai-form-selector="#confirmation_create_form"
+                data-ai-generate-url="{{ route('dashboard.ai-assist.concept') }}"
+                data-ai-check-url="{{ route('dashboard.ai-assist.check') }}"
+            >
+                <h2>AI-assistent</h2>
+
+                <label for="ai_brief">Korte opdracht</label>
+                <textarea
+                    id="ai_brief"
+                    data-ai-brief
+                    rows="4"
+                    placeholder="Bijvoorbeeld: website bouwen voor Acme, 3 pagina's, EUR 1.500 excl. btw, oplevering eind september."
+                ></textarea>
+
+                <div class="dashboard-panel-actions">
+                    <button type="button" class="btn btn-secondary btn-small" data-ai-generate>Concept maken</button>
+                    <button type="button" class="btn btn-secondary btn-small" data-ai-check>Compleetheid checken</button>
+                </div>
+
+                <p class="form-help ai-status" data-ai-status></p>
+                <div class="ai-check-results" data-ai-check-results hidden></div>
+            </section>
+
+            @include('partials.dashboard.panel', [
+                'title' => 'Vaste gegevens',
+                'slot' => '
+                    <p>Algemene voorwaarden, bedrijfsgegevens, basis afspraken, logo en huisstijl beheer je in Mijn profiel.</p>
+                    <p>Die vaste gegevens worden automatisch toegevoegd aan nieuwe opdrachtbevestigingen en meegenomen in de PDF die bij het verzenden wordt gemaakt.</p>
+                    <p><a href="'.e(route('dashboard.profile.agreements')).'" class="btn btn-secondary">Naar basis afspraken</a></p>
+                ',
+            ])
+        </div>
     </div>
     @endif
 @endsection
