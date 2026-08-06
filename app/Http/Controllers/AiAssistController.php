@@ -38,8 +38,9 @@ class AiAssistController extends Controller
                     .'Herschrijf deze tot een heldere, juridisch zorgvuldig geformuleerde en professioneel gestructureerde tekst in het Nederlands. '
                     .'Behoud de inhoudelijke intentie en alle feitelijke details van de gebruiker; verzin geen nieuwe afspraken of bedragen. '
                     .'Gebruik waar zinvol alinea\'s en opsommingen om de tekst overzichtelijk te maken. '
-                    .'Antwoord uitsluitend met de verbeterde tekst als HTML, en gebruik daarbij alleen de tags <p>, <br>, <strong>, <em>, <ul>, <ol> en <li>. '
-                    .'Geen inleiding, geen toelichting, geen markdown, geen andere HTML-tags.',
+                    .'Als de tekst een volledige opdrachtbeschrijving is, gebruik dan de vaste opbouw voor opdrachtbeschrijvingen. '
+                    .$this->draftStructureRules().' '
+                    .$this->htmlOutputRules(),
                 content: $plainText,
             );
         } catch (Throwable $exception) {
@@ -74,9 +75,8 @@ class AiAssistController extends Controller
                     .'Maak van de korte input een duidelijke opdrachtbeschrijving in professioneel Nederlands. '
                     .'Gebruik uitsluitend feiten die de gebruiker of formuliercontext geeft. Verzin geen bedragen, datums, namen, looptijden of afspraken. '
                     .'Als informatie ontbreekt, benoem die niet als fictieve afspraak en gebruik geen placeholders zoals [datum]. '
-                    .'Structuur mag bestaan uit korte alinea\'s en opsommingen. '
-                    .'Antwoord uitsluitend als veilige HTML met alleen <p>, <br>, <strong>, <em>, <ul>, <ol> en <li>. '
-                    .'Geen toelichting, geen markdown en geen andere HTML-tags.',
+                    .$this->draftStructureRules().' '
+                    .$this->htmlOutputRules(),
                 content: trim($validated['brief'])."\n\nFormuliercontext:\n".trim($validated['form_context'] ?? ''),
                 maxTokens: 1600,
             );
@@ -182,6 +182,31 @@ class AiAssistController extends Controller
             ->filter(fn ($block) => $block->type === 'text')
             ->map(fn ($block) => $block->text)
             ->implode('');
+    }
+
+    private function draftStructureRules(): string
+    {
+        return implode(' ', [
+            'Gebruik deze vaste HTML-opbouw voor opdrachtbeschrijvingen:',
+            '<p><strong>Opdracht</strong></p> met daarna een korte alinea over de opdracht.',
+            '<p><strong>Afspraken</strong></p> met daarna een <ul> met concrete afspraken.',
+            '<p><strong>Planning en vergoeding</strong></p> alleen als hierover concrete informatie is gegeven.',
+            '<p><strong>Voorwaarden</strong></p> alleen als hierover concrete informatie is gegeven.',
+            'Start nooit met een losse titel zoals Opdrachtbevestiging.',
+            'Gebruik koppen alleen als <p><strong>Koptekst</strong></p>.',
+            'Schrijf geen afsluitende restalinea over ontbrekende informatie.',
+            'Als de gebruiker expliciet zegt dat iets nog niet bekend is, benoem dat alleen bij dat concrete onderdeel.',
+        ]);
+    }
+
+    private function htmlOutputRules(): string
+    {
+        return implode(' ', [
+            'Antwoord uitsluitend als veilige HTML.',
+            'Gebruik alleen de tags <p>, <br>, <strong>, <em>, <ul>, <ol> en <li>.',
+            'Geen inleiding, geen toelichting, geen markdown en geen andere HTML-tags.',
+            'Gebruik geen inline styles, classes, tabellen, headings of links.',
+        ]);
     }
 
     /**
