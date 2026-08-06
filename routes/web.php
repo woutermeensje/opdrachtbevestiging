@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AiAssistController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConfirmationController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
@@ -14,6 +16,7 @@ use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\PublicConfirmationController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\VerifyEmailController;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +62,9 @@ Route::get('/opdrachtbevestiging/{token}/getekend', [PublicConfirmationControlle
 Route::get('/opdrachtbevestiging/{token}/pdf', [PublicConfirmationController::class, 'downloadPdf'])->name('confirmations.public.pdf');
 Route::post('/kvk/lookup', KvkLookupController::class)->name('kvk.lookup');
 Route::post('/kvk/search', KvkSearchController::class)->name('kvk.search');
+Route::post('/mollie/webhook', [BillingController::class, 'webhook'])
+    ->withoutMiddleware(ValidateCsrfToken::class)
+    ->name('billing.webhook');
 
 Route::redirect('/register', '/registreren');
 Route::redirect('/login', '/');
@@ -87,6 +93,13 @@ Route::middleware('auth')->group(function (): void {
 });
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::get('/dashboard/abonnement', [BillingController::class, 'show'])->name('billing.show');
+    Route::post('/dashboard/abonnement/{plan}/checkout', [BillingController::class, 'checkout'])->name('billing.checkout');
+    Route::get('/dashboard/abonnement/bedankt', [BillingController::class, 'return'])->name('billing.return');
+    Route::get('/dashboard/abonnement/geannuleerd', [BillingController::class, 'cancelled'])->name('billing.cancelled');
+});
+
+Route::middleware(['auth', 'verified', 'billing.active'])->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/opdrachtbevestigingen', [ConfirmationController::class, 'index'])->name('dashboard.confirmations');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
@@ -115,6 +128,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::middleware('company.profile')->group(function (): void {
         Route::get('/dashboard/aanmaken', [ConfirmationController::class, 'create'])->name('dashboard.create');
         Route::post('/dashboard/aanmaken', [ConfirmationController::class, 'store'])->name('dashboard.create.store');
+        Route::post('/dashboard/ai-assist/tekst', [AiAssistController::class, 'improveConfirmationText'])
+            ->middleware('throttle:20,1')
+            ->name('dashboard.ai-assist.text');
         Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/verzenden', [ConfirmationController::class, 'send'])->name('dashboard.confirmations.send');
         Route::post('/dashboard/opdrachtbevestigingen/{confirmation}/intrekken', [ConfirmationController::class, 'retract'])->name('dashboard.confirmations.retract');
 

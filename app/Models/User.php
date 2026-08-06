@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -43,6 +44,16 @@ class User extends Authenticatable implements MustVerifyEmail
         'default_specifications',
         'email',
         'password',
+        'trial_ends_at',
+        'subscription_status',
+        'subscription_plan',
+        'subscription_started_at',
+        'subscription_renews_at',
+        'mollie_customer_id',
+        'mollie_mandate_id',
+        'mollie_subscription_id',
+        'mollie_pending_payment_id',
+        'pending_subscription_plan',
     ];
 
     /**
@@ -64,6 +75,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'trial_ends_at' => 'datetime',
+            'subscription_started_at' => 'datetime',
+            'subscription_renews_at' => 'datetime',
             'default_specifications' => 'array',
             'password' => 'hashed',
         ];
@@ -87,6 +101,51 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasCompletedCompanyProfile(): bool
     {
         return filled($this->company_name) && filled($this->kvk_number);
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        return $this->subscription_status === 'active';
+    }
+
+    public function hasPendingSubscription(): bool
+    {
+        return $this->subscription_status === 'pending';
+    }
+
+    public function isOnTrial(): bool
+    {
+        return ! $this->hasActiveSubscription()
+            && $this->trial_ends_at instanceof Carbon
+            && $this->trial_ends_at->isFuture();
+    }
+
+    public function hasExpiredTrial(): bool
+    {
+        return ! $this->hasActiveSubscription()
+            && $this->trial_ends_at instanceof Carbon
+            && $this->trial_ends_at->isPast();
+    }
+
+    public function hasBillingAccess(): bool
+    {
+        return $this->hasActiveSubscription() || $this->isOnTrial();
+    }
+
+    public function trialDaysRemaining(): int
+    {
+        if (! $this->trial_ends_at instanceof Carbon || ! $this->trial_ends_at->isFuture()) {
+            return 0;
+        }
+
+        return max(0, (int) ceil(now()->diffInSeconds($this->trial_ends_at, false) / 86400));
+    }
+
+    public function subscriptionPlanName(): ?string
+    {
+        $planName = config('billing.plans.'.($this->subscription_plan ?? $this->pending_subscription_plan).'.name');
+
+        return is_string($planName) ? $planName : null;
     }
 
     /**

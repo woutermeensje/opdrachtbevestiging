@@ -103,8 +103,6 @@
             'title' => 'Vaste afspraken',
             'slot' => '
                 '.($confirmation->defaultAgreementsHtml() !== '' ? '<div class="dashboard-rich-content">'.$confirmation->defaultAgreementsHtml().'</div>' : '<p>Geen basis afspraken toegevoegd.</p>').'
-                <p><strong>Beëindiging van de opdracht:</strong></p>
-                '.($confirmation->terminationTermsHtml() !== '' ? '<div class="dashboard-rich-content">'.$confirmation->terminationTermsHtml().'</div>' : '<p>-</p>').'
                 '.$termsLine.'
             ',
         ])

@@ -240,13 +240,6 @@
         </div>
     @endif
 
-    @if ($confirmation->terminationTermsHtml() !== '')
-        <div class="box">
-            <h2>Beëindiging van de opdracht</h2>
-            <div class="rich-content">{!! $confirmation->terminationTermsHtml() !!}</div>
-        </div>
-    @endif
-
     @if ($documents !== [])
         <div class="box">
             <h2>Meegestuurde documenten</h2>

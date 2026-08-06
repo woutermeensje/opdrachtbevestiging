@@ -72,5 +72,12 @@
         @case('chevron-down')
             <path d="m6 9 6 6 6-6"></path>
             @break
+
+        @case('credit-card')
+            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+            <path d="M3 10h18"></path>
+            <path d="M7 15h.01"></path>
+            <path d="M11 15h2"></path>
+            @break
     @endswitch
 </svg>

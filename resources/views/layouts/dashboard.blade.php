@@ -18,20 +18,25 @@
             <header class="dashboard-topbar">
                 <p class="dashboard-topbar-greeting">Welkom terug, {{ auth()->user()->first_name }}</p>
 
-                <details class="dashboard-topbar-create">
-                    <summary class="dashboard-topbar-action">
-                        <span>Aanmaken</span>
-                        @include('partials.icons.icon', ['name' => 'chevron-down', 'size' => 16, 'class' => 'dashboard-topbar-action-icon'])
-                    </summary>
-                    <div class="dashboard-topbar-menu">
-                        <a href="{{ route('dashboard.create') }}">Opdrachtbevestiging</a>
-                        <a href="{{ route('dashboard.quotes.create') }}">Offerte</a>
-                        <a href="{{ route('dashboard.contacts.create') }}">Opdrachtgever</a>
-                    </div>
-                </details>
+                @if (auth()->user()->hasBillingAccess())
+                    <details class="dashboard-topbar-create">
+                        <summary class="dashboard-topbar-action">
+                            <span>Aanmaken</span>
+                            @include('partials.icons.icon', ['name' => 'chevron-down', 'size' => 16, 'class' => 'dashboard-topbar-action-icon'])
+                        </summary>
+                        <div class="dashboard-topbar-menu">
+                            <a href="{{ route('dashboard.create') }}">Opdrachtbevestiging</a>
+                            <a href="{{ route('dashboard.quotes.create') }}">Offerte</a>
+                            <a href="{{ route('dashboard.contacts.create') }}">Opdrachtgever</a>
+                        </div>
+                    </details>
+                @else
+                    <a href="{{ route('billing.show') }}" class="dashboard-topbar-action">Abonnement kiezen</a>
+                @endif
             </header>
 
             <main class="dashboard-main">
+                @include('partials.dashboard.billing-banner')
                 @yield('content')
             </main>
         </div>

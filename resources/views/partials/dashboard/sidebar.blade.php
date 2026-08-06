@@ -38,6 +38,7 @@
                 ['route' => 'dashboard.profile.brand', 'label' => 'Logo & Huisstijl'],
             ],
         ],
+        ['route' => 'billing.show', 'label' => 'Abonnement', 'icon' => 'credit-card'],
     ];
 @endphp
 

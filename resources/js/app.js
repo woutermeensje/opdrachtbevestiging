@@ -380,6 +380,62 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
         quill.clipboard.dangerouslyPasteHTML(initialContent);
     }
 
+    if (wrapper.dataset.aiAssist === 'true' && wrapper.dataset.aiAssistUrl) {
+        const toolbar = quill.getModule('toolbar')?.container;
+
+        if (toolbar) {
+            const status = document.createElement('span');
+            status.className = 'quill-ai-assist-status';
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'quill-ai-assist-button';
+            button.textContent = 'AI-assist';
+
+            button.addEventListener('click', async () => {
+                if (quill.getText().trim() === '') {
+                    status.textContent = 'Vul eerst een tekst in.';
+                    return;
+                }
+
+                button.disabled = true;
+                button.textContent = 'Bezig...';
+                status.textContent = '';
+
+                try {
+                    const response = await fetch(wrapper.dataset.aiAssistUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                        },
+                        body: JSON.stringify({
+                            text: quill.getSemanticHTML(),
+                            context: wrapper.dataset.aiAssistContext ?? '',
+                        }),
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message ?? 'Er ging iets mis.');
+                    }
+
+                    quill.setText('');
+                    quill.clipboard.dangerouslyPasteHTML(data.html);
+                } catch (error) {
+                    status.textContent = error.message ?? 'Er ging iets mis, probeer het opnieuw.';
+                } finally {
+                    button.disabled = false;
+                    button.textContent = 'AI-assist';
+                }
+            });
+
+            toolbar.append(button, status);
+        }
+    }
+
     let hasAttemptedSubmit = false;
 
     const syncInput = () => {

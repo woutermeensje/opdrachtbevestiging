@@ -35,6 +35,8 @@ class AuthController extends Controller
             'phone_number' => $validated['phone_number'],
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'trial_ends_at' => now()->addDays(config('billing.trial_days', 14)),
+            'subscription_status' => 'trialing',
         ]);
 
         event(new Registered($user));

@@ -73,13 +73,6 @@
         </div>
     @endif
 
-    @if ($confirmation->terminationTermsHtml() !== '')
-        <div class="public-document-body">
-            <h3>Beëindiging van de opdracht</h3>
-            <div class="dashboard-rich-content">{!! $confirmation->terminationTermsHtml() !!}</div>
-        </div>
-    @endif
-
     @if ($confirmation->terms_path)
         <div class="public-document-body">
             <h3>Algemene voorwaarden</h3>

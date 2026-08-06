@@ -84,7 +84,7 @@
                         <input id="title" name="title" type="text" value="{{ old('title') }}" required>
                     </div>
 
-                    <div class="quill-field" data-quill-field>
+                    <div class="quill-field" data-quill-field data-ai-assist="true" data-ai-assist-context="opdrachtbeschrijving" data-ai-assist-url="{{ route('dashboard.ai-assist.text') }}">
                         <label for="description_editor">Opdrachtbeschrijving invullen</label>
                         <div id="description_editor" class="quill-editor" data-quill-editor data-quill-required="true" data-quill-placeholder="Beschrijf de opdracht...">{!! \App\Models\Confirmation::sanitizeDescription(old('description')) ?? '' !!}</div>
                         <textarea id="description" name="description" class="quill-editor-input" data-quill-input>{{ old('description') }}</textarea>
@@ -93,13 +93,6 @@
                     @include('partials.dashboard.confirmation-specifications-form', [
                         'values' => auth()->user()->default_specifications ?? [],
                     ])
-
-                    <div class="quill-field" data-quill-field>
-                        <label for="termination_terms_editor">Beëindiging van de opdracht</label>
-                        <div id="termination_terms_editor" class="quill-editor" data-quill-editor data-quill-placeholder="Bv. Beide partijen kunnen de opdracht schriftelijk opzeggen met een opzegtermijn van 1 maand.">{!! \App\Models\Confirmation::sanitizeDescription(old('termination_terms')) ?? '' !!}</div>
-                        <textarea id="termination_terms" name="termination_terms" class="quill-editor-input" data-quill-input>{{ old('termination_terms') }}</textarea>
-                    </div>
-
                 </section>
 
                 <section class="dashboard-panel dashboard-panel-wide">

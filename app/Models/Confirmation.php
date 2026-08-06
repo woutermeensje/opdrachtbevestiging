@@ -24,7 +24,6 @@ class Confirmation extends Model
         'client_email',
         'client_kvk_number',
         'description',
-        'termination_terms',
         'specifications',
         'total_value',
         'value_vat_type',
@@ -412,16 +411,6 @@ class Confirmation extends Model
     public function valueVatLabel(): string
     {
         return $this->value_vat_type === 'incl' ? 'incl. BTW' : 'excl. BTW';
-    }
-
-    public function terminationTermsHtml(): string
-    {
-        return self::sanitizeDescription($this->termination_terms) ?? '';
-    }
-
-    public function terminationTermsText(): string
-    {
-        return self::richTextToPlainText($this->terminationTermsHtml());
     }
 
     public static function richTextToPlainText(?string $html): string

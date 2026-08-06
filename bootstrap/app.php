@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'company.profile' => \App\Http\Middleware\EnsureCompanyProfileIsComplete::class,
+            'billing.active' => \App\Http\Middleware\EnsureBillingAccessIsActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

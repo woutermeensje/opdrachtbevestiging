@@ -420,6 +420,109 @@
     color: #92400e;
 }
 
+.dashboard-billing-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    background: #ffffff;
+}
+
+.dashboard-billing-banner strong,
+.dashboard-billing-banner span {
+    display: block;
+}
+
+.dashboard-billing-banner strong {
+    margin-bottom: 0.15rem;
+    color: var(--color-primary);
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    line-height: 1.2;
+}
+
+.dashboard-billing-banner span {
+    color: #333;
+    font-size: 0.85rem;
+}
+
+.dashboard-billing-banner-warning strong {
+    color: #92400e;
+}
+
+.billing-status-panel {
+    margin-bottom: 1.25rem;
+}
+
+.billing-plan-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.billing-plan-card {
+    position: relative;
+    padding: 1.4rem;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    background: #ffffff;
+}
+
+.billing-plan-card-featured {
+    border-color: var(--color-primary);
+}
+
+.billing-plan-badge {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 0 0.75rem;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    background: var(--color-primary);
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.billing-plan-card h2 {
+    margin: 0 0 0.8rem;
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.billing-plan-price {
+    margin-bottom: 1rem;
+}
+
+.billing-plan-price strong,
+.billing-plan-price span {
+    display: block;
+}
+
+.billing-plan-price strong {
+    color: var(--color-text);
+    font-family: var(--font-ui);
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.billing-plan-price span {
+    color: var(--color-text-subtle);
+    font-size: 0.85rem;
+}
+
+.billing-plan-features {
+    margin: 0 0 1.1rem;
+    padding-left: 1.1rem;
+}
+
 .dashboard-table-wrap {
     overflow-x: auto;
 }
@@ -633,8 +736,14 @@
     }
 
     .dashboard-metrics,
-    .dashboard-content-grid {
+    .dashboard-content-grid,
+    .billing-plan-grid {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-billing-banner {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .dashboard-profile-form {

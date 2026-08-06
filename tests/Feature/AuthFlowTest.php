@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Notifications\AdminNewUserRegisteredNotification;
 use App\Models\User;
+use App\Notifications\AdminNewUserRegisteredNotification;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -48,6 +48,10 @@ class AuthFlowTest extends TestCase
         ]);
 
         $user = User::where('email', 'wouter@example.com')->firstOrFail();
+
+        $this->assertSame('trialing', $user->subscription_status);
+        $this->assertNotNull($user->trial_ends_at);
+        $this->assertTrue($user->trial_ends_at->isAfter(now()->addDays(13)));
 
         Notification::assertSentTo($user, VerifyEmail::class);
         Notification::assertSentOnDemand(AdminNewUserRegisteredNotification::class, function ($notification, array $channels, object $notifiable): bool {
