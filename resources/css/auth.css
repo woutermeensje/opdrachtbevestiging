@@ -121,6 +121,45 @@
     margin-top: 1.25rem;
 }
 
+.auth-verification-form {
+    margin-top: 1.25rem;
+}
+
+.auth-verification-form .btn {
+    width: 100%;
+}
+
+.auth-switch-account {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    color: var(--color-text-subtle);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.auth-switch-account button {
+    appearance: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: inherit;
+    font-weight: 700;
+    line-height: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
+.auth-switch-account button:hover {
+    color: var(--color-primary-strong);
+}
+
 .auth-inline-link {
     margin: -0.1rem 0 0;
     font-size: 0.92rem;

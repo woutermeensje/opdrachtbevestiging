@@ -16,16 +16,15 @@
 
         <p>Open de e-mail en klik op de link om je account te activeren. Zonder bevestiging kun je het dashboard nog niet gebruiken.</p>
 
-        <div class="actions actions-split">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn btn-secondary">Uitloggen</button>
-            </form>
+        <form method="POST" action="{{ route('verification.send') }}" class="auth-verification-form">
+            @csrf
+            <button type="submit" class="btn btn-primary">Verificatiemail opnieuw sturen</button>
+        </form>
 
-            <form method="POST" action="{{ route('verification.send') }}">
-                @csrf
-                <button type="submit" class="btn btn-primary">Verificatiemail opnieuw sturen</button>
-            </form>
-        </div>
+        <form method="POST" action="{{ route('logout') }}" class="auth-switch-account">
+            @csrf
+            <span>Verkeerd e-mailadres gebruikt?</span>
+            <button type="submit">Ander account gebruiken</button>
+        </form>
     </section>
 @endsection

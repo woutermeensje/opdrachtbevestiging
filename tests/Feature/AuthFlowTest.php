@@ -109,6 +109,19 @@ class AuthFlowTest extends TestCase
         $response->assertRedirect(route('verification.notice'));
     }
 
+    public function test_verification_notice_prioritizes_resending_the_verification_email(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $response = $this->actingAs($user)->get(route('verification.notice'));
+
+        $response
+            ->assertOk()
+            ->assertSeeText('Verificatiemail opnieuw sturen')
+            ->assertSeeText('Ander account gebruiken')
+            ->assertDontSeeText('Uitloggen');
+    }
+
     public function test_user_can_verify_email_from_link(): void
     {
         $user = User::factory()->unverified()->create();
