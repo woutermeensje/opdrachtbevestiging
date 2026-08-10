@@ -193,29 +193,6 @@
                                     data-preview-input="title"
                                 >
                             </div>
-
-                            <div>
-                                <label for="agreement_date">Startdatum</label>
-                                <input id="agreement_date" name="agreement_date" type="date" value="{{ old('agreement_date') }}" data-preview-input="agreement-date" data-sync-input="#specifications_planning_start_date">
-                            </div>
-
-                            <div>
-                                <label for="duration">Duur van de opdracht</label>
-                                <input id="duration" name="duration" type="text" value="{{ old('duration') }}" placeholder="Bijvoorbeeld 6 maanden" data-preview-input="duration" data-sync-input="#specifications_planning_expected_duration">
-                            </div>
-
-                            <div>
-                                <label for="total_value">Vergoeding</label>
-                                <input id="total_value" name="total_value" type="number" step="0.01" min="0" value="{{ old('total_value') }}" placeholder="0,00" data-preview-input="total-value" data-sync-input="#specifications_financial_total_amount">
-                            </div>
-
-                            <div>
-                                <label for="value_vat_type">BTW</label>
-                                <select id="value_vat_type" name="value_vat_type" data-preview-input="vat-type">
-                                    <option value="excl" @selected(old('value_vat_type', 'excl') === 'excl')>Excl. BTW</option>
-                                    <option value="incl" @selected(old('value_vat_type') === 'incl')>Incl. BTW</option>
-                                </select>
-                            </div>
                         </div>
 
                         <div class="quill-field" data-quill-field data-ai-assist="true" data-ai-assist-context="opdrachtbeschrijving" data-ai-assist-url="{{ route('dashboard.ai-assist.text') }}">
@@ -223,53 +200,6 @@
                             <div id="description_editor" class="quill-editor" data-quill-editor data-quill-required="true" data-quill-placeholder="Beschrijf de opdracht...">{!! $descriptionHtml ?? '' !!}</div>
                             <textarea id="description" name="description" class="quill-editor-input" data-quill-input data-preview-input="description">{{ old('description') }}</textarea>
                         </div>
-
-                        <details class="confirmation-panel-details" open>
-                            <summary>Specificaties en afspraken</summary>
-                            @include('partials.dashboard.confirmation-specifications-form', [
-                                'values' => $user->default_specifications ?? [],
-                            ])
-                        </details>
-
-                        <div class="upload-block-grid">
-                            <div class="upload-block">
-                                <label for="attachment">Bijlage</label>
-                                <input id="attachment" name="attachment" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg">
-                                <p class="form-help">Optioneel. PDF, Word, Excel of afbeelding tot 10 MB.</p>
-                            </div>
-
-                            <div class="upload-block">
-                                <label for="quote">Offerte</label>
-                                <input id="quote" name="quote" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg">
-                                <p class="form-help">Optioneel. PDF, Word, Excel of afbeelding tot 10 MB.</p>
-                            </div>
-                        </div>
-
-                        <section
-                            class="confirmation-ai-inline"
-                            data-ai-toolkit
-                            data-ai-form-selector="#confirmation_create_form"
-                            data-ai-generate-url="{{ route('dashboard.ai-assist.concept') }}"
-                            data-ai-check-url="{{ route('dashboard.ai-assist.check') }}"
-                        >
-                            <h3>AI-assistent</h3>
-
-                            <label for="ai_brief">Korte opdracht</label>
-                            <textarea
-                                id="ai_brief"
-                                data-ai-brief
-                                rows="3"
-                                placeholder="Bijvoorbeeld: website bouwen voor Acme, 3 pagina's, EUR 1.500 excl. btw, oplevering eind september."
-                            ></textarea>
-
-                            <div class="dashboard-panel-actions">
-                                <button type="button" class="btn btn-secondary btn-small" data-ai-generate>Concept maken</button>
-                                <button type="button" class="btn btn-secondary btn-small" data-ai-check>Compleetheid checken</button>
-                            </div>
-
-                            <p class="form-help ai-status" data-ai-status></p>
-                            <div class="ai-check-results" data-ai-check-results hidden></div>
-                        </section>
 
                         <div class="confirmation-edit-panel-actions">
                             <button type="button" class="btn btn-secondary" data-builder-close>Klaar met invullen</button>

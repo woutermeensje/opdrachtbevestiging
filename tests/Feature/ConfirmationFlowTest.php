@@ -118,33 +118,33 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('data-contact-search-option', false)
             ->assertSee('Acme B.V.')
             ->assertSee('sanne@acme.test')
-            ->assertSee('Algemene gegevens')
-            ->assertSee('Financiële afspraken')
-            ->assertSee('Reiskosten')
-            ->assertSee('Materialen')
+            ->assertDontSee('Algemene gegevens')
+            ->assertDontSee('Financiële afspraken')
+            ->assertDontSee('Reiskosten')
+            ->assertDontSee('Materialen')
             ->assertDontSee('Werkzaamheden')
             ->assertDontSee('Urenregistratie')
             ->assertDontSee('Juridisch')
             ->assertDontSee('Bijlagen')
-            ->assertSee('name="specifications[general][client_reference]"', false)
-            ->assertSee('name="specifications[planning][start_date]"', false)
-            ->assertSee('name="specifications[planning][expected_duration]"', false)
-            ->assertSee('name="specifications[financial][rate_unit]"', false)
-            ->assertSee('name="specifications[financial][total_amount]"', false)
+            ->assertDontSee('name="specifications[general][client_reference]"', false)
+            ->assertDontSee('name="specifications[planning][start_date]"', false)
+            ->assertDontSee('name="specifications[planning][expected_duration]"', false)
+            ->assertDontSee('name="specifications[financial][rate_unit]"', false)
+            ->assertDontSee('name="specifications[financial][total_amount]"', false)
             ->assertDontSee('name="specifications[work][acceptance_criteria]"', false)
             ->assertDontSee('name="specifications[time_tracking][required]"', false)
             ->assertDontSee('name="specifications[legal][nda]"', false)
             ->assertDontSee('name="specifications[contact][client_phone]"', false)
             ->assertDontSee('name="specifications[attachments][nda_document]"', false)
-            ->assertSee('name="attachment"', false)
-            ->assertSee('name="quote"', false)
+            ->assertDontSee('name="attachment"', false)
+            ->assertDontSee('name="quote"', false)
             ->assertSee('Verzenden')
             ->assertSee('Verzend test')
             ->assertSee('Vaste gegevens')
-            ->assertSee('name="agreement_date"', false)
-            ->assertSee('name="duration"', false)
-            ->assertSee('name="total_value"', false)
-            ->assertSee('name="value_vat_type"', false)
+            ->assertDontSee('name="agreement_date"', false)
+            ->assertDontSee('name="duration"', false)
+            ->assertDontSee('name="total_value"', false)
+            ->assertDontSee('name="value_vat_type"', false)
             ->assertDontSee('name="termination_terms"', false)
             ->assertDontSee('name="status"', false);
     }
@@ -225,7 +225,7 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Figma-toegang wordt verstrekt.', false);
     }
 
-    public function test_create_confirmation_form_prefills_default_specifications(): void
+    public function test_create_confirmation_form_hides_default_specification_fields(): void
     {
         $user = User::factory()->create([
             'default_specifications' => [
@@ -246,9 +246,9 @@ class ConfirmationFlowTest extends TestCase
             ->actingAs($user)
             ->get(route('dashboard.create'))
             ->assertOk()
-            ->assertSee('name="specifications[travel_expenses][compensation]"', false)
-            ->assertSee('value="yes" selected', false)
-            ->assertSee('value="0,23 per kilometer"', false);
+            ->assertDontSee('name="specifications[travel_expenses][compensation]"', false)
+            ->assertDontSee('value="yes" selected', false)
+            ->assertDontSee('value="0,23 per kilometer"', false);
     }
 
     public function test_confirmation_uses_default_specifications_when_not_submitted(): void
