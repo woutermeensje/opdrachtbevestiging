@@ -139,6 +139,451 @@ input[type='color'] {
     flex: 1 1 150px;
 }
 
+.confirmation-builder {
+    display: block;
+}
+
+.confirmation-builder-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 1rem;
+    align-items: start;
+}
+
+.confirmation-builder-stage {
+    position: relative;
+    min-width: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: #f3f4f6;
+    overflow: hidden;
+}
+
+.confirmation-edit-panel {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    z-index: 8;
+    max-height: min(760px, calc(100vh - 150px));
+    overflow: auto;
+    padding: 1.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg-white);
+    box-shadow: var(--shadow-popover);
+}
+
+.confirmation-edit-panel[hidden] {
+    display: none;
+}
+
+.confirmation-edit-panel-wide {
+    max-height: min(820px, calc(100vh - 150px));
+}
+
+.confirmation-edit-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.15rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.confirmation-edit-panel-header h2 {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.confirmation-edit-panel-eyebrow {
+    margin: 0 0 0.25rem;
+    color: var(--color-primary);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.confirmation-edit-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem 1rem;
+}
+
+.confirmation-edit-panel-grid input,
+.confirmation-edit-panel-grid select,
+.confirmation-edit-panel-grid textarea {
+    margin-bottom: 0;
+}
+
+.confirmation-edit-panel-grid input[readonly] {
+    background: var(--color-surface-muted);
+    color: var(--color-text-soft);
+}
+
+.confirmation-edit-panel-field-wide {
+    grid-column: 1 / -1;
+}
+
+.confirmation-edit-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.7rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.confirmation-panel-details {
+    margin: 1rem 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg-white);
+    overflow: hidden;
+}
+
+.confirmation-panel-details > summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 50px;
+    padding: 0.85rem 2.6rem 0.85rem 1rem;
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    font-weight: 800;
+    list-style: none;
+}
+
+.confirmation-panel-details > summary::-webkit-details-marker {
+    display: none;
+}
+
+.confirmation-panel-details > summary::after {
+    content: '+';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    color: var(--color-primary);
+    font-size: 1.15rem;
+    font-weight: 800;
+    transform: translateY(-50%);
+}
+
+.confirmation-panel-details[open] > summary::after {
+    content: '-';
+}
+
+.confirmation-panel-details .confirmation-specifications {
+    margin: 1rem;
+}
+
+.confirmation-ai-inline {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg);
+}
+
+.confirmation-ai-inline h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.confirmation-ai-inline textarea {
+    min-height: 94px;
+    margin-bottom: 0.85rem;
+}
+
+.confirmation-document-preview {
+    width: 100%;
+    max-width: 980px;
+    min-height: 1120px;
+    margin: 0 auto;
+    padding: clamp(1.25rem, 4vw, 3rem);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg-white);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    color: #222222;
+}
+
+.confirmation-document-click-target {
+    border-radius: var(--radius-default);
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.confirmation-document-click-target:hover {
+    background: color-mix(in srgb, var(--preview-accent) 5%, white);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--preview-accent) 24%, white);
+}
+
+.confirmation-document-click-target:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring), inset 0 0 0 1px var(--preview-accent);
+}
+
+.confirmation-document-content-target {
+    display: block;
+    margin: -0.75rem;
+    padding: 0.75rem;
+}
+
+.confirmation-document-header {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(220px, 0.85fr);
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 4rem;
+}
+
+.confirmation-document-logo {
+    display: flex;
+    align-items: center;
+    min-height: 76px;
+}
+
+.confirmation-document-logo img {
+    width: auto;
+    max-width: 260px;
+    max-height: 96px;
+    object-fit: contain;
+}
+
+.confirmation-document-logo span {
+    color: var(--preview-accent);
+    font-family: var(--font-heading);
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+}
+
+.confirmation-document-sender,
+.confirmation-document-recipient {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    font-family: var(--font-ui);
+    font-size: 0.94rem;
+    line-height: 1.45;
+}
+
+.confirmation-document-sender strong,
+.confirmation-document-recipient strong {
+    font-weight: 800;
+}
+
+.confirmation-document-recipient {
+    width: min(360px, 100%);
+    margin-bottom: 4rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid color-mix(in srgb, var(--preview-accent) 72%, white);
+}
+
+.confirmation-document-label {
+    margin: 0 0 0.25rem;
+    color: var(--preview-accent);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.confirmation-document-title-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, auto);
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 2.25rem;
+}
+
+.confirmation-document-title-row h2 {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: clamp(1.65rem, 4vw, 2.45rem);
+    font-weight: 500;
+    line-height: 1.12;
+}
+
+.confirmation-document-title-row h2 span:last-child {
+    color: #9ca3af;
+}
+
+.confirmation-document-title-row dl,
+.confirmation-builder-status-card dl {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+}
+
+.confirmation-document-title-row dl div,
+.confirmation-builder-status-card dl div {
+    display: grid;
+    grid-template-columns: 116px minmax(0, 1fr);
+    gap: 0.8rem;
+}
+
+.confirmation-document-title-row dt,
+.confirmation-builder-status-card dt {
+    color: var(--color-text-soft);
+    font-family: var(--font-ui);
+    font-weight: 700;
+}
+
+.confirmation-document-title-row dd,
+.confirmation-builder-status-card dd {
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-ui);
+}
+
+.confirmation-document-section {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.confirmation-document-section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.confirmation-document-section-heading span {
+    color: var(--color-text-subtle);
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.confirmation-document-rich {
+    color: var(--color-text);
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+.confirmation-document-rich p,
+.confirmation-document-rich li {
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+.confirmation-document-rich p:last-child,
+.confirmation-document-terms p:last-child {
+    margin-bottom: 0;
+}
+
+.confirmation-document-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
+}
+
+.confirmation-document-summary-grid > div {
+    min-height: 74px;
+    padding: 0.85rem;
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.confirmation-document-summary-grid span,
+.confirmation-document-summary-grid strong {
+    display: block;
+}
+
+.confirmation-document-summary-grid > div > span {
+    margin-bottom: 0.25rem;
+    color: var(--color-text-subtle);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.confirmation-document-summary-grid strong {
+    overflow-wrap: anywhere;
+    font-family: var(--font-ui);
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.confirmation-document-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px solid #222222;
+    color: var(--color-text-soft);
+    font-size: 0.82rem;
+}
+
+.confirmation-builder-aside {
+    position: sticky;
+    top: 5.5rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.confirmation-builder-status-card,
+.confirmation-builder-help-card {
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg-white);
+    box-shadow: var(--box-shadow-default);
+}
+
+.confirmation-builder-status-card .dashboard-status {
+    margin-bottom: 1rem;
+}
+
+.confirmation-builder-status-card dl {
+    margin-bottom: 1rem;
+}
+
+.confirmation-builder-status-card dl div {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.confirmation-builder-submit-actions {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.confirmation-builder-help-card h2 {
+    margin: 0 0 0.55rem;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.confirmation-builder-help-card p {
+    color: var(--color-text-soft);
+    line-height: 1.55;
+}
+
+.confirmation-builder-help-card .btn {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
 .ai-status {
     min-height: 1.25rem;
     margin: 0.75rem 0 0;
@@ -742,6 +1187,42 @@ input[type='color'] {
 }
 
 @media (max-width: 800px) {
+    .confirmation-builder-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .confirmation-builder-stage {
+        padding: 0.75rem;
+        overflow: visible;
+    }
+
+    .confirmation-edit-panel {
+        position: static;
+        max-height: none;
+        margin-bottom: 0.75rem;
+    }
+
+    .confirmation-edit-panel-grid,
+    .confirmation-document-header,
+    .confirmation-document-title-row,
+    .confirmation-document-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .confirmation-document-preview {
+        min-height: auto;
+        padding: 1.15rem;
+    }
+
+    .confirmation-document-header,
+    .confirmation-document-recipient {
+        margin-bottom: 2rem;
+    }
+
+    .confirmation-builder-aside {
+        position: static;
+    }
+
     .form-steps {
         grid-template-columns: 1fr;
     }
@@ -759,9 +1240,14 @@ input[type='color'] {
 
     .actions,
     .actions-end,
-    .actions-split {
+    .actions-split,
+    .confirmation-edit-panel-actions {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .confirmation-edit-panel-actions .btn {
+        width: 100%;
     }
 }
 

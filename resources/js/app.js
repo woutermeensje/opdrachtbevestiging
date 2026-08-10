@@ -163,6 +163,344 @@ document.querySelectorAll('[data-step-form]').forEach((stepForm) => {
     syncSteps();
 });
 
+document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
+    const panels = Array.from(builder.querySelectorAll('[data-builder-panel]'));
+    const openButtons = Array.from(builder.querySelectorAll('[data-builder-open]'));
+    const closeButtons = Array.from(builder.querySelectorAll('[data-builder-close]'));
+    const previewBindings = {
+        specifications_general_client_reference: 'client-reference',
+        specifications_general_project_name: 'project-name',
+        specifications_general_work_location: 'work-location',
+        specifications_planning_end_date: 'end-date',
+        specifications_financial_rate: 'rate',
+        specifications_financial_rate_unit: 'rate-unit',
+        specifications_financial_vat_percentage: 'vat-percentage',
+    };
+    const syncBindings = {
+        specifications_planning_start_date: '#agreement_date',
+        specifications_planning_expected_duration: '#duration',
+        specifications_financial_total_amount: '#total_value',
+    };
+
+    const previewTarget = (name) => builder.querySelector(`[data-preview-target="${name}"]`);
+
+    const fallbackText = (value, fallback) => {
+        const text = `${value ?? ''}`.trim();
+
+        return text === '' ? fallback : text;
+    };
+
+    const setPreviewText = (name, value, fallback = 'Nog niet ingevuld') => {
+        const target = previewTarget(name);
+
+        if (!target) {
+            return;
+        }
+
+        target.textContent = fallbackText(value, fallback);
+    };
+
+    const cleanRichText = (html) => {
+        const template = document.createElement('template');
+        template.innerHTML = html;
+        template.content.querySelectorAll('script, style').forEach((node) => node.remove());
+
+        return template.innerHTML.trim();
+    };
+
+    const setPreviewHtml = (name, value, fallbackHtml) => {
+        const target = previewTarget(name);
+
+        if (!target) {
+            return;
+        }
+
+        const html = cleanRichText(value ?? '');
+        target.innerHTML = html === '' ? fallbackHtml : html;
+    };
+
+    const formatDate = (value, fallback = 'Nog niet ingevuld') => {
+        if (!value) {
+            return fallback;
+        }
+
+        const [year, month, day] = value.split('-');
+
+        if (!year || !month || !day) {
+            return value;
+        }
+
+        return `${day}-${month}-${year}`;
+    };
+
+    const formatMoney = (value) => {
+        const number = Number.parseFloat(`${value}`.replace(',', '.'));
+
+        if (Number.isNaN(number)) {
+            return 'EUR 0,00';
+        }
+
+        return new Intl.NumberFormat('nl-NL', {
+            style: 'currency',
+            currency: 'EUR',
+        }).format(number);
+    };
+
+    const syncMirrorInput = (field) => {
+        const selector = field.dataset.syncInput;
+
+        if (!selector) {
+            return;
+        }
+
+        const target = builder.querySelector(selector);
+
+        if (!target || target.value === field.value) {
+            return;
+        }
+
+        target.value = field.value;
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+
+    const openPanel = (panelName, shouldFocus = true) => {
+        panels.forEach((panel) => {
+            const isOpen = panel.dataset.builderPanel === panelName;
+            panel.hidden = !isOpen;
+        });
+
+        openButtons.forEach((button) => {
+            button.setAttribute('aria-expanded', button.dataset.builderOpen === panelName ? 'true' : 'false');
+        });
+
+        if (!shouldFocus) {
+            return;
+        }
+
+        const activePanel = panels.find((panel) => panel.dataset.builderPanel === panelName);
+        const firstField = activePanel?.querySelector('input:not([type="hidden"]):not([readonly]), select, textarea');
+        firstField?.focus({ preventScroll: true });
+        activePanel?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    };
+
+    const closePanels = () => {
+        panels.forEach((panel) => {
+            panel.hidden = true;
+        });
+
+        openButtons.forEach((button) => {
+            button.setAttribute('aria-expanded', 'false');
+        });
+    };
+
+    const updateContactPreview = (option) => {
+        if (!option) {
+            return;
+        }
+
+        const person = option.dataset.contactPerson ?? '';
+        const email = option.dataset.contactEmail ?? '';
+        const address = (option.dataset.contactAddress ?? '').split('||').filter(Boolean).join(' · ');
+
+        setPreviewText('client-company', option.dataset.contactCompany || option.dataset.contactLabel, 'Nog te selecteren');
+        setPreviewText('client-person', person, 'Contactpersoon');
+        setPreviewText('client-email', email, 'E-mailadres opdrachtgever');
+        setPreviewText('client-address', address, 'Adres opdrachtgever');
+        setPreviewText('aside-client', option.dataset.contactCompany || option.dataset.contactLabel, 'Nog niet geselecteerd');
+
+        const personField = builder.querySelector('[data-selected-contact-person]');
+        const emailField = builder.querySelector('[data-selected-contact-email]');
+
+        if (personField) {
+            personField.value = person;
+        }
+
+        if (emailField) {
+            emailField.value = email;
+        }
+    };
+
+    const updatePreviewFromField = (field, shouldSync = true) => {
+        if (shouldSync) {
+            syncMirrorInput(field);
+        }
+
+        const previewName = field.dataset.previewInput;
+
+        if (!previewName) {
+            return;
+        }
+
+        if (previewName === 'description') {
+            setPreviewHtml('description', field.value, '<p>Beschrijf hier de opdracht, werkzaamheden, verwachtingen en oplevering.</p>');
+            return;
+        }
+
+        if (previewName === 'agreement-date') {
+            const formattedDate = formatDate(field.value);
+            setPreviewText('agreement-date', formattedDate);
+            setPreviewText('start-date', formattedDate, 'Startdatum');
+            return;
+        }
+
+        if (previewName === 'start-date' || previewName === 'end-date') {
+            setPreviewText(previewName, formatDate(field.value, previewName === 'start-date' ? 'Startdatum' : 'Einddatum'));
+            return;
+        }
+
+        if (previewName === 'total-value') {
+            setPreviewText('total-value', formatMoney(field.value));
+            return;
+        }
+
+        if (previewName === 'vat-type') {
+            setPreviewText('vat-type', field.value === 'incl' ? 'incl. BTW' : 'excl. BTW');
+            return;
+        }
+
+        if (previewName === 'vat-percentage') {
+            setPreviewText('vat-percentage', field.value ? `${field.value}%` : '21%');
+            return;
+        }
+
+        if (previewName === 'rate-unit') {
+            const label = field.selectedOptions?.[0]?.textContent?.trim() ?? '';
+            setPreviewText('rate-unit', label === 'Niet ingevuld' ? '' : label, '');
+            return;
+        }
+
+        setPreviewText(previewName, field.value);
+
+        if (previewName === 'client-reference') {
+            setPreviewText('client-reference-footer', field.value ? `Kenmerk ${field.value}` : 'Concept zonder kenmerk', 'Concept zonder kenmerk');
+        }
+    };
+
+    Object.entries(previewBindings).forEach(([fieldId, previewName]) => {
+        const field = builder.querySelector(`#${fieldId}`);
+
+        if (!field) {
+            return;
+        }
+
+        field.dataset.previewInput = field.dataset.previewInput || previewName;
+    });
+
+    Object.entries(syncBindings).forEach(([fieldId, selector]) => {
+        const field = builder.querySelector(`#${fieldId}`);
+
+        if (!field || field.dataset.syncInput) {
+            return;
+        }
+
+        field.dataset.syncInput = selector;
+    });
+
+    builder.querySelectorAll('[data-sync-input]').forEach((mirrorField) => {
+        const target = builder.querySelector(mirrorField.dataset.syncInput);
+
+        if (!target) {
+            return;
+        }
+
+        if (mirrorField.value && !target.value) {
+            target.value = mirrorField.value;
+        }
+
+        target.addEventListener('input', () => {
+            if (mirrorField.value !== target.value) {
+                mirrorField.value = target.value;
+            }
+        });
+    });
+
+    builder.addEventListener('input', (event) => {
+        if (!(event.target instanceof HTMLElement)) {
+            return;
+        }
+
+        updatePreviewFromField(event.target);
+    });
+
+    builder.addEventListener('change', (event) => {
+        if (!(event.target instanceof HTMLElement)) {
+            return;
+        }
+
+        updatePreviewFromField(event.target);
+    });
+
+    builder.addEventListener('contact-search:selected', (event) => {
+        updateContactPreview(event.detail?.option);
+    });
+
+    openButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            openPanel(button.dataset.builderOpen);
+        });
+
+        button.addEventListener('keydown', (event) => {
+            if (button.tagName === 'BUTTON' || !['Enter', ' '].includes(event.key)) {
+                return;
+            }
+
+            event.preventDefault();
+            openPanel(button.dataset.builderOpen);
+        });
+    });
+
+    closeButtons.forEach((button) => {
+        button.addEventListener('click', closePanels);
+    });
+
+    builder.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closePanels();
+        }
+    });
+
+    builder.addEventListener('submit', (event) => {
+        const contactValue = builder.querySelector('[data-contact-search-value]');
+        const contactInput = builder.querySelector('[data-contact-search-input]');
+        const titleInput = builder.querySelector('#title');
+        const descriptionInput = builder.querySelector('[data-quill-input]');
+        const descriptionWrapper = builder.querySelector('[data-quill-field]');
+
+        if (contactValue && contactInput && contactValue.value.trim() === '') {
+            event.preventDefault();
+            openPanel('client');
+            contactInput.setCustomValidity('Kies een opdrachtgever uit de lijst.');
+            contactInput.reportValidity();
+            contactInput.addEventListener('input', () => contactInput.setCustomValidity(''), { once: true });
+            return;
+        }
+
+        if (titleInput && titleInput.value.trim() === '') {
+            event.preventDefault();
+            openPanel('confirmation');
+            titleInput.setCustomValidity('Vul een titel in.');
+            titleInput.reportValidity();
+            titleInput.addEventListener('input', () => titleInput.setCustomValidity(''), { once: true });
+            return;
+        }
+
+        if (descriptionInput && descriptionInput.value.trim() === '') {
+            event.preventDefault();
+            openPanel('confirmation');
+            descriptionWrapper?.__quill?.focus();
+        }
+    });
+
+    builder.querySelectorAll('[data-preview-input]').forEach((field) => updatePreviewFromField(field, false));
+
+    const initialContact = builder.querySelector(`[data-contact-search-option][data-contact-id="${builder.querySelector('[data-contact-search-value]')?.value}"]`);
+    updateContactPreview(initialContact);
+
+    if (builder.dataset.initialPanel) {
+        openPanel(builder.dataset.initialPanel, false);
+    }
+});
+
 document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
     const input = contactSearch.querySelector('[data-contact-search-input]');
     const valueInput = contactSearch.querySelector('[data-contact-search-value]');
@@ -230,6 +568,14 @@ document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
         input.value = option.dataset.contactLabel ?? '';
         input.setCustomValidity('');
         markSelectedOption();
+        contactSearch.dispatchEvent(new CustomEvent('contact-search:selected', {
+            bubbles: true,
+            detail: {
+                id: valueInput.value,
+                label: input.value,
+                option,
+            },
+        }));
         closeList();
     };
 
@@ -444,6 +790,7 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
         const isEmpty = quill.getText().trim() === '';
         input.value = isEmpty ? '' : quill.getSemanticHTML();
         quill.container.classList.toggle('is-invalid', hasAttemptedSubmit && isRequired && isEmpty);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
     };
     wrapper.__syncQuillInput = syncInput;
 

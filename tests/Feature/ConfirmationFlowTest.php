@@ -89,7 +89,7 @@ class ConfirmationFlowTest extends TestCase
         });
     }
 
-    public function test_create_confirmation_form_uses_simplified_fields(): void
+    public function test_create_confirmation_form_uses_document_builder_fields(): void
     {
         $user = User::factory()->create();
 
@@ -106,6 +106,11 @@ class ConfirmationFlowTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('enctype="multipart/form-data"', false)
+            ->assertSee('data-confirmation-builder', false)
+            ->assertSee('confirmation-document-preview', false)
+            ->assertSee('Opdrachtgever selecteren')
+            ->assertSee('Opdrachtbevestiging invullen')
+            ->assertSee('Concept')
             ->assertSee('name="title"', false)
             ->assertSee('data-quill-editor', false)
             ->assertSee('name="contact_id"', false)
@@ -136,11 +141,11 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Verzenden')
             ->assertSee('Verzend test')
             ->assertSee('Vaste gegevens')
-            ->assertDontSee('name="agreement_date"', false)
-            ->assertDontSee('name="duration"', false)
-            ->assertDontSee('name="total_value"', false)
-            ->assertDontSee('name="value_vat_type"', false)
-            ->assertSee('name="termination_terms"', false)
+            ->assertSee('name="agreement_date"', false)
+            ->assertSee('name="duration"', false)
+            ->assertSee('name="total_value"', false)
+            ->assertSee('name="value_vat_type"', false)
+            ->assertDontSee('name="termination_terms"', false)
             ->assertDontSee('name="status"', false);
     }
 
@@ -308,7 +313,6 @@ class ConfirmationFlowTest extends TestCase
                 'duration' => '3 maanden',
                 'total_value' => '1250.50',
                 'value_vat_type' => 'incl',
-                'termination_terms' => 'Beide partijen kunnen schriftelijk opzeggen met een termijn van 1 maand.',
             ]);
 
         $confirmation = Confirmation::query()->first();
@@ -318,7 +322,6 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('3 maanden', $confirmation->duration);
         $this->assertSame('1250.50', $confirmation->total_value);
         $this->assertSame('incl', $confirmation->value_vat_type);
-        $this->assertSame('Beide partijen kunnen schriftelijk opzeggen met een termijn van 1 maand.', $confirmation->termination_terms);
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
             $mail->assertHasAttachment(
