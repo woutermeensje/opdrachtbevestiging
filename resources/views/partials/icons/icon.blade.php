@@ -79,5 +79,16 @@
             <path d="M7 15h.01"></path>
             <path d="M11 15h2"></path>
             @break
+
+        @case('menu')
+            <path d="M4 6h16"></path>
+            <path d="M4 12h16"></path>
+            <path d="M4 18h16"></path>
+            @break
+
+        @case('x')
+            <path d="M18 6 6 18"></path>
+            <path d="M6 6l12 12"></path>
+            @break
     @endswitch
 </svg>

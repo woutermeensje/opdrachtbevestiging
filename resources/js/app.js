@@ -1,7 +1,19 @@
 import './bootstrap';
-import 'flowbite';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+
+document.querySelectorAll('[data-mobile-nav-toggle]').forEach((toggle) => {
+    const sidebar = toggle.closest('.dashboard-sidebar');
+
+    if (!sidebar) {
+        return;
+    }
+
+    toggle.addEventListener('click', () => {
+        const isOpen = sidebar.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+});
 
 document.querySelectorAll('[data-kvk-form]').forEach((kvkForm) => {
     const kvkInput = kvkForm.querySelector('[data-kvk-number]');
@@ -533,7 +545,6 @@ document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
 
         optionElements.forEach((option) => {
             option.classList.remove('is-active');
-            option.classList.remove('bg-gray-100');
         });
     };
 
@@ -552,7 +563,6 @@ document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
         }
 
         option.classList.add('is-active');
-        option.classList.add('bg-gray-100');
         input.setAttribute('aria-activedescendant', option.id);
         option.scrollIntoView({ block: 'nearest' });
     };
@@ -562,8 +572,6 @@ document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
             const isSelected = option.dataset.contactId === valueInput.value;
 
             option.classList.toggle('is-selected', isSelected);
-            option.classList.toggle('bg-blue-50', isSelected);
-            option.classList.toggle('text-blue-700', isSelected);
             option.setAttribute('aria-selected', isSelected ? 'true' : 'false');
         });
     };
