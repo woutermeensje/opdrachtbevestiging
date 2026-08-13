@@ -17,17 +17,6 @@
     }
 
     $descriptionHtml = \App\Models\Confirmation::sanitizeDescription(old('description'));
-    $defaultAgreementsHtml = $user->defaultAgreementsHtml();
-    $specificationValues = old('specifications', $user->default_specifications ?? []);
-    $clientReference = data_get($specificationValues, 'general.client_reference');
-    $projectName = data_get($specificationValues, 'general.project_name');
-    $workLocation = data_get($specificationValues, 'general.work_location');
-    $startDate = data_get($specificationValues, 'planning.start_date') ?: old('agreement_date');
-    $endDate = data_get($specificationValues, 'planning.end_date');
-    $rate = data_get($specificationValues, 'financial.rate');
-    $rateUnit = data_get($specificationValues, 'financial.rate_unit');
-    $vatPercentage = data_get($specificationValues, 'financial.vat_percentage');
-    $totalValue = old('total_value') ?: data_get($specificationValues, 'financial.total_amount');
 @endphp
 
 @section('content')
@@ -153,18 +142,6 @@
                                     readonly
                                 >
                             </div>
-
-                            <div>
-                                <label for="client_reference_quick">Kenmerk opdrachtgever</label>
-                                <input
-                                    id="client_reference_quick"
-                                    type="text"
-                                    value="{{ $clientReference }}"
-                                    placeholder="Bijvoorbeeld PO-nummer of intern kenmerk"
-                                    data-preview-input="client-reference"
-                                    data-sync-input="#specifications_general_client_reference"
-                                >
-                            </div>
                         </div>
 
                         <div class="confirmation-edit-panel-actions">
@@ -285,10 +262,6 @@
                                         <dt>Aanmaakdatum</dt>
                                         <dd>{{ now()->format('d-m-Y') }}</dd>
                                     </div>
-                                    <div>
-                                        <dt>Startdatum</dt>
-                                        <dd data-preview-target="agreement-date">{{ $startDate ?: 'Nog niet ingevuld' }}</dd>
-                                    </div>
                                 </dl>
                             </section>
 
@@ -306,75 +279,10 @@
                                 </div>
                             </section>
 
-                            <section class="confirmation-document-section">
-                                <div class="confirmation-document-section-heading">
-                                    <p class="confirmation-document-label">Afspraken</p>
-                                    <span>2. Velden aanvullen</span>
-                                </div>
-
-                                <div class="confirmation-document-summary-grid">
-                                    <div>
-                                        <span>Kenmerk opdrachtgever</span>
-                                        <strong data-preview-target="client-reference">{{ $clientReference ?: 'Nog niet ingevuld' }}</strong>
-                                    </div>
-                                    <div>
-                                        <span>Projectnaam</span>
-                                        <strong data-preview-target="project-name">{{ $projectName ?: 'Nog niet ingevuld' }}</strong>
-                                    </div>
-                                    <div>
-                                        <span>Locatie werkzaamheden</span>
-                                        <strong data-preview-target="work-location">{{ $workLocation ?: 'Nog niet ingevuld' }}</strong>
-                                    </div>
-                                    <div>
-                                        <span>Duur van de opdracht</span>
-                                        <strong data-preview-target="duration">{{ old('duration') ?: 'Nog niet ingevuld' }}</strong>
-                                    </div>
-                                    <div>
-                                        <span>Periode</span>
-                                        <strong>
-                                            <span data-preview-target="start-date">{{ $startDate ?: 'Startdatum' }}</span>
-                                            <span> - </span>
-                                            <span data-preview-target="end-date">{{ $endDate ?: 'Einddatum' }}</span>
-                                        </strong>
-                                    </div>
-                                    <div>
-                                        <span>Tarief</span>
-                                        <strong>
-                                            <span data-preview-target="rate">{{ $rate ?: '0,00' }}</span>
-                                            <span data-preview-target="rate-unit">{{ $rateUnit ?: '' }}</span>
-                                        </strong>
-                                    </div>
-                                    <div>
-                                        <span>Vergoeding</span>
-                                        <strong>
-                                            <span data-preview-target="total-value">{{ $totalValue ? 'EUR '.number_format((float) $totalValue, 2, ',', '.') : 'EUR 0,00' }}</span>
-                                            <span data-preview-target="vat-type">{{ old('value_vat_type', 'excl') === 'incl' ? 'incl. BTW' : 'excl. BTW' }}</span>
-                                        </strong>
-                                    </div>
-                                    <div>
-                                        <span>BTW-percentage</span>
-                                        <strong data-preview-target="vat-percentage">{{ $vatPercentage ?: '21' }}%</strong>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <section class="confirmation-document-section confirmation-document-terms">
-                                <div class="confirmation-document-section-heading">
-                                    <p class="confirmation-document-label">Vaste afspraken</p>
-                                    <span>3. Automatisch toegevoegd</span>
-                                </div>
-
-                                @if ($defaultAgreementsHtml !== '')
-                                    <div class="confirmation-document-rich">{!! $defaultAgreementsHtml !!}</div>
-                                @else
-                                    <p>Je basis afspraken en algemene voorwaarden worden hier meegenomen zodra je die in Mijn profiel hebt ingesteld.</p>
-                                @endif
-                            </section>
                         </div>
 
                         <footer class="confirmation-document-footer">
                             <span>Opgesteld door {{ $user->company_name ?: $senderName ?: config('app.name') }}</span>
-                            <span data-preview-target="client-reference-footer">{{ $clientReference ? 'Kenmerk '.$clientReference : 'Concept zonder kenmerk' }}</span>
                         </footer>
                     </article>
                 </div>

@@ -180,20 +180,6 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
     const panels = Array.from(builder.querySelectorAll('[data-builder-panel]'));
     const openButtons = Array.from(builder.querySelectorAll('[data-builder-open]'));
     const closeButtons = Array.from(builder.querySelectorAll('[data-builder-close]'));
-    const previewBindings = {
-        specifications_general_client_reference: 'client-reference',
-        specifications_general_project_name: 'project-name',
-        specifications_general_work_location: 'work-location',
-        specifications_planning_end_date: 'end-date',
-        specifications_financial_rate: 'rate',
-        specifications_financial_rate_unit: 'rate-unit',
-        specifications_financial_vat_percentage: 'vat-percentage',
-    };
-    const syncBindings = {
-        specifications_planning_start_date: '#agreement_date',
-        specifications_planning_expected_duration: '#duration',
-        specifications_financial_total_amount: '#total_value',
-    };
 
     const previewTarget = (name) => builder.querySelector(`[data-preview-target="${name}"]`);
 
@@ -230,50 +216,6 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
 
         const html = cleanRichText(value ?? '');
         target.innerHTML = html === '' ? fallbackHtml : html;
-    };
-
-    const formatDate = (value, fallback = 'Nog niet ingevuld') => {
-        if (!value) {
-            return fallback;
-        }
-
-        const [year, month, day] = value.split('-');
-
-        if (!year || !month || !day) {
-            return value;
-        }
-
-        return `${day}-${month}-${year}`;
-    };
-
-    const formatMoney = (value) => {
-        const number = Number.parseFloat(`${value}`.replace(',', '.'));
-
-        if (Number.isNaN(number)) {
-            return 'EUR 0,00';
-        }
-
-        return new Intl.NumberFormat('nl-NL', {
-            style: 'currency',
-            currency: 'EUR',
-        }).format(number);
-    };
-
-    const syncMirrorInput = (field) => {
-        const selector = field.dataset.syncInput;
-
-        if (!selector) {
-            return;
-        }
-
-        const target = builder.querySelector(selector);
-
-        if (!target || target.value === field.value) {
-            return;
-        }
-
-        target.value = field.value;
-        target.dispatchEvent(new Event('input', { bubbles: true }));
     };
 
     const openPanel = (panelName, shouldFocus = true) => {
@@ -333,11 +275,7 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         }
     };
 
-    const updatePreviewFromField = (field, shouldSync = true) => {
-        if (shouldSync) {
-            syncMirrorInput(field);
-        }
-
+    const updatePreviewFromField = (field) => {
         const previewName = field.dataset.previewInput;
 
         if (!previewName) {
@@ -349,83 +287,8 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
             return;
         }
 
-        if (previewName === 'agreement-date') {
-            const formattedDate = formatDate(field.value);
-            setPreviewText('agreement-date', formattedDate);
-            setPreviewText('start-date', formattedDate, 'Startdatum');
-            return;
-        }
-
-        if (previewName === 'start-date' || previewName === 'end-date') {
-            setPreviewText(previewName, formatDate(field.value, previewName === 'start-date' ? 'Startdatum' : 'Einddatum'));
-            return;
-        }
-
-        if (previewName === 'total-value') {
-            setPreviewText('total-value', formatMoney(field.value));
-            return;
-        }
-
-        if (previewName === 'vat-type') {
-            setPreviewText('vat-type', field.value === 'incl' ? 'incl. BTW' : 'excl. BTW');
-            return;
-        }
-
-        if (previewName === 'vat-percentage') {
-            setPreviewText('vat-percentage', field.value ? `${field.value}%` : '21%');
-            return;
-        }
-
-        if (previewName === 'rate-unit') {
-            const label = field.selectedOptions?.[0]?.textContent?.trim() ?? '';
-            setPreviewText('rate-unit', label === 'Niet ingevuld' ? '' : label, '');
-            return;
-        }
-
         setPreviewText(previewName, field.value);
-
-        if (previewName === 'client-reference') {
-            setPreviewText('client-reference-footer', field.value ? `Kenmerk ${field.value}` : 'Concept zonder kenmerk', 'Concept zonder kenmerk');
-        }
     };
-
-    Object.entries(previewBindings).forEach(([fieldId, previewName]) => {
-        const field = builder.querySelector(`#${fieldId}`);
-
-        if (!field) {
-            return;
-        }
-
-        field.dataset.previewInput = field.dataset.previewInput || previewName;
-    });
-
-    Object.entries(syncBindings).forEach(([fieldId, selector]) => {
-        const field = builder.querySelector(`#${fieldId}`);
-
-        if (!field || field.dataset.syncInput) {
-            return;
-        }
-
-        field.dataset.syncInput = selector;
-    });
-
-    builder.querySelectorAll('[data-sync-input]').forEach((mirrorField) => {
-        const target = builder.querySelector(mirrorField.dataset.syncInput);
-
-        if (!target) {
-            return;
-        }
-
-        if (mirrorField.value && !target.value) {
-            target.value = mirrorField.value;
-        }
-
-        target.addEventListener('input', () => {
-            if (mirrorField.value !== target.value) {
-                mirrorField.value = target.value;
-            }
-        });
-    });
 
     builder.addEventListener('input', (event) => {
         if (!(event.target instanceof HTMLElement)) {
@@ -504,7 +367,7 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         }
     });
 
-    builder.querySelectorAll('[data-preview-input]').forEach((field) => updatePreviewFromField(field, false));
+    builder.querySelectorAll('[data-preview-input]').forEach((field) => updatePreviewFromField(field));
 
     const initialContact = builder.querySelector(`[data-contact-search-option][data-contact-id="${builder.querySelector('[data-contact-search-value]')?.value}"]`);
     updateContactPreview(initialContact);
