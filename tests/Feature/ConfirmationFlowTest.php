@@ -43,6 +43,12 @@ class ConfirmationFlowTest extends TestCase
             'contact_last_name' => 'Jansen',
             'contact_email' => 'info@acme.test',
             'kvk_number' => '12345678',
+            'street_name' => 'Keizersgracht',
+            'house_number' => '24',
+            'house_number_addition' => 'A',
+            'postal_code' => '1015 CJ',
+            'city' => 'Amsterdam',
+            'country' => 'Nederland',
         ]);
 
         $response = $this
@@ -62,6 +68,7 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('Acme B.V.', $confirmation->client_name);
         $this->assertSame('Sanne Jansen', $confirmation->client_contact_name);
         $this->assertSame('info@acme.test', $confirmation->client_email);
+        $this->assertSame(['Keizersgracht 24 A', '1015 CJ Amsterdam', 'Nederland'], $confirmation->clientAddressLines());
         $this->assertSame('verzonden', $confirmation->status);
         $this->assertSame('0.00', $confirmation->total_value);
         $this->assertNotNull($confirmation->sent_at);
@@ -95,6 +102,47 @@ class ConfirmationFlowTest extends TestCase
 
             return $mail->hasTo($confirmation->client_email);
         });
+    }
+
+    public function test_confirmation_uses_default_footer_note_when_left_empty(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create([
+            'first_name' => 'Wouter',
+            'last_name' => 'Meens',
+            'company_name' => 'SRM',
+            'kvk_number' => '85994847',
+            'street_name' => 'Brinklande',
+            'house_number' => '10',
+            'postal_code' => '2641 RE',
+            'city' => 'Pijnacker',
+            'country' => 'Nederland',
+            'email' => 'wouter@inhuren.com',
+        ]);
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'title' => 'Nieuwe website opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Ontwikkeling van een website.</p>',
+                'footer_note' => '',
+                'submit_action' => 'test',
+            ]);
+
+        $confirmation = Confirmation::query()->firstOrFail();
+        $expectedFooterNote = 'Deze opdrachtbevestiging is opgesteld door Wouter Meens van SRM, 85994847, Brinklande 10, 2641 RE Pijnacker, Nederland. Contactgegevens: wouter@inhuren.com.';
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+        $this->assertSame($expectedFooterNote, $confirmation->footer_note);
+        $this->assertSame($expectedFooterNote, $confirmation->footerNoteText());
     }
 
     public function test_create_confirmation_form_uses_document_builder_fields(): void

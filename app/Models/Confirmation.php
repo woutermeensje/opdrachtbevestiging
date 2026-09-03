@@ -23,6 +23,12 @@ class Confirmation extends Model
         'client_contact_name',
         'client_email',
         'client_kvk_number',
+        'client_street_name',
+        'client_house_number',
+        'client_house_number_addition',
+        'client_postal_code',
+        'client_city',
+        'client_country',
         'description',
         'footer_note',
         'specifications',
@@ -528,6 +534,29 @@ class Confirmation extends Model
             $streetLine,
             $cityLine,
             $this->sender_country,
+        ]));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function clientAddressLines(): array
+    {
+        $streetLine = trim(implode(' ', array_filter([
+            $this->client_street_name,
+            $this->client_house_number,
+            $this->client_house_number_addition,
+        ])));
+
+        $cityLine = trim(implode(' ', array_filter([
+            $this->client_postal_code,
+            $this->client_city,
+        ])));
+
+        return array_values(array_filter([
+            $streetLine,
+            $cityLine,
+            $this->client_country,
         ]));
     }
 

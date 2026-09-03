@@ -162,6 +162,11 @@ input[type='color'] {
 
 .confirmation-edit-panel-wide {
     max-height: min(820px, calc(100vh - 150px));
+    padding: 1.7rem;
+}
+
+.confirmation-edit-panel-wide .confirmation-edit-panel-header {
+    margin-bottom: 1.7rem;
 }
 
 .confirmation-edit-panel-header {
@@ -179,6 +184,19 @@ input[type='color'] {
     font-family: var(--font-heading);
     font-size: 20px;
     font-weight: 800;
+}
+
+.confirmation-edit-panel-close {
+    width: 2.35rem;
+    min-width: 2.35rem;
+    height: 2.35rem;
+    min-height: 0;
+    padding: 0;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1;
 }
 
 .confirmation-edit-panel-eyebrow {
@@ -215,6 +233,21 @@ input[type='color'] {
     grid-column: 1 / -1;
 }
 
+.confirmation-edit-panel-wide .confirmation-edit-panel-grid {
+    margin-bottom: 2rem;
+}
+
+.confirmation-edit-panel-wide .confirmation-edit-panel-field-wide label,
+.confirmation-edit-panel-wide .quill-field > label {
+    margin-bottom: 0.75rem;
+}
+
+.confirmation-edit-panel-wide .confirmation-edit-panel-field-wide input {
+    min-height: 52px;
+    padding-top: 0.72rem;
+    padding-bottom: 0.72rem;
+}
+
 .confirmation-edit-panel-actions {
     display: flex;
     flex-wrap: wrap;
@@ -223,6 +256,11 @@ input[type='color'] {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--color-border);
+}
+
+.confirmation-edit-panel-wide .confirmation-edit-panel-actions {
+    margin-top: 2rem;
+    padding-top: 1.4rem;
 }
 
 .confirmation-panel-details {
@@ -576,6 +614,10 @@ input[type='color'] {
     transition: box-shadow 0.16s ease;
 }
 
+.confirmation-edit-panel-wide .quill-field {
+    margin-bottom: 2rem;
+}
+
 .confirmation-specifications {
     display: grid;
     gap: 0.65rem;
@@ -698,6 +740,12 @@ input[type='color'] {
     font-size: 0.95rem;
     line-height: 1.75;
     overflow-wrap: anywhere;
+}
+
+.confirmation-edit-panel-wide .quill-field .ql-editor {
+    min-height: 260px;
+    padding-top: 1.35rem;
+    padding-bottom: 1.35rem;
 }
 
 .quill-field .ql-editor h1,

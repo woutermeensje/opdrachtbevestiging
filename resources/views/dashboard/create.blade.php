@@ -62,7 +62,9 @@
                                 <p class="confirmation-edit-panel-eyebrow">Stap 1</p>
                                 <h2>Opdrachtgever selecteren</h2>
                             </div>
-                            <button type="button" class="btn btn-secondary btn-small" data-builder-close>Sluiten</button>
+                            <button type="button" class="btn btn-secondary confirmation-edit-panel-close" data-builder-close aria-label="Sluiten" title="Sluiten">
+                                <span aria-hidden="true">X</span>
+                            </button>
                         </div>
 
                         <div class="confirmation-edit-panel-grid">
@@ -157,7 +159,9 @@
                                 <p class="confirmation-edit-panel-eyebrow">Stap 2</p>
                                 <h2>Opdrachtbevestiging invullen</h2>
                             </div>
-                            <button type="button" class="btn btn-secondary btn-small" data-builder-close>Sluiten</button>
+                            <button type="button" class="btn btn-secondary confirmation-edit-panel-close" data-builder-close aria-label="Sluiten" title="Sluiten">
+                                <span aria-hidden="true">X</span>
+                            </button>
                         </div>
 
                         <div class="confirmation-edit-panel-grid">
@@ -181,7 +185,7 @@
                         </div>
 
                         <div class="confirmation-edit-panel-actions">
-                            <button type="button" class="btn btn-secondary" data-builder-close>Klaar met invullen</button>
+                            <button type="button" class="btn btn-secondary" data-builder-close>Sluiten</button>
                             <button type="submit" name="submit_action" value="send" class="btn btn-primary">Verzenden</button>
                         </div>
                     </section>
@@ -195,19 +199,39 @@
                                     <span>{{ $user->company_name ?: config('app.name') }}</span>
                                 @endif
                             </div>
+
+                            <div class="confirmation-document-date">
+                                <p class="confirmation-document-label">Datum</p>
+                                <span>{{ now()->format('d-m-Y') }}</span>
+                            </div>
                         </header>
 
                         <div class="confirmation-document-party-row">
+                            <div class="confirmation-document-sender">
+                                <p class="confirmation-document-label">Opdrachtnemer</p>
+                                <strong>{{ $user->company_name ?: 'Jouw bedrijfsnaam' }}</strong>
+                                @forelse ($senderAddressLines as $line)
+                                    <span>{{ $line }}</span>
+                                @empty
+                                    <span>Bedrijfsadres nog niet ingevuld</span>
+                                @endforelse
+                                <span>{{ $user->email }}</span>
+                                @if (filled($user->kvk_number))
+                                    <span>KVK: {{ $user->kvk_number }}</span>
+                                @endif
+                            </div>
+
                             <section
                                 class="confirmation-document-recipient confirmation-document-click-target"
                                 role="button"
                                 tabindex="0"
                                 data-builder-open="client"
-                                aria-expanded="false"
-                                aria-label="Opdrachtgever selecteren"
-                            >
-                                <p class="confirmation-document-label">Opdrachtgever</p>
-                                <strong data-preview-target="client-company">{{ $selectedContact?->company_name ?: 'Nog te selecteren' }}</strong>
+                            aria-expanded="false"
+                            aria-label="Opdrachtgever selecteren"
+                        >
+                            <span class="confirmation-document-edit-affordance" aria-hidden="true"></span>
+                            <p class="confirmation-document-label">Opdrachtgever</p>
+                            <strong data-preview-target="client-company">{{ $selectedContact?->company_name ?: 'Nog te selecteren' }}</strong>
                                 <span data-preview-target="client-person">{{ $selectedContact?->contactName() ?: 'Contactpersoon' }}</span>
                                 <span data-preview-target="client-email">{{ $selectedContact?->contact_email ?: 'E-mailadres opdrachtgever' }}</span>
                                 <span data-preview-target="client-address">
@@ -230,19 +254,6 @@
                                 </span>
                             </section>
 
-                            <div class="confirmation-document-sender">
-                                <p class="confirmation-document-label">Bedrijfsgegevens</p>
-                                <strong>{{ $user->company_name ?: 'Jouw bedrijfsnaam' }}</strong>
-                                @forelse ($senderAddressLines as $line)
-                                    <span>{{ $line }}</span>
-                                @empty
-                                    <span>Bedrijfsadres nog niet ingevuld</span>
-                                @endforelse
-                                <span>{{ $user->email }}</span>
-                                @if (filled($user->kvk_number))
-                                    <span>KVK: {{ $user->kvk_number }}</span>
-                                @endif
-                            </div>
                         </div>
 
                         <div
@@ -253,26 +264,25 @@
                             aria-expanded="false"
                             aria-label="Opdrachtbevestiging invullen"
                         >
+                            <span class="confirmation-document-edit-affordance" aria-hidden="true"></span>
                             <section class="confirmation-document-title-row">
-                                <div>
-                                    <p class="confirmation-document-label">Concept</p>
-                                    <h2 class="confirmation-document-title">
-                                        <span data-preview-target="title">{{ old('title') ?: 'Opdrachtbevestiging' }}</span>
-                                    </h2>
-                                </div>
-
-                                <dl>
-                                    <div>
-                                        <dt>Aanmaakdatum</dt>
-                                        <dd>{{ now()->format('d-m-Y') }}</dd>
-                                    </div>
-                                </dl>
+                                <h2 class="confirmation-document-form-heading">Opdrachtbevestiging opstellen</h2>
                             </section>
 
                             <section class="confirmation-document-section">
-                                <div class="confirmation-document-section-heading">
+                                <div class="confirmation-document-field">
+                                    <p class="confirmation-document-label">Titel</p>
+                                    @php($previewTitle = old('title'))
+                                    <p class="confirmation-document-title">
+                                        <span
+                                            class="{{ filled($previewTitle) ? '' : 'is-placeholder' }}"
+                                            data-preview-target="title"
+                                        >{{ filled($previewTitle) ? $previewTitle : 'Bijvoorbeeld: Website development' }}</span>
+                                    </p>
+                                </div>
+
+                                <div class="confirmation-document-section-heading confirmation-document-field">
                                     <p class="confirmation-document-label">Omschrijving</p>
-                                    <span>1. Opdracht beschrijven</span>
                                 </div>
                                 <div class="confirmation-document-rich" data-preview-target="description">
                                     @if ($descriptionHtml !== null)
@@ -286,6 +296,7 @@
                         </div>
 
                         <div class="confirmation-document-footnote">
+                            <span class="confirmation-document-edit-affordance" aria-hidden="true"></span>
                             <textarea
                                 id="footer_note"
                                 name="footer_note"

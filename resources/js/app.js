@@ -403,6 +403,15 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
             return;
         }
 
+        if (previewName === 'title') {
+            const titleTarget = previewTarget('title');
+            const hasTitle = `${field.value ?? ''}`.trim() !== '';
+
+            setPreviewText('title', field.value, 'Bijvoorbeeld: Website development');
+            titleTarget?.classList.toggle('is-placeholder', !hasTitle);
+            return;
+        }
+
         setPreviewText(previewName, field.value);
     };
 

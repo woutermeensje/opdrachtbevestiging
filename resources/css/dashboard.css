@@ -642,12 +642,12 @@
     font-weight: 700;
     line-height: 1;
     color: #ffffff;
-    background: #7c3aed;
+    background: var(--color-status-concept);
     border: 1px solid transparent;
 }
 
 .dashboard-status-concept {
-    background: #7c3aed;
+    background: var(--color-status-concept);
 }
 
 .dashboard-status-wacht-op-akkoord {
