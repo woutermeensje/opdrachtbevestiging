@@ -69,10 +69,39 @@ select {
     cursor: pointer;
 }
 
-input[type='color'] {
-    min-height: 38px;
-    padding: 0.2rem;
-    cursor: pointer;
+/* Hex-kleurveld: tekstinvoer met kleurstaal-preview */
+.color-field {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.color-field input {
+    margin-bottom: 0;
+    padding-left: 2.15rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.color-field-swatch {
+    position: absolute;
+    top: 50%;
+    left: 0.55rem;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: transparent;
+    pointer-events: none;
+}
+
+.form-help code {
+    padding: 0.05rem 0.3rem;
+    border-radius: 3px;
+    background: var(--color-surface-muted);
+    font-family: var(--font-ui);
+    font-size: 0.92em;
+    letter-spacing: 0.02em;
 }
 
 .dashboard-form textarea {

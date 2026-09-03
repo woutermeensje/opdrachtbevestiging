@@ -43,18 +43,48 @@
             <div class="grid-2">
                 <div>
                     <label for="primary_color">Primaire kleur</label>
-                    <input
-                        id="primary_color"
-                        name="primary_color"
-                        type="color"
-                        value="{{ $primaryColor }}"
-                        required
-                        @if (! $primaryColor) data-theme-primary-color-default="true" @endif
-                    >
+                    <div class="color-field" data-color-field>
+                        <span class="color-field-swatch" data-color-swatch></span>
+                        <input
+                            id="primary_color"
+                            name="primary_color"
+                            type="text"
+                            value="{{ $primaryColor }}"
+                            required
+                            maxlength="7"
+                            spellcheck="false"
+                            autocomplete="off"
+                            inputmode="text"
+                            pattern="#[0-9A-Fa-f]{6}"
+                            placeholder="#7C5CFA"
+                            title="Voer een hex-kleurcode in, bijvoorbeeld #7C5CFA"
+                            data-color-input
+                            @if (! $primaryColor) data-theme-primary-color-default="true" @endif
+                        >
+                    </div>
+                    <p class="form-help">Hex-kleurcode, bijvoorbeeld <code>#7C5CFA</code>.</p>
                 </div>
                 <div>
                     <label for="secondary_color">Secundaire kleur</label>
-                    <input id="secondary_color" name="secondary_color" type="color" value="{{ $secondaryColor }}" required>
+                    <div class="color-field" data-color-field>
+                        <span class="color-field-swatch" data-color-swatch></span>
+                        <input
+                            id="secondary_color"
+                            name="secondary_color"
+                            type="text"
+                            value="{{ $secondaryColor }}"
+                            required
+                            maxlength="7"
+                            spellcheck="false"
+                            autocomplete="off"
+                            inputmode="text"
+                            pattern="#[0-9A-Fa-f]{6}"
+                            placeholder="#FBFAF8"
+                            title="Voer een hex-kleurcode in, bijvoorbeeld #FBFAF8"
+                            data-color-input
+                        >
+                    </div>
+                    <p class="form-help">Hex-kleurcode, bijvoorbeeld <code>#FBFAF8</code>.</p>
                 </div>
             </div>
         </section>

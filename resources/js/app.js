@@ -122,6 +122,35 @@ document.querySelectorAll('[data-theme-primary-color-default]').forEach((input) 
     }
 });
 
+document.querySelectorAll('[data-color-field]').forEach((field) => {
+    const input = field.querySelector('[data-color-input]');
+    const swatch = field.querySelector('[data-color-swatch]');
+
+    if (!input) {
+        return;
+    }
+
+    const clean = (raw) => raw.replace(/[^0-9a-fA-F]/g, '').slice(0, 6).toUpperCase();
+
+    const renderSwatch = () => {
+        const hex = clean(input.value);
+
+        if (swatch) {
+            swatch.style.background = hex.length === 6 ? `#${hex}` : 'transparent';
+        }
+    };
+
+    input.addEventListener('input', renderSwatch);
+
+    input.addEventListener('blur', () => {
+        const hex = clean(input.value);
+        input.value = hex ? `#${hex}` : '';
+        renderSwatch();
+    });
+
+    renderSwatch();
+});
+
 document.querySelectorAll('[data-mobile-nav-toggle]').forEach((toggle) => {
     const sidebar = toggle.closest('.dashboard-sidebar');
 
