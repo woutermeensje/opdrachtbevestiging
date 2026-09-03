@@ -238,7 +238,7 @@ input[type='color'] {
 }
 
 .confirmation-edit-panel-wide .confirmation-edit-panel-field-wide label,
-.confirmation-edit-panel-wide .quill-field > label {
+.confirmation-edit-panel-wide .quill-field-block > label {
     margin-bottom: 0.75rem;
 }
 
@@ -607,15 +607,33 @@ input[type='color'] {
     margin-top: 0.6rem;
 }
 
-.quill-field {
+.quill-field-block {
+    position: relative;
     margin-bottom: 1rem;
+    max-width: 100%;
+}
+
+/* AI-assist als losse knop rechtsboven de editor, naast het label */
+.quill-ai-assist {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: min(70%, 420px);
+}
+
+.confirmation-edit-panel-wide .quill-field-block {
+    margin-bottom: 2rem;
+}
+
+/* Het bewerkbare veld zelf: toolbar + tekstblok. Het label staat
+   erbuiten (.quill-field-block) zodat de focus-ring er niet omheen loopt. */
+.quill-field {
     max-width: 100%;
     border-radius: var(--radius-default);
     transition: box-shadow 0.16s ease;
-}
-
-.confirmation-edit-panel-wide .quill-field {
-    margin-bottom: 2rem;
 }
 
 .confirmation-specifications {

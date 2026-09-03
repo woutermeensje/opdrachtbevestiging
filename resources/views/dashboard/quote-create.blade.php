@@ -52,10 +52,12 @@
                         <input id="title" name="title" type="text" value="{{ old('title') }}" required>
                     </div>
 
-                    <div class="quill-field" data-quill-field>
+                    <div class="quill-field-block">
                         <label for="description_editor">Omschrijving van de offerte</label>
-                        <div id="description_editor" class="quill-editor" data-quill-editor data-quill-required="true" data-quill-placeholder="Beschrijf wat je aanbiedt...">{!! \App\Models\Confirmation::sanitizeDescription(old('description')) ?? '' !!}</div>
-                        <textarea id="description" name="description" class="quill-editor-input" data-quill-input>{{ old('description') }}</textarea>
+                        <div class="quill-field" data-quill-field>
+                            <div id="description_editor" class="quill-editor" data-quill-editor data-quill-required="true" data-quill-placeholder="Beschrijf wat je aanbiedt...">{!! \App\Models\Confirmation::sanitizeDescription(old('description')) ?? '' !!}</div>
+                            <textarea id="description" name="description" class="quill-editor-input" data-quill-input>{{ old('description') }}</textarea>
+                        </div>
                     </div>
 
                     <div class="grid-2">

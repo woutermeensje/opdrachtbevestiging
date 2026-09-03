@@ -26,10 +26,12 @@
         <section class="dashboard-panel dashboard-panel-wide">
             <h2>Basis afspraken</h2>
 
-            <div class="quill-field" data-quill-field>
+            <div class="quill-field-block">
                 <label for="default_agreements_editor">Basis afspraken</label>
-                <div id="default_agreements_editor" class="quill-editor" data-quill-editor data-quill-placeholder="Bijvoorbeeld betalingstermijnen of annuleringsvoorwaarden...">{!! $defaultAgreements !!}</div>
-                <textarea id="default_agreements" name="default_agreements" class="quill-editor-input" data-quill-input>{{ old('default_agreements', $user->default_agreements) }}</textarea>
+                <div class="quill-field" data-quill-field>
+                    <div id="default_agreements_editor" class="quill-editor" data-quill-editor data-quill-placeholder="Bijvoorbeeld betalingstermijnen of annuleringsvoorwaarden...">{!! $defaultAgreements !!}</div>
+                    <textarea id="default_agreements" name="default_agreements" class="quill-editor-input" data-quill-input>{{ old('default_agreements', $user->default_agreements) }}</textarea>
+                </div>
             </div>
         </section>
 

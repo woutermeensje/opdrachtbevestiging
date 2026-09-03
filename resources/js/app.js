@@ -732,9 +732,12 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
     }
 
     if (wrapper.dataset.aiAssist === 'true' && wrapper.dataset.aiAssistUrl) {
-        const toolbar = quill.getModule('toolbar')?.container;
+        const block = wrapper.closest('.quill-field-block') ?? wrapper.parentElement;
 
-        if (toolbar) {
+        if (block) {
+            const container = document.createElement('div');
+            container.className = 'quill-ai-assist';
+
             const status = document.createElement('span');
             status.className = 'quill-ai-assist-status';
 
@@ -784,7 +787,13 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
                 }
             });
 
-            toolbar.append(button, status);
+            container.append(status, button);
+
+            if (block.classList.contains('quill-field-block')) {
+                block.prepend(container);
+            } else {
+                block.insertBefore(container, wrapper);
+            }
         }
     }
 

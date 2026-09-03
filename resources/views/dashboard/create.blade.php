@@ -178,10 +178,12 @@
                             </div>
                         </div>
 
-                        <div class="quill-field" data-quill-field data-ai-assist="true" data-ai-assist-context="opdrachtbeschrijving" data-ai-assist-url="{{ route('dashboard.ai-assist.text') }}">
+                        <div class="quill-field-block">
                             <label for="description_editor">Omschrijving van de opdracht</label>
-                            <div id="description_editor" class="quill-editor" data-quill-editor data-quill-required="true" data-quill-placeholder="Beschrijf de opdracht...">{!! $descriptionHtml ?? '' !!}</div>
-                            <textarea id="description" name="description" class="quill-editor-input" data-quill-input data-preview-input="description">{{ old('description') }}</textarea>
+                            <div class="quill-field" data-quill-field data-ai-assist="true" data-ai-assist-context="opdrachtbeschrijving" data-ai-assist-url="{{ route('dashboard.ai-assist.text') }}">
+                                <div id="description_editor" class="quill-editor" data-quill-editor data-quill-required="true" data-quill-placeholder="Beschrijf de opdracht...">{!! $descriptionHtml ?? '' !!}</div>
+                                <textarea id="description" name="description" class="quill-editor-input" data-quill-input data-preview-input="description">{{ old('description') }}</textarea>
+                            </div>
                         </div>
 
                         <div class="confirmation-edit-panel-actions">
