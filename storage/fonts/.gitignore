@@ -1,0 +1,14 @@
+# Alleen de bron-fontbestanden en de licentie committen.
+# dompdf genereert hier bij het renderen cache-bestanden
+# (*.ufm, *.ufm.json, gehashte *.ttf-kopieën, installed-fonts.json) —
+# die horen niet in versiebeheer.
+*
+
+!.gitignore
+!OFL.txt
+!Poppins-Light.ttf
+!Poppins-Regular.ttf
+!Poppins-Medium.ttf
+!Poppins-SemiBold.ttf
+!Poppins-Bold.ttf
+!Poppins-Italic.ttf
