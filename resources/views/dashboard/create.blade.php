@@ -17,7 +17,8 @@
     }
 
     $descriptionHtml = \App\Models\Confirmation::sanitizeDescription(old('description'));
-    $footerNoteText = \App\Models\Confirmation::sanitizeFooterNote(old('footer_note'));
+    $footerNoteText = \App\Models\Confirmation::sanitizeFooterNote(old('footer_note'))
+        ?? \App\Models\Confirmation::defaultFooterNoteForUser($user);
 @endphp
 
 @section('content')
@@ -295,9 +296,6 @@
                             >{{ $footerNoteText }}</textarea>
                         </div>
 
-                        <footer class="confirmation-document-footer">
-                            <span>Opgesteld door {{ $user->company_name ?: $senderName ?: config('app.name') }}</span>
-                        </footer>
                     </article>
                 </div>
 

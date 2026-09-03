@@ -63,7 +63,8 @@ class ConfirmationController extends Controller
         ]);
 
         $description = Confirmation::sanitizeDescription($validated['description']);
-        $footerNote = Confirmation::sanitizeFooterNote($validated['footer_note'] ?? null);
+        $footerNote = Confirmation::sanitizeFooterNote($validated['footer_note'] ?? null)
+            ?? Confirmation::defaultFooterNoteForUser($request->user());
 
         if ($description === null) {
             return back()

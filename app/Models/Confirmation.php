@@ -399,6 +399,22 @@ class Confirmation extends Model
         return $clean !== '' ? $clean : null;
     }
 
+    public static function defaultFooterNoteForUser(User $user): string
+    {
+        $senderName = trim(implode(' ', array_filter([
+            $user->first_name,
+            $user->last_name,
+        ])));
+
+        return self::buildDefaultFooterNote(
+            $senderName,
+            $user->company_name,
+            $user->kvk_number,
+            implode(', ', $user->companyAddressLines()),
+            $user->email,
+        );
+    }
+
     public function descriptionHtml(): string
     {
         return self::sanitizeDescription($this->description) ?? 'Geen omschrijving toegevoegd.';
@@ -421,12 +437,51 @@ class Confirmation extends Model
 
     public function footerNoteText(): string
     {
-        return self::sanitizeFooterNote($this->footer_note) ?? '';
+        return self::sanitizeFooterNote($this->footer_note) ?? $this->defaultFooterNote();
     }
 
     public function footerNoteHtml(): string
     {
         return nl2br(htmlspecialchars($this->footerNoteText(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), false);
+    }
+
+    public function defaultFooterNote(): string
+    {
+        $senderName = trim((string) $this->sender_name);
+
+        if ($senderName === '') {
+            $senderName = trim(implode(' ', array_filter([
+                $this->user?->first_name,
+                $this->user?->last_name,
+            ])));
+        }
+
+        $senderEmail = $this->sender_email ?: $this->user?->email;
+        $kvkNumber = $this->sender_kvk_number ?: $this->user?->kvk_number;
+
+        return self::buildDefaultFooterNote(
+            $senderName,
+            $this->senderCompanyDisplayName(),
+            $kvkNumber,
+            implode(', ', $this->senderAddressLines()),
+            $senderEmail,
+        );
+    }
+
+    private static function buildDefaultFooterNote(
+        ?string $senderName,
+        ?string $companyName,
+        ?string $kvkNumber,
+        ?string $address,
+        ?string $email,
+    ): string {
+        $senderName = trim((string) $senderName) ?: 'de gebruiker';
+        $companyName = trim((string) $companyName) ?: config('app.name');
+        $kvkNumber = trim((string) $kvkNumber) ?: 'KVK niet ingevuld';
+        $address = trim((string) $address) ?: 'adres niet ingevuld';
+        $email = trim((string) $email) ?: 'e-mailadres niet ingevuld';
+
+        return "Deze opdrachtbevestiging is opgesteld door {$senderName} van {$companyName}, {$kvkNumber}, {$address}. Contactgegevens: {$email}.";
     }
 
     public function valueVatLabel(): string
