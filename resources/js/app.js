@@ -788,6 +788,7 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
             });
 
             container.append(status, button);
+            block.classList.add('has-ai-assist');
 
             if (block.classList.contains('quill-field-block')) {
                 block.prepend(container);

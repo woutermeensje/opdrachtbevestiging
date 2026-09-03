@@ -179,15 +179,15 @@
     color: var(--color-primary-strong);
 }
 
-/* Editor: "AI-assist" pill in de Quill-toolbar (in JS toegevoegd) */
+/* Editor: losse "AI-assist" knop rechtsboven de rich-text editor
+   (in JS toegevoegd in .quill-ai-assist). */
 .quill-ai-assist-button {
-    display: inline-flex !important;
-    float: none !important;
+    display: inline-flex;
     align-items: center;
-    width: auto !important;
-    height: 24px;
-    margin-left: 0.5rem;
-    padding: 0 0.6rem !important;
+    gap: 0.35rem;
+    flex-shrink: 0;
+    height: 28px;
+    padding: 0 0.75rem;
     border: 1px solid var(--color-primary);
     border-radius: var(--radius-pill);
     background: var(--color-bg-white);

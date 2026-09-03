@@ -614,12 +614,17 @@ input[type='color'] {
 }
 
 /* AI-assist als losse knop rechtsboven de editor, naast het label */
+.quill-field-block.has-ai-assist > label {
+    padding-right: 7rem;
+}
+
 .quill-ai-assist {
     position: absolute;
-    top: 0;
+    top: -0.15rem;
     right: 0;
     display: inline-flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 0.6rem;
     max-width: min(70%, 420px);
 }
@@ -1007,10 +1012,15 @@ input[type='color'] {
 /* .quill-ai-assist-button (+ :hover / :disabled) staat in buttons.css */
 
 .quill-ai-assist-status {
-    margin-left: 0.6rem;
     color: var(--color-text-subtle);
     font-family: var(--font-ui);
     font-size: 0.78rem;
+    line-height: 1.3;
+    text-align: right;
+}
+
+.quill-ai-assist-status:empty {
+    display: none;
 }
 
 .quill-field.is-invalid .ql-toolbar.ql-snow,
