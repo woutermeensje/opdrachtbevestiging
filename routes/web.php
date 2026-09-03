@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\AiAssistController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BillingController;
@@ -90,6 +91,18 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('throttle:6,1')
         ->name('verification.send');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin
+|--------------------------------------------------------------------------
+| Alleen bereikbaar voor gebruikers met is_admin = true. Voor nu bevat de
+| omgeving enkel /admin/dashboard; de rest volgt later.
+*/
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
+    Route::redirect('/', '/admin/dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 });
 
 Route::middleware(['auth', 'verified'])->group(function (): void {

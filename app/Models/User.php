@@ -80,7 +80,13 @@ class User extends Authenticatable implements MustVerifyEmail
             'subscription_renews_at' => 'datetime',
             'default_specifications' => 'array',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
     }
 
     public function confirmations(): HasMany
