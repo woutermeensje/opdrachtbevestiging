@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Opdrachtbevestiging {{ $confirmation->reference }}</title>
+    @include('pdf.partials.fonts')
     <style>
         @page {
             margin: 46px 52px;
@@ -11,7 +12,7 @@
         body {
             margin: 0;
             color: #333333;
-            font-family: DejaVu Sans, Arial, sans-serif;
+            font-family: 'Poppins', 'DejaVu Sans', Arial, sans-serif;
             font-size: 14px;
             line-height: 1.55;
         }

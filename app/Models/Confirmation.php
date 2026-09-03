@@ -34,6 +34,7 @@ class Confirmation extends Model
         'specifications',
         'total_value',
         'value_vat_type',
+        'vat_rate',
         'public_token',
         'status',
         'sender_name',
@@ -80,6 +81,7 @@ class Confirmation extends Model
     {
         return [
             'total_value' => 'decimal:2',
+            'vat_rate' => 'integer',
             'specifications' => 'array',
             'agreement_date' => 'date',
             'sent_at' => 'datetime',
@@ -492,6 +494,10 @@ class Confirmation extends Model
 
     public function valueVatLabel(): string
     {
+        if ($this->vat_rate !== null) {
+            return 'excl. '.$this->vat_rate.'% btw';
+        }
+
         return $this->value_vat_type === 'incl' ? 'incl. BTW' : 'excl. BTW';
     }
 

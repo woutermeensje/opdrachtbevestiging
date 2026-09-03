@@ -176,6 +176,30 @@
                                     data-preview-input="title"
                                 >
                             </div>
+                            <div>
+                                <label for="total_value">Vergoeding</label>
+                                <div class="amount-field">
+                                    <span class="amount-field-prefix" aria-hidden="true">&euro;</span>
+                                    <input
+                                        id="total_value"
+                                        name="total_value"
+                                        type="text"
+                                        inputmode="decimal"
+                                        autocomplete="off"
+                                        value="{{ old('total_value') }}"
+                                        placeholder="5.000"
+                                        data-amount-input
+                                    >
+                                </div>
+                            </div>
+                            <div>
+                                <label for="vat_rate">BTW</label>
+                                <select id="vat_rate" name="vat_rate">
+                                    <option value="21" @selected((string) old('vat_rate', '21') === '21')>21% (algemeen tarief)</option>
+                                    <option value="9" @selected((string) old('vat_rate') === '9')>9% (verlaagd tarief)</option>
+                                    <option value="0" @selected((string) old('vat_rate') === '0')>0% / vrijgesteld</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="quill-field-block">
@@ -188,7 +212,7 @@
 
                         <div class="confirmation-edit-panel-actions">
                             <button type="button" class="btn btn-secondary" data-builder-close>Sluiten</button>
-                            <button type="submit" name="submit_action" value="send" class="btn btn-primary">Verzenden</button>
+                            <button type="button" class="btn btn-primary" data-builder-close>Opslaan</button>
                         </div>
                     </section>
 
