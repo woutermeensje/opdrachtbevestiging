@@ -1,6 +1,7 @@
 @php
     $senderAddressLines = $confirmation->senderAddressLines();
     $logo = $confirmation->senderCompanyLogoDataUri();
+    $footerNoteText = $confirmation->footerNoteText();
 @endphp
 
 <article class="card public-document">
@@ -77,6 +78,12 @@
         <div class="public-document-body">
             <h3>Algemene voorwaarden</h3>
             <p>{{ $confirmation->terms_original_name ?: basename($confirmation->terms_path) }} is meegestuurd als bijlage en is van toepassing op deze opdracht.</p>
+        </div>
+    @endif
+
+    @if ($footerNoteText !== '')
+        <div class="public-document-footnote">
+            <p>{!! $confirmation->footerNoteHtml() !!}</p>
         </div>
     @endif
 </article>

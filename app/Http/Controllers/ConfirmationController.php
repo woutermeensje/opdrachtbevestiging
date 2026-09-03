@@ -49,6 +49,7 @@ class ConfirmationController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'contact_id' => ['required', 'integer'],
             'description' => ['required', 'string'],
+            'footer_note' => ['nullable', 'string', 'max:2000'],
             'agreement_date' => ['nullable', 'date'],
             'duration' => ['nullable', 'string', 'max:255'],
             'total_value' => ['nullable', 'numeric', 'min:0'],
@@ -62,6 +63,7 @@ class ConfirmationController extends Controller
         ]);
 
         $description = Confirmation::sanitizeDescription($validated['description']);
+        $footerNote = Confirmation::sanitizeFooterNote($validated['footer_note'] ?? null);
 
         if ($description === null) {
             return back()
@@ -87,6 +89,7 @@ class ConfirmationController extends Controller
             'client_email' => $contact->contact_email,
             'client_kvk_number' => $contact->kvk_number,
             'description' => $description,
+            'footer_note' => $footerNote,
             'specifications' => $specifications,
             'agreement_date' => $validated['agreement_date'] ?? null,
             'duration' => $validated['duration'] ?? null,

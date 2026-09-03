@@ -65,7 +65,7 @@
 
         .eyebrow {
             margin-bottom: 5px;
-            color: #003B73;
+            color: {{ $themePrimaryColor }};
             font-size: 10px;
             font-weight: bold;
             text-transform: uppercase;
@@ -99,10 +99,49 @@
             margin-bottom: 8px;
         }
 
+        .rich-content h1,
+        .rich-content h2,
+        .rich-content h3 {
+            margin: 0 0 8px;
+            color: #333333;
+            font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .rich-content h1 {
+            font-size: 18px;
+        }
+
+        .rich-content h2 {
+            font-size: 15px;
+        }
+
+        .rich-content h3 {
+            font-size: 13px;
+        }
+
         .rich-content ul,
         .rich-content ol {
             margin-top: 0;
+            margin-bottom: 8px;
             padding-left: 18px;
+        }
+
+        .rich-content li {
+            margin-bottom: 4px;
+        }
+
+        .rich-content blockquote {
+            margin: 0 0 8px;
+            padding: 6px 10px;
+            border-left: 3px solid {{ $themePrimaryColor }};
+            background: #f5f6f8;
+            color: #4b5563;
+        }
+
+        .rich-content a {
+            color: {{ $themePrimaryColor }};
+            text-decoration: underline;
         }
 
         .document-list {
@@ -155,6 +194,20 @@
             border-top: 1px solid #999999;
             padding-top: 6px;
             color: #666666;
+        }
+
+        .footer-note {
+            margin: 18px 0 12px;
+            padding-top: 10px;
+            border-top: 2px solid #222222;
+            color: #333333;
+            font-size: 11px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+        .footer-note p {
+            margin: 0;
         }
     </style>
 </head>
@@ -274,6 +327,12 @@
             </div>
         @endif
     </div>
+
+    @if ($confirmation->footerNoteText() !== '')
+        <div class="footer-note">
+            <p>{!! $confirmation->footerNoteHtml() !!}</p>
+        </div>
+    @endif
 
     <p class="meta">
         Deze opdrachtbevestiging is opgesteld door {{ $confirmation->senderCompanyDisplayName() }}.

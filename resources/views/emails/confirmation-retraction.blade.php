@@ -17,7 +17,7 @@
     <div style="width:100%;background:{{ $themeBackground }};padding:64px 24px;box-sizing:border-box;">
         <div style="max-width:720px;margin:0 auto;">
             <div style="{{ $blockStyle }}">
-                <p style="margin:0 0 10px;font-size:13px;line-height:1.4;color:#003B73;text-transform:uppercase;letter-spacing:.06em;font-weight:700;">Opdrachtbevestiging</p>
+                <p style="margin:0 0 10px;font-size:13px;line-height:1.4;color:{{ $themePrimaryColor }};text-transform:uppercase;letter-spacing:.06em;font-weight:700;">Opdrachtbevestiging</p>
                 <h1 style="margin:0 0 20px;font-size:28px;line-height:1.2;color:#333333;font-weight:700;">{{ $confirmation->title }}</h1>
 
                 <p style="{{ $textStyle }}">Beste {{ $recipientName }},</p>

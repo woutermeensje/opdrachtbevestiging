@@ -6,15 +6,17 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
-    min-height: 42px;
+    gap: 0.4rem;
+    min-height: 38px;
     text-decoration: none;
     border-radius: var(--radius-default);
-    padding: 0.7rem 1rem;
+    padding: 0.64rem 0.94rem;
     font-weight: 600;
     font-family: var(--font-ui);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.01em;
     border: 1px solid transparent;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.12);
     cursor: pointer;
     line-height: 1;
     text-align: center;
@@ -26,10 +28,13 @@
 
 .btn:hover {
     text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .btn:active {
     transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 .btn:disabled,
@@ -37,12 +42,13 @@
     cursor: not-allowed;
     opacity: 0.55;
     transform: none;
+    box-shadow: none;
 }
 
 .btn-small {
-    min-height: 36px;
-    padding: 0.52rem 0.75rem;
-    font-size: 0.85rem;
+    min-height: 33px;
+    padding: 0.46rem 0.68rem;
+    font-size: 0.82rem;
 }
 
 .btn-primary {
@@ -90,4 +96,150 @@
     background: var(--color-bg-white);
     border-color: var(--color-danger);
     color: var(--color-danger);
+}
+
+/* ===============================
+   COMPONENT BUTTONS
+   Losse <button>-elementen die niet de .btn-basis gebruiken maar
+   wel hier centraal worden vormgegeven.
+================================ */
+
+/* Sidebar: uitloggen (dashboard) — visueel een nav-link */
+.dashboard-logout-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-subtle);
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dashboard-logout-button:hover {
+    background: var(--color-bg);
+    color: var(--color-danger);
+}
+
+/* Sidebar: mobiele navigatie-toggle (hamburger) */
+.dashboard-nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-right: 0.5rem;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.dashboard-nav-toggle-icon-close {
+    display: none;
+}
+
+.dashboard-nav-toggle[aria-expanded="true"] .dashboard-nav-toggle-icon-open {
+    display: none;
+}
+
+.dashboard-nav-toggle[aria-expanded="true"] .dashboard-nav-toggle-icon-close {
+    display: block;
+}
+
+/* Auth: "Ander account gebruiken" — tekstlink-knop */
+.auth-switch-account button {
+    appearance: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: inherit;
+    font-weight: 700;
+    line-height: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
+.auth-switch-account button:hover {
+    color: var(--color-primary-strong);
+}
+
+/* Editor: "AI-assist" pill in de Quill-toolbar (in JS toegevoegd) */
+.quill-ai-assist-button {
+    display: inline-flex !important;
+    float: none !important;
+    align-items: center;
+    width: auto !important;
+    height: 24px;
+    margin-left: 0.5rem;
+    padding: 0 0.6rem !important;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-white);
+    color: var(--color-primary);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.quill-ai-assist-button:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: #ffffff;
+}
+
+.quill-ai-assist-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* Opdrachtgever-zoeker: resultaatoptie (<button> in de dropdown) */
+.contact-search-option {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    padding: 0.7rem 0.8rem;
+    border: 0;
+    border-radius: var(--radius-default);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    font-family: var(--font-text);
+    font-size: 0.92rem;
+    line-height: 1.35;
+    text-align: left;
+}
+
+.contact-search-option span {
+    color: var(--color-text-subtle);
+    font-size: 0.82rem;
+}
+
+.contact-search-option:hover,
+.contact-search-option.is-active {
+    background: var(--color-bg);
+}
+
+.contact-search-option.is-selected strong {
+    color: var(--color-primary);
 }

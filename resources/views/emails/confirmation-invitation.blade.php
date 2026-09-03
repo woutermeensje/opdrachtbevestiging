@@ -21,10 +21,10 @@
         <div style="max-width:720px;margin:0 auto;">
             <div style="{{ $blockStyle }}">
                 <p style="{{ $textStyle }}">Hoi {{ $recipientFirstName }},</p>
-                <p style="margin:0;font-size:15px;line-height:1.6;color:#333333;">{{ $senderCompany }} heeft een opdrachtbevestiging opgesteld! Je kan via <a href="{{ $acceptUrl }}" style="color:#003B73;font-weight:700;">deze link</a> de opdrachtbevestiging bekijken en accorderen.</p>
+                <p style="margin:0;font-size:15px;line-height:1.6;color:#333333;">{{ $senderCompany }} heeft een opdrachtbevestiging opgesteld! Je kan via <a href="{{ $acceptUrl }}" style="color:{{ $themePrimaryColor }};font-weight:700;">deze link</a> de opdrachtbevestiging bekijken en accorderen.</p>
 
                 <p style="margin:20px 0 0;">
-                    <a href="{{ $acceptUrl }}" style="display:inline-block;padding:12px 18px;border-radius:5px;background:#003B73;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">Opdrachtbevestiging bekijken</a>
+                    <a href="{{ $acceptUrl }}" style="display:inline-block;padding:12px 18px;border-radius:5px;background:{{ $themePrimaryColor }};color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">Opdrachtbevestiging bekijken</a>
                 </p>
 
                 <div style="{{ $dividerStyle }}">

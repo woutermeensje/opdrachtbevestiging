@@ -51,6 +51,7 @@ class ConfirmationFlowTest extends TestCase
                 'title' => 'Nieuwe website opdracht',
                 'contact_id' => $contact->id,
                 'description' => '<p>Ontwikkeling van een <strong>marketingwebsite</strong>.</p>',
+                'footer_note' => "Betaling binnen 14 dagen.\n<script>alert(1)</script>",
             ]);
 
         $confirmation = Confirmation::query()->first();
@@ -66,6 +67,7 @@ class ConfirmationFlowTest extends TestCase
         $this->assertNotNull($confirmation->sent_at);
         $this->assertNotNull($confirmation->pdf_path);
         $this->assertSame('<p>Ontwikkeling van een <strong>marketingwebsite</strong>.</p>', $confirmation->description);
+        $this->assertSame('Betaling binnen 14 dagen.', $confirmation->footer_note);
 
         Storage::disk('local')->assertExists($confirmation->pdf_path);
 
@@ -73,6 +75,12 @@ class ConfirmationFlowTest extends TestCase
             ->get(route('dashboard.confirmations.pdf', $confirmation))
             ->assertOk()
             ->assertDownload($confirmation->pdf_original_name);
+
+        $this
+            ->get(route('confirmations.public.show', $confirmation->public_token))
+            ->assertOk()
+            ->assertSee('Betaling binnen 14 dagen.')
+            ->assertDontSee('alert(1)');
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
             $mail->assertSeeInHtml('Hoi Sanne,');
@@ -113,6 +121,8 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Concept')
             ->assertSee('name="title"', false)
             ->assertSee('data-quill-editor', false)
+            ->assertSee('name="footer_note"', false)
+            ->assertSee('data-preview-input="footer-note"', false)
             ->assertSee('name="contact_id"', false)
             ->assertSee('data-contact-search', false)
             ->assertSee('data-contact-search-option', false)

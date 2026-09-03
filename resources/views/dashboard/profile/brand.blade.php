@@ -4,7 +4,7 @@
 
 @php
     $user = auth()->user();
-    $primaryColor = old('primary_color', $user->primary_color ?: '#003B73');
+    $primaryColor = old('primary_color', $user->primary_color);
     $secondaryColor = old('secondary_color', $user->secondary_color ?: '#FBFAF8');
 @endphp
 
@@ -43,7 +43,14 @@
             <div class="grid-2">
                 <div>
                     <label for="primary_color">Primaire kleur</label>
-                    <input id="primary_color" name="primary_color" type="color" value="{{ $primaryColor }}" required>
+                    <input
+                        id="primary_color"
+                        name="primary_color"
+                        type="color"
+                        value="{{ $primaryColor }}"
+                        required
+                        @if (! $primaryColor) data-theme-primary-color-default="true" @endif
+                    >
                 </div>
                 <div>
                     <label for="secondary_color">Secundaire kleur</label>

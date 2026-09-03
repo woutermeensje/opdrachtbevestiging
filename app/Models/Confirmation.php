@@ -24,6 +24,7 @@ class Confirmation extends Model
         'client_email',
         'client_kvk_number',
         'description',
+        'footer_note',
         'specifications',
         'total_value',
         'value_vat_type',
@@ -327,9 +328,72 @@ class Confirmation extends Model
             return null;
         }
 
-        $clean = preg_replace('/<(script|style)\b[^>]*>.*?<\/\1>/is', '', $description) ?? '';
-        $clean = strip_tags($clean, '<p><br><strong><b><em><i><u><ul><ol><li>');
-        $clean = preg_replace('/<([a-z][a-z0-9]*)\b[^>]*>/i', '<$1>', $clean) ?? '';
+        $clean = preg_replace('/<(script|style|iframe|object|embed|form)\b[^>]*>.*?<\/\1>/is', '', $description) ?? '';
+        $clean = strip_tags($clean, '<p><br><strong><b><em><i><u><ul><ol><li><blockquote><h1><h2><h3><a>');
+        $clean = preg_replace_callback('/<a\b([^>]*)>/i', function (array $matches): string {
+            $attrs = $matches[1] ?? '';
+
+            preg_match('/\shref\s*=\s*(["\'])(.*?)\1/i', $attrs, $quotedHref);
+            preg_match('/\shref\s*=\s*([^\s>"\']+)/i', $attrs, $unquotedHref);
+
+            $href = html_entity_decode($quotedHref[2] ?? $unquotedHref[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            if (! self::isSafeRichTextUrl($href)) {
+                return '<a>';
+            }
+
+            $href = htmlspecialchars(trim($href), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+            if (preg_match('/^https?:\/\//i', $href)) {
+                return '<a href="'.$href.'" target="_blank" rel="noopener noreferrer">';
+            }
+
+            return '<a href="'.$href.'">';
+        }, $clean) ?? '';
+        $clean = preg_replace_callback('/<([a-z][a-z0-9]*)\b[^>]*>/i', function (array $matches): string {
+            $tag = strtolower($matches[1]);
+
+            if ($tag === 'a') {
+                return $matches[0];
+            }
+
+            return '<'.$tag.'>';
+        }, $clean) ?? '';
+        $clean = preg_replace('/<(p|h[1-3]|blockquote)>\s*(?:<br>\s*)*<\/\1>/i', '', $clean) ?? '';
+        $clean = trim($clean);
+
+        $text = html_entity_decode(strip_tags($clean), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace('/[\s\x{00a0}\x{202f}\x{2007}]+/u', ' ', $text) ?? '';
+
+        return trim($text) !== '' ? $clean : null;
+    }
+
+    private static function isSafeRichTextUrl(string $url): bool
+    {
+        $url = trim($url);
+
+        if ($url === '' || str_starts_with($url, '//')) {
+            return false;
+        }
+
+        return preg_match('/^(https?:|mailto:|tel:|\/|#)/i', $url) === 1;
+    }
+
+    public static function sanitizeFooterNote(?string $note): ?string
+    {
+        if ($note === null) {
+            return null;
+        }
+
+        $clean = preg_replace('/<(script|style|iframe|object|embed|form)\b[^>]*>.*?<\/\1>/is', '', $note) ?? '';
+        $clean = preg_replace('/<br\s*\/?>/i', "\n", $clean) ?? '';
+        $clean = preg_replace('/<\/(?:p|div|li|h[1-6])>/i', "\n", $clean) ?? '';
+        $clean = strip_tags($clean);
+        $clean = html_entity_decode($clean, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $clean = str_replace(["\r\n", "\r"], "\n", $clean);
+        $clean = preg_replace('/[ \t\x{00a0}\x{202f}\x{2007}]+/u', ' ', $clean) ?? '';
+        $clean = preg_replace('/ *\n */', "\n", $clean) ?? '';
+        $clean = preg_replace("/\n{3,}/", "\n\n", $clean) ?? '';
         $clean = trim($clean);
 
         return $clean !== '' ? $clean : null;
@@ -353,6 +417,16 @@ class Confirmation extends Model
     public function defaultAgreementsText(): string
     {
         return self::richTextToPlainText($this->defaultAgreementsHtml());
+    }
+
+    public function footerNoteText(): string
+    {
+        return self::sanitizeFooterNote($this->footer_note) ?? '';
+    }
+
+    public function footerNoteHtml(): string
+    {
+        return nl2br(htmlspecialchars($this->footerNoteText(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), false);
     }
 
     public function valueVatLabel(): string

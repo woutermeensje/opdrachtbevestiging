@@ -22,7 +22,7 @@
     <div style="width:100%;background:{{ $themeBackground }};padding:64px 24px;box-sizing:border-box;">
         <div style="max-width:720px;margin:0 auto;">
             <div style="{{ $blockStyle }}">
-                <p style="margin:0 0 10px;font-size:13px;line-height:1.4;color:#003B73;text-transform:uppercase;letter-spacing:.06em;font-weight:700;">Opdrachtbevestiging getekend</p>
+                <p style="margin:0 0 10px;font-size:13px;line-height:1.4;color:{{ $themePrimaryColor }};text-transform:uppercase;letter-spacing:.06em;font-weight:700;">Opdrachtbevestiging getekend</p>
                 <h1 style="margin:0 0 20px;font-size:28px;line-height:1.2;color:#333333;font-weight:700;">{{ $confirmation->title }}</h1>
 
                 <p style="{{ $textStyle }}">Beste {{ $recipientName }},</p>
@@ -46,7 +46,7 @@
                         <p style="margin:0 0 6px;font-size:16px;line-height:1.5;color:#333333;font-weight:700;">Zelf ook opdrachtbevestigingen versturen?</p>
                         <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#333333;">Maak gratis een account aan op Opdrachtbevestiging.nl en stel binnen enkele minuten je eigen opdrachtbevestigingen op.</p>
                         <p style="margin:0;">
-                            <a href="{{ route('register') }}" style="display:inline-block;padding:12px 18px;border-radius:5px;background:#003B73;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">Maak ook een account aan op Opdrachtbevestiging.nl</a>
+                            <a href="{{ route('register') }}" style="display:inline-block;padding:12px 18px;border-radius:5px;background:{{ $themePrimaryColor }};color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">Maak ook een account aan op Opdrachtbevestiging.nl</a>
                         </p>
                     </div>
                 @endif

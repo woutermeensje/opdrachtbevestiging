@@ -1,0 +1,385 @@
+/* ===============================
+   OPDRACHTBEVESTIGING AANMAKEN
+   Route: /dashboard/aanmaken
+
+   Deze stylesheet bepaalt het volledige "aanmaken"-blok:
+   de builder-layout, de documentpreview en de aside.
+   De formulieren zelf (Stap 1 / Stap 2 edit-panels, de
+   contactzoeker en de Quill-editor) worden gestyled via forms.css.
+================================ */
+
+/* -------------------------------
+   Builder layout / shell
+-------------------------------- */
+.confirmation-builder {
+    display: block;
+}
+
+.confirmation-builder-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 1rem;
+    align-items: start;
+}
+
+.confirmation-builder-stage {
+    position: relative;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-default);
+    background: transparent;
+    overflow: hidden;
+}
+
+/* -------------------------------
+   Documentpreview
+-------------------------------- */
+.confirmation-document-preview {
+    width: 100%;
+    max-width: 980px;
+    min-height: 1120px;
+    margin: 0 auto;
+    padding: clamp(1.25rem, 4vw, 3rem);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    background: var(--color-bg-white);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    color: #222222;
+}
+
+.confirmation-document-click-target {
+    border-radius: var(--radius-default);
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.confirmation-document-click-target:hover {
+    background: color-mix(in srgb, var(--preview-accent) 5%, white);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--preview-accent) 24%, white);
+}
+
+.confirmation-document-click-target:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring), inset 0 0 0 1px var(--preview-accent);
+}
+
+.confirmation-document-content-target {
+    display: block;
+    margin: -0.75rem;
+    padding: 0.75rem;
+}
+
+.confirmation-document-header {
+    margin-bottom: 4rem;
+}
+
+.confirmation-document-logo {
+    display: flex;
+    align-items: center;
+    min-height: 76px;
+}
+
+.confirmation-document-logo img {
+    width: auto;
+    max-width: 260px;
+    max-height: 96px;
+    object-fit: contain;
+}
+
+.confirmation-document-logo span {
+    color: var(--preview-accent);
+    font-family: var(--font-heading);
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+}
+
+.confirmation-document-party-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 8vw, 6rem);
+    align-items: start;
+    margin-bottom: 4rem;
+}
+
+.confirmation-document-sender,
+.confirmation-document-recipient {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    color: #333333;
+    font-family: var(--font-text);
+    font-size: calc(0.94rem - 2px);
+    font-weight: 300;
+    line-height: 1.45;
+}
+
+.confirmation-document-sender .confirmation-document-label,
+.confirmation-document-sender strong,
+.confirmation-document-sender span,
+.confirmation-document-recipient .confirmation-document-label,
+.confirmation-document-recipient strong,
+.confirmation-document-recipient span {
+    color: #333333;
+    font-family: var(--font-text);
+    font-size: inherit;
+    font-weight: 300;
+}
+
+.confirmation-document-sender .confirmation-document-label,
+.confirmation-document-recipient .confirmation-document-label {
+    color: var(--preview-accent);
+    font-weight: 800;
+}
+
+.confirmation-document-sender strong,
+.confirmation-document-recipient strong {
+    font-weight: 600;
+}
+
+.confirmation-document-recipient {
+    width: auto;
+    /* Negatieve horizontale marge + gelijke padding: de tekst blijft
+       links uitgelijnd met de rest van het document, maar de hover-
+       highlight (.confirmation-document-click-target) krijgt op alle
+       randen ruimte. */
+    margin: -0.75rem;
+    padding: 0.75rem;
+    border-left: 0;
+}
+
+.confirmation-document-label {
+    margin: 0 0 0.25rem;
+    color: var(--preview-accent);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+/* -------------------------------
+   Conceptkop in de documentpreview
+   ("<titel>" + aanmaakdatum)
+-------------------------------- */
+.confirmation-document-title-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, auto);
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 2.25rem;
+}
+
+.confirmation-document-title {
+    margin: 0;
+    font-family: var(--font-ui); /* Inter */
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.12;
+}
+
+.confirmation-document-title-row dl {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    justify-self: end;
+}
+
+.confirmation-document-title-row dl div {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+}
+
+.confirmation-document-title-row dt {
+    color: #333333;
+    font-family: var(--font-ui);
+    font-size: calc(1rem - 2px);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.confirmation-document-title-row dd {
+    margin: 0;
+    color: #333333;
+    font-family: var(--font-text);
+    font-size: calc(0.94rem - 2px);
+    font-weight: 300;
+    line-height: 1.45;
+}
+
+/* -------------------------------
+   Documentsecties + footer
+-------------------------------- */
+.confirmation-document-section {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.confirmation-document-section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.confirmation-document-section-heading span {
+    color: var(--color-text-subtle);
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.confirmation-document-footnote {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px solid #222222;
+}
+
+.confirmation-document-footnote textarea {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #333333;
+    font-family: var(--font-text);
+    font-size: calc(0.94rem - 2px);
+    font-weight: 300;
+    line-height: 1.45;
+    resize: vertical;
+    white-space: pre-line;
+}
+
+.confirmation-document-footnote textarea::placeholder {
+    color: var(--color-text-subtle);
+}
+
+.confirmation-document-footnote textarea:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.confirmation-document-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 0;
+    border-top: 0;
+    color: var(--color-text-soft);
+    font-size: 0.82rem;
+}
+
+/* De rich-text weergave in de preview (.confirmation-document-rich)
+   deelt zijn regels met .dashboard-rich-content en staat daarom
+   in forms.css. */
+
+/* -------------------------------
+   Aside (statuskaart + hulpkaart)
+-------------------------------- */
+.confirmation-builder-aside {
+    position: sticky;
+    top: 5.5rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.confirmation-builder-status-card,
+.confirmation-builder-help-card {
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-default);
+    background: transparent;
+    box-shadow: none;
+}
+
+.confirmation-builder-status-card .dashboard-status {
+    margin-bottom: 1rem;
+}
+
+.confirmation-builder-status-card dl {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0 0 1rem;
+}
+
+.confirmation-builder-status-card dl div {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.confirmation-builder-status-card dt {
+    color: var(--color-text-soft);
+    font-family: var(--font-ui);
+    font-weight: 700;
+}
+
+.confirmation-builder-status-card dd {
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-ui);
+}
+
+.confirmation-builder-submit-actions {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.confirmation-builder-help-card h2 {
+    margin: 0 0 0.55rem;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.confirmation-builder-help-card p {
+    color: var(--color-text-soft);
+    line-height: 1.55;
+}
+
+.confirmation-builder-help-card .btn {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+/* -------------------------------
+   Responsive
+-------------------------------- */
+@media (max-width: 800px) {
+    .confirmation-builder-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .confirmation-builder-stage {
+        padding: 0.75rem;
+        overflow: visible;
+    }
+
+    .confirmation-document-party-row,
+    .confirmation-document-title-row {
+        grid-template-columns: 1fr;
+    }
+
+    .confirmation-document-preview {
+        min-height: auto;
+        padding: 1.15rem;
+    }
+
+    .confirmation-document-header,
+    .confirmation-document-party-row {
+        margin-bottom: 2rem;
+    }
+
+    .confirmation-builder-aside {
+        position: static;
+    }
+}

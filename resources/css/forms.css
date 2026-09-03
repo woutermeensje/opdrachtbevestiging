@@ -36,14 +36,14 @@ select {
     background: var(--field-bg);
     border: 1px solid var(--field-border);
     border-radius: var(--radius-default);
-    padding: 0.64rem 0.75rem;
-    margin-bottom: 1.35rem;
-    font-size: 0.9rem;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
     font-family: var(--font-text);
     color: var(--color-text);
     outline: none;
-    line-height: 1.35;
-    min-height: 42px;
+    line-height: 1.4;
+    min-height: 36px;
     transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -70,7 +70,7 @@ select {
 }
 
 input[type='color'] {
-    min-height: 44px;
+    min-height: 38px;
     padding: 0.2rem;
     cursor: pointer;
 }
@@ -139,26 +139,7 @@ input[type='color'] {
     flex: 1 1 150px;
 }
 
-.confirmation-builder {
-    display: block;
-}
-
-.confirmation-builder-shell {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 280px;
-    gap: 1rem;
-    align-items: start;
-}
-
-.confirmation-builder-stage {
-    position: relative;
-    min-width: 0;
-    padding: 0;
-    border: 0;
-    border-radius: var(--radius-default);
-    background: transparent;
-    overflow: hidden;
-}
+/* .confirmation-builder / -shell / -stage staan in create.css */
 
 .confirmation-edit-panel {
     position: absolute;
@@ -212,6 +193,11 @@ input[type='color'] {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.85rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.confirmation-edit-panel-grid:last-child {
+    margin-bottom: 0;
 }
 
 .confirmation-edit-panel-grid input,
@@ -304,249 +290,133 @@ input[type='color'] {
     margin-bottom: 0.85rem;
 }
 
-.confirmation-document-preview {
-    width: 100%;
-    max-width: 980px;
-    min-height: 1120px;
-    margin: 0 auto;
-    padding: clamp(1.25rem, 4vw, 3rem);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-default);
-    background: var(--color-bg-white);
-    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
-    color: #222222;
+/* De documentpreview (.confirmation-document-preview, -header, -logo,
+   -sender, -recipient, -label, -section, -footer, de conceptkop en de
+   click-targets) staat in create.css. */
+
+.confirmation-document-rich,
+.dashboard-rich-content {
+    max-width: 100%;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+    word-break: normal;
 }
 
-.confirmation-document-click-target {
-    border-radius: var(--radius-default);
-    cursor: pointer;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+:where(.confirmation-document-rich, .dashboard-rich-content) * {
+    max-width: 100%;
 }
 
-.confirmation-document-click-target:hover {
-    background: color-mix(in srgb, var(--preview-accent) 5%, white);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--preview-accent) 24%, white);
-}
-
-.confirmation-document-click-target:focus-visible {
-    outline: none;
-    box-shadow: var(--focus-ring), inset 0 0 0 1px var(--preview-accent);
-}
-
-.confirmation-document-content-target {
-    display: block;
-    margin: -0.75rem;
-    padding: 0.75rem;
-}
-
-.confirmation-document-header {
-    display: grid;
-    grid-template-columns: minmax(220px, 1fr) minmax(220px, 0.85fr);
-    gap: 2rem;
-    align-items: start;
-    margin-bottom: 4rem;
-}
-
-.confirmation-document-logo {
-    display: flex;
-    align-items: center;
-    min-height: 76px;
-}
-
-.confirmation-document-logo img {
-    width: auto;
-    max-width: 260px;
-    max-height: 96px;
-    object-fit: contain;
-}
-
-.confirmation-document-logo span {
-    color: var(--preview-accent);
+:where(.confirmation-document-rich, .dashboard-rich-content) h1,
+:where(.confirmation-document-rich, .dashboard-rich-content) h2,
+:where(.confirmation-document-rich, .dashboard-rich-content) h3 {
+    margin-top: 0;
+    color: var(--color-text);
     font-family: var(--font-heading);
-    font-size: clamp(1.6rem, 4vw, 2.5rem);
     font-weight: 800;
-    line-height: 1.05;
+    line-height: 1.24;
+    letter-spacing: 0;
 }
 
-.confirmation-document-sender,
-.confirmation-document-recipient {
-    display: flex;
-    flex-direction: column;
-    gap: 0.18rem;
-    font-family: var(--font-ui);
-    font-size: 0.94rem;
-    line-height: 1.45;
+:where(.confirmation-document-rich, .dashboard-rich-content) h1 {
+    margin-bottom: 1rem;
+    font-size: 1.55rem;
 }
 
-.confirmation-document-sender strong,
-.confirmation-document-recipient strong {
-    font-weight: 800;
+:where(.confirmation-document-rich, .dashboard-rich-content) h2 {
+    margin-bottom: 0.65rem;
+    font-size: 1.28rem;
 }
 
-.confirmation-document-recipient {
-    width: min(360px, 100%);
-    margin-bottom: 4rem;
-    padding: 0.75rem 1rem;
-    border-left: 3px solid color-mix(in srgb, var(--preview-accent) 72%, white);
+:where(.confirmation-document-rich, .dashboard-rich-content) h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.08rem;
 }
 
-.confirmation-document-label {
-    margin: 0 0 0.25rem;
-    color: var(--preview-accent);
-    font-family: var(--font-ui);
-    font-size: 0.78rem;
-    font-weight: 800;
+:where(.confirmation-document-rich, .dashboard-rich-content) :where(p, ul, ol, blockquote) {
+    margin: 0 0 0.85rem;
 }
 
-.confirmation-document-title-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, auto);
-    gap: 2rem;
-    align-items: start;
-    margin-bottom: 2.25rem;
+:where(.confirmation-document-rich, .dashboard-rich-content) :where(p, li) {
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.75;
 }
 
-.confirmation-document-title-row h2 {
-    margin: 0;
-    font-family: var(--font-ui);
-    font-size: clamp(1.65rem, 4vw, 2.45rem);
-    font-weight: 500;
-    line-height: 1.12;
+:where(.confirmation-document-rich, .dashboard-rich-content) :where(ul, ol) {
+    padding-left: 1.35rem;
 }
 
-.confirmation-document-title-row h2 span:last-child {
-    color: #9ca3af;
+:where(.confirmation-document-rich, .dashboard-rich-content) ul {
+    list-style-type: disc;
 }
 
-.confirmation-document-title-row dl,
-.confirmation-builder-status-card dl {
-    display: grid;
-    gap: 0.4rem;
-    margin: 0;
+:where(.confirmation-document-rich, .dashboard-rich-content) ul ul {
+    margin-top: 0.45rem;
+    list-style-type: circle;
 }
 
-.confirmation-document-title-row dl div,
-.confirmation-builder-status-card dl div {
-    display: grid;
-    grid-template-columns: 116px minmax(0, 1fr);
-    gap: 0.8rem;
+:where(.confirmation-document-rich, .dashboard-rich-content) ul ul ul {
+    list-style-type: square;
 }
 
-.confirmation-document-title-row dt,
-.confirmation-builder-status-card dt {
-    color: var(--color-text-soft);
+:where(.confirmation-document-rich, .dashboard-rich-content) ol {
+    list-style-type: decimal;
+}
+
+:where(.confirmation-document-rich, .dashboard-rich-content) ol ol {
+    margin-top: 0.45rem;
+    list-style-type: lower-alpha;
+}
+
+:where(.confirmation-document-rich, .dashboard-rich-content) ol ol ol {
+    list-style-type: lower-roman;
+}
+
+:where(.confirmation-document-rich, .dashboard-rich-content) li {
+    margin: 0 0 0.45rem;
+    padding-left: 0.25rem;
+}
+
+:where(.confirmation-document-rich, .dashboard-rich-content) :where(p, li):last-child,
+:where(.confirmation-document-rich, .dashboard-rich-content) :where(ul, ol, blockquote):last-child {
+    margin-bottom: 0;
+}
+
+:where(.confirmation-document-rich, .dashboard-rich-content) li::marker {
+    color: var(--color-primary);
     font-family: var(--font-ui);
     font-weight: 700;
 }
 
-.confirmation-document-title-row dd,
-.confirmation-builder-status-card dd {
-    margin: 0;
-    color: var(--color-text);
-    font-family: var(--font-ui);
+:where(.confirmation-document-rich, .dashboard-rich-content) ul li::marker {
+    font-size: 0.9em;
 }
 
-.confirmation-document-section {
-    margin-top: 2rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--color-border);
+:where(.confirmation-document-rich, .dashboard-rich-content) ol li::marker {
+    font-size: 0.95em;
+    font-variant-numeric: tabular-nums;
 }
 
-.confirmation-document-section-heading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.confirmation-document-section-heading span {
-    color: var(--color-text-subtle);
-    font-family: var(--font-ui);
-    font-size: 0.82rem;
-    font-weight: 800;
-}
-
-.confirmation-document-rich {
-    color: var(--color-text);
-    font-size: 0.95rem;
-    line-height: 1.7;
-}
-
-.confirmation-document-rich p,
-.confirmation-document-rich li {
-    color: var(--color-text);
-    font-size: 0.95rem;
-    font-weight: 400;
-}
-
-.confirmation-document-rich p:last-child {
-    margin-bottom: 0;
-}
-
-.confirmation-document-footer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 2px solid #222222;
+:where(.confirmation-document-rich, .dashboard-rich-content) blockquote {
+    border-left: 3px solid var(--color-primary);
+    padding: 0.65rem 0.9rem;
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
     color: var(--color-text-soft);
-    font-size: 0.82rem;
 }
 
-.confirmation-builder-aside {
-    position: sticky;
-    top: 5.5rem;
-    display: grid;
-    gap: 1rem;
+:where(.confirmation-document-rich, .dashboard-rich-content) a {
+    color: var(--color-primary);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
 }
 
-.confirmation-builder-status-card,
-.confirmation-builder-help-card {
-    padding: 0;
-    border: 0;
-    border-radius: var(--radius-default);
-    background: transparent;
-    box-shadow: none;
-}
-
-.confirmation-builder-status-card .dashboard-status {
-    margin-bottom: 1rem;
-}
-
-.confirmation-builder-status-card dl {
-    margin-bottom: 1rem;
-}
-
-.confirmation-builder-status-card dl div {
-    grid-template-columns: 1fr;
-    gap: 0.1rem;
-    padding: 0.65rem 0;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.confirmation-builder-submit-actions {
-    display: grid;
-    gap: 0.6rem;
-}
-
-.confirmation-builder-help-card h2 {
-    margin: 0 0 0.55rem;
-    font-size: 1rem;
-    font-weight: 800;
-}
-
-.confirmation-builder-help-card p {
-    color: var(--color-text-soft);
-    line-height: 1.55;
-}
-
-.confirmation-builder-help-card .btn {
-    width: 100%;
-    margin-top: 0.5rem;
-}
+/* .confirmation-document-footer en de builder-aside (statuskaart +
+   hulpkaart) staan in create.css. */
 
 .ai-status {
     min-height: 1.25rem;
@@ -664,6 +534,7 @@ input[type='color'] {
 .checkbox-field input {
     width: 18px;
     height: 18px;
+    min-height: 0;
     margin: 0.15rem 0 0;
     flex-shrink: 0;
 }
@@ -699,13 +570,16 @@ input[type='color'] {
 }
 
 .quill-field {
-    margin-bottom: 1.35rem;
+    margin-bottom: 1rem;
+    max-width: 100%;
+    border-radius: var(--radius-default);
+    transition: box-shadow 0.16s ease;
 }
 
 .confirmation-specifications {
     display: grid;
     gap: 0.65rem;
-    margin: -0.35rem 0 1.35rem;
+    margin: -0.35rem 0 1rem;
 }
 
 .confirmation-specification-section {
@@ -774,7 +648,7 @@ input[type='color'] {
 }
 
 .quill-editor-input {
-    display: none;
+    display: none !important;
 }
 
 .quill-field .ql-toolbar.ql-snow {
@@ -783,30 +657,90 @@ input[type='color'] {
     border-radius: var(--radius-default) var(--radius-default) 0 0;
     background: var(--color-surface-muted);
     font-family: var(--font-ui);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem;
+    overflow: visible;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
 }
 
 .quill-field .ql-container.ql-snow {
     border: 1px solid var(--field-border);
     border-radius: 0 0 var(--radius-default) var(--radius-default);
     background: var(--field-bg);
+    font-family: var(--font-text);
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+.quill-field:hover .ql-toolbar.ql-snow,
+.quill-field:hover .ql-container.ql-snow {
+    border-color: var(--field-border-hover);
+}
+
+.quill-field:focus-within .ql-toolbar.ql-snow,
+.quill-field:focus-within .ql-container.ql-snow {
+    border-color: var(--color-primary);
+}
+
+/* Focus-ring om het hele veld (toolbar + tekstblok), niet alleen om
+   de .ql-container. */
+.quill-field:focus-within {
+    box-shadow: var(--focus-ring);
 }
 
 .quill-field .ql-editor {
     min-height: 220px;
+    padding: 1rem;
     color: var(--color-text);
     font-family: var(--font-text);
     font-size: 0.95rem;
-    line-height: 1.6;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+}
+
+.quill-field .ql-editor h1,
+.quill-field .ql-editor h2,
+.quill-field .ql-editor h3 {
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-weight: 800;
+    line-height: 1.24;
+    letter-spacing: 0;
+}
+
+.quill-field .ql-editor h1 {
+    margin: 0 0 1rem;
+    font-size: 1.55rem;
+}
+
+.quill-field .ql-editor h2 {
+    margin: 1.35rem 0 0.65rem;
+    font-size: 1.28rem;
+}
+
+.quill-field .ql-editor h3 {
+    margin: 1.15rem 0 0.5rem;
+    font-size: 1.08rem;
 }
 
 .quill-field .ql-editor p,
-.quill-field .ql-editor li {
+.quill-field .ql-editor ul,
+.quill-field .ql-editor ol,
+.quill-field .ql-editor blockquote {
+    margin: 0 0 0.85rem;
+}
+
+.quill-field .ql-editor p,
+.quill-field .ql-editor li,
+.quill-field .ql-editor blockquote {
     margin: 0 0 0.75rem;
     color: var(--color-text);
     font-family: var(--font-text);
     font-size: 0.95rem;
     font-weight: 400;
-    line-height: 1.6;
+    line-height: 1.75;
 }
 
 .quill-field .ql-editor p:last-child {
@@ -829,26 +763,62 @@ input[type='color'] {
 
 .quill-field .ql-editor ul,
 .quill-field .ql-editor ol {
-    margin: 0.25rem 0 0.85rem;
     padding-left: 1.35rem;
     color: var(--color-text);
     font-family: var(--font-text);
     font-size: 0.95rem;
-    line-height: 1.6;
+    line-height: 1.75;
+}
+
+.quill-field .ql-editor ul {
+    list-style-type: disc;
+}
+
+.quill-field .ql-editor ul ul {
+    list-style-type: circle;
+}
+
+.quill-field .ql-editor ul ul ul {
+    list-style-type: square;
+}
+
+.quill-field .ql-editor ol {
+    list-style-type: decimal;
+}
+
+.quill-field .ql-editor ol ol {
+    list-style-type: lower-alpha;
+}
+
+.quill-field .ql-editor ol ol ol {
+    list-style-type: lower-roman;
 }
 
 .quill-field .ql-editor li {
-    margin-bottom: 0.35rem;
-    padding-left: 0.15rem;
+    margin: 0 0 0.45rem;
+    padding-left: 0.22rem;
 }
 
+.quill-field .ql-editor li::marker,
 .quill-field .ql-editor li::before,
 .quill-field .ql-editor li > .ql-ui::before {
-    color: var(--color-text);
-    font-family: var(--font-text);
-    font-size: 0.95rem;
-    font-weight: 400;
-    line-height: 1.6;
+    color: var(--color-primary);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    line-height: 1.75;
+}
+
+.quill-field .ql-editor ul li::marker {
+    font-size: 0.9em;
+}
+
+.quill-field .ql-editor ol li::marker {
+    font-size: 0.95em;
+    font-variant-numeric: tabular-nums;
+}
+
+.quill-field .ql-editor li[data-list='bullet'] > .ql-ui::before {
+    font-size: 1.12em;
 }
 
 .quill-field .ql-editor li:last-child {
@@ -859,38 +829,116 @@ input[type='color'] {
     color: var(--color-text-subtle);
     font-family: var(--font-text);
     font-style: normal;
+    left: 1rem;
+    right: 1rem;
 }
 
-.quill-ai-assist-button {
-    display: inline-flex !important;
-    float: none !important;
-    align-items: center;
-    width: auto !important;
-    height: 24px;
-    margin-left: 0.5rem;
-    padding: 0 0.6rem !important;
-    border: 1px solid var(--color-primary);
-    border-radius: var(--radius-pill);
-    background: var(--color-bg-white);
+.quill-field .ql-editor blockquote {
+    border-left: 3px solid var(--color-primary);
+    padding: 0.65rem 0.9rem;
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    color: var(--color-text-soft);
+}
+
+.quill-field .ql-editor a {
     color: var(--color-primary);
-    font-family: var(--font-ui);
-    font-size: 0.78rem;
-    font-weight: 700;
-    line-height: 1;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
-.quill-ai-assist-button:hover:not(:disabled) {
-    background: var(--color-primary);
-    color: #ffffff;
+.quill-field .ql-toolbar .ql-formats {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    margin: 0;
+    padding-right: 0.5rem;
+    border-right: 1px solid var(--color-border);
 }
 
-.quill-ai-assist-button:disabled {
-    opacity: 0.6;
-    cursor: default;
+.quill-field .ql-toolbar .ql-formats:last-child {
+    border-right: 0;
+    padding-right: 0;
 }
+
+.quill-field .ql-toolbar button,
+.quill-field .ql-toolbar .ql-picker-label {
+    border-radius: var(--radius-default);
+    color: var(--color-text);
+}
+
+.quill-field .ql-toolbar button {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+}
+
+.quill-field .ql-toolbar .ql-picker-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 26px 0 10px;
+}
+
+.quill-field .ql-toolbar button:hover,
+.quill-field .ql-toolbar button:focus,
+.quill-field .ql-toolbar .ql-picker-label:hover,
+.quill-field .ql-toolbar .ql-picker-label:focus {
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    color: var(--color-primary);
+}
+
+.quill-field .ql-toolbar button.ql-active,
+.quill-field .ql-toolbar .ql-picker-label.ql-active {
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
+}
+
+.quill-field .ql-toolbar .ql-picker.ql-header {
+    width: 126px;
+}
+
+.quill-field .ql-snow .ql-picker.ql-header .ql-picker-label::before,
+.quill-field .ql-snow .ql-picker.ql-header .ql-picker-item::before {
+    content: 'Paragraaf';
+}
+
+.quill-field .ql-snow .ql-picker.ql-header .ql-picker-label[data-value='1']::before,
+.quill-field .ql-snow .ql-picker.ql-header .ql-picker-item[data-value='1']::before {
+    content: 'Kop 1';
+}
+
+.quill-field .ql-snow .ql-picker.ql-header .ql-picker-label[data-value='2']::before,
+.quill-field .ql-snow .ql-picker.ql-header .ql-picker-item[data-value='2']::before {
+    content: 'Kop 2';
+}
+
+.quill-field .ql-snow .ql-picker.ql-header .ql-picker-label[data-value='3']::before,
+.quill-field .ql-snow .ql-picker.ql-header .ql-picker-item[data-value='3']::before {
+    content: 'Kop 3';
+}
+
+.quill-field .ql-toolbar .ql-picker-options {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-default);
+    box-shadow: var(--shadow-popover);
+    padding: 0.4rem;
+    z-index: 20;
+}
+
+.quill-field .ql-toolbar .ql-picker-item {
+    border-radius: var(--radius-default);
+    padding: 0.45rem 0.55rem;
+    color: var(--color-text);
+}
+
+.quill-field .ql-toolbar .ql-picker-item:hover,
+.quill-field .ql-toolbar .ql-picker-item.ql-selected {
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
+}
+
+/* .quill-ai-assist-button (+ :hover / :disabled) staat in buttons.css */
 
 .quill-ai-assist-status {
     margin-left: 0.6rem;
@@ -899,22 +947,43 @@ input[type='color'] {
     font-size: 0.78rem;
 }
 
+.quill-field.is-invalid .ql-toolbar.ql-snow,
+.quill-field.is-invalid .ql-container.ql-snow,
 .quill-field .ql-container.ql-snow.is-invalid {
     border-color: var(--color-danger);
+}
+
+.quill-field.is-invalid {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 14%, transparent);
 }
 
 .quill-field .ql-snow.ql-toolbar button:hover,
 .quill-field .ql-snow .ql-toolbar button:hover,
 .quill-field .ql-snow.ql-toolbar button.ql-active,
-.quill-field .ql-snow .ql-toolbar button.ql-active {
+.quill-field .ql-snow .ql-toolbar button.ql-active,
+.quill-field .ql-snow.ql-toolbar .ql-picker-label:hover,
+.quill-field .ql-snow .ql-toolbar .ql-picker-label:hover,
+.quill-field .ql-snow.ql-toolbar .ql-picker-label.ql-active,
+.quill-field .ql-snow .ql-toolbar .ql-picker-label.ql-active {
     color: var(--color-primary);
 }
 
 .quill-field .ql-snow.ql-toolbar button:hover .ql-stroke,
 .quill-field .ql-snow .ql-toolbar button:hover .ql-stroke,
 .quill-field .ql-snow.ql-toolbar button.ql-active .ql-stroke,
-.quill-field .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+.quill-field .ql-snow .ql-toolbar button.ql-active .ql-stroke,
+.quill-field .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
+.quill-field .ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke,
+.quill-field .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.quill-field .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke {
     stroke: var(--color-primary);
+}
+
+.quill-field .ql-snow.ql-toolbar button:hover .ql-fill,
+.quill-field .ql-snow .ql-toolbar button:hover .ql-fill,
+.quill-field .ql-snow.ql-toolbar button.ql-active .ql-fill,
+.quill-field .ql-snow .ql-toolbar button.ql-active .ql-fill {
+    fill: var(--color-primary);
 }
 
 .form-steps {
@@ -996,6 +1065,68 @@ input[type='color'] {
     align-items: end;
 }
 
+/* -------------------------------
+   Horizontale veldopbouw — label links, invoer rechts.
+
+   <div class="form-rows">
+       <div class="form-row">
+           <label for="street">Straat</label>
+           <input id="street" type="text">
+       </div>
+       <div class="form-row">
+           <label for="city">Plaats</label>
+           <div>
+               <input id="city" type="text">
+               <p class="form-help">Optionele toelichting</p>
+           </div>
+       </div>
+   </div>
+-------------------------------- */
+.form-rows {
+    display: grid;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 200px) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 1.25rem;
+    row-gap: 0.35rem;
+    margin-bottom: 1rem;
+}
+
+.form-rows .form-row {
+    margin-bottom: 0;
+}
+
+.form-row > label {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    margin-bottom: 0;
+}
+
+/* Kolom rechts: een los veld, of een wrapper met veld + hulptekst */
+.form-row > div {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.form-row > :where(input, textarea, select),
+.form-row > div > :where(input, textarea, select) {
+    margin-bottom: 0;
+}
+
+/* Meerdere velden naast elkaar in de rechterkolom */
+.form-row-group {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+}
+
 .dashboard-inline-actions {
     display: flex;
     align-items: flex-end;
@@ -1003,7 +1134,7 @@ input[type='color'] {
 
 .contact-search {
     position: relative;
-    margin-bottom: 1.35rem;
+    margin-bottom: 1rem;
 }
 
 .contact-search-input {
@@ -1031,37 +1162,8 @@ input[type='color'] {
     display: none;
 }
 
-.contact-search-option {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.15rem;
-    padding: 0.7rem 0.8rem;
-    border: 0;
-    border-radius: var(--radius-default);
-    background: transparent;
-    color: var(--color-text);
-    cursor: pointer;
-    font-family: var(--font-text);
-    font-size: 0.92rem;
-    line-height: 1.35;
-    text-align: left;
-}
-
-.contact-search-option span {
-    color: var(--color-text-subtle);
-    font-size: 0.82rem;
-}
-
-.contact-search-option:hover,
-.contact-search-option.is-active {
-    background: var(--color-bg);
-}
-
-.contact-search-option.is-selected strong {
-    color: var(--color-primary);
-}
+/* .contact-search-option (+ span / :hover / .is-active / .is-selected)
+   staat in buttons.css */
 
 .contact-search-empty {
     padding: 0.75rem 0.8rem;
@@ -1151,14 +1253,7 @@ input[type='color'] {
 }
 
 @media (max-width: 800px) {
-    .confirmation-builder-shell {
-        grid-template-columns: 1fr;
-    }
-
-    .confirmation-builder-stage {
-        padding: 0.75rem;
-        overflow: visible;
-    }
+    /* Builder-shell, -stage, documentpreview en -aside: zie create.css */
 
     .confirmation-edit-panel {
         position: static;
@@ -1166,24 +1261,8 @@ input[type='color'] {
         margin-bottom: 0.75rem;
     }
 
-    .confirmation-edit-panel-grid,
-    .confirmation-document-header,
-    .confirmation-document-title-row {
+    .confirmation-edit-panel-grid {
         grid-template-columns: 1fr;
-    }
-
-    .confirmation-document-preview {
-        min-height: auto;
-        padding: 1.15rem;
-    }
-
-    .confirmation-document-header,
-    .confirmation-document-recipient {
-        margin-bottom: 2rem;
-    }
-
-    .confirmation-builder-aside {
-        position: static;
     }
 
     .form-steps {
@@ -1195,6 +1274,19 @@ input[type='color'] {
     .grid-kvk,
     .grid-address,
     .upload-block-grid { grid-template-columns: 1fr; gap: 0; }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        row-gap: 0.35rem;
+    }
+
+    .form-row > label {
+        min-height: 0;
+    }
+
+    .form-row-group {
+        grid-auto-flow: row;
+    }
 
     .confirmation-specification-grid {
         grid-template-columns: 1fr;

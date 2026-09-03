@@ -25,6 +25,7 @@ class ConfirmationFactory extends Factory
             'client_email' => fake()->companyEmail(),
             'client_kvk_number' => fake()->numerify('########'),
             'description' => fake()->paragraph(),
+            'footer_note' => null,
             'public_token' => fake()->sha1(),
             'total_value' => fake()->randomFloat(2, 250, 7500),
             'status' => fake()->randomElement(['concept', 'verzonden', 'getekend']),

@@ -28,12 +28,12 @@
                 <section class="dashboard-panel dashboard-panel-wide">
                     <h2>Bedrijfsgegevens</h2>
 
-                    <div class="grid-2">
-                        <div>
+                    <div class="form-rows">
+                        <div class="form-row">
                             <label for="company_name">Bedrijfsnaam</label>
                             <input id="company_name" name="company_name" type="text" value="{{ old('company_name', $contact?->company_name) }}" required>
                         </div>
-                        <div>
+                        <div class="form-row">
                             <label for="kvk_number">KVK-nummer</label>
                             <input id="kvk_number" name="kvk_number" type="text" value="{{ old('kvk_number', $contact?->kvk_number) }}">
                         </div>
@@ -43,31 +43,27 @@
                 <section class="dashboard-panel dashboard-panel-wide">
                     <h2>Adresgegevens</h2>
 
-                    <div class="grid-3">
-                        <div>
+                    <div class="form-rows">
+                        <div class="form-row">
                             <label for="street_name">Straat</label>
                             <input id="street_name" name="street_name" type="text" value="{{ old('street_name', $contact?->street_name) }}" required>
                         </div>
-                        <div>
+                        <div class="form-row">
                             <label for="house_number">Huisnummer</label>
-                            <input id="house_number" name="house_number" type="text" value="{{ old('house_number', $contact?->house_number) }}" required>
+                            <div class="form-row-group">
+                                <input id="house_number" name="house_number" type="text" placeholder="Nr." value="{{ old('house_number', $contact?->house_number) }}" required>
+                                <input id="house_number_addition" name="house_number_addition" type="text" placeholder="Toevoeging" value="{{ old('house_number_addition', $contact?->house_number_addition) }}" aria-label="Toevoeging">
+                            </div>
                         </div>
-                        <div>
-                            <label for="house_number_addition">Toevoeging</label>
-                            <input id="house_number_addition" name="house_number_addition" type="text" value="{{ old('house_number_addition', $contact?->house_number_addition) }}">
-                        </div>
-                    </div>
-
-                    <div class="grid-3">
-                        <div>
+                        <div class="form-row">
                             <label for="postal_code">Postcode</label>
                             <input id="postal_code" name="postal_code" type="text" value="{{ old('postal_code', $contact?->postal_code) }}" required>
                         </div>
-                        <div>
+                        <div class="form-row">
                             <label for="city">Plaats</label>
                             <input id="city" name="city" type="text" value="{{ old('city', $contact?->city) }}" required>
                         </div>
-                        <div>
+                        <div class="form-row">
                             <label for="country">Land</label>
                             <input id="country" name="country" type="text" value="{{ old('country', $contact?->country) }}">
                         </div>
@@ -77,23 +73,20 @@
                 <section class="dashboard-panel dashboard-panel-wide">
                     <h2>Contactgegevens</h2>
 
-                    <div class="grid-2">
-                        <div>
+                    <div class="form-rows">
+                        <div class="form-row">
                             <label for="contact_first_name">Voornaam</label>
                             <input id="contact_first_name" name="contact_first_name" type="text" value="{{ old('contact_first_name', $contact?->contact_first_name) }}" required>
                         </div>
-                        <div>
+                        <div class="form-row">
                             <label for="contact_last_name">Achternaam</label>
                             <input id="contact_last_name" name="contact_last_name" type="text" value="{{ old('contact_last_name', $contact?->contact_last_name) }}" required>
                         </div>
-                    </div>
-
-                    <div class="grid-2">
-                        <div>
+                        <div class="form-row">
                             <label for="contact_email">E-mailadres</label>
                             <input id="contact_email" name="contact_email" type="email" value="{{ old('contact_email', $contact?->contact_email) }}" required>
                         </div>
-                        <div>
+                        <div class="form-row">
                             <label for="contact_phone">Telefoonnummer</label>
                             <input id="contact_phone" name="contact_phone" type="text" value="{{ old('contact_phone', $contact?->contact_phone) }}" required>
                         </div>

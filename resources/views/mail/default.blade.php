@@ -3,7 +3,7 @@
 body,
 body *:not(html):not(style):not(br):not(tr):not(code) {
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     position: relative;
 }
@@ -240,8 +240,8 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #003B73;
-    border: 1px solid #003B73;
+    background-color: {{ $themePrimaryColor }};
+    border: 1px solid {{ $themePrimaryColor }};
     color: #ffffff;
 }
 

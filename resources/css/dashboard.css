@@ -148,33 +148,7 @@
     text-decoration: none;
 }
 
-.dashboard-nav-toggle {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 2.25rem;
-    height: 2.25rem;
-    margin-right: 0.5rem;
-    padding: 0;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--color-text);
-    cursor: pointer;
-}
-
-.dashboard-nav-toggle-icon-close {
-    display: none;
-}
-
-.dashboard-nav-toggle[aria-expanded="true"] .dashboard-nav-toggle-icon-open {
-    display: none;
-}
-
-.dashboard-nav-toggle[aria-expanded="true"] .dashboard-nav-toggle-icon-close {
-    display: block;
-}
+/* .dashboard-nav-toggle (+ icoonstatussen) staat in buttons.css */
 
 .dashboard-brand-text {
     display: block;
@@ -197,8 +171,8 @@
     gap: 0.15rem;
 }
 
-.dashboard-nav-link,
-.dashboard-logout-button {
+/* .dashboard-logout-button staat in buttons.css */
+.dashboard-nav-link {
     position: relative;
     display: flex;
     align-items: center;
@@ -297,17 +271,6 @@
     border-top: 1px solid var(--color-border);
 }
 
-.dashboard-logout-button {
-    cursor: pointer;
-    color: var(--color-text-subtle);
-    background: transparent;
-}
-
-.dashboard-logout-button:hover {
-    background: var(--color-bg);
-    color: var(--color-danger);
-}
-
 .dashboard-main {
     padding: 2rem;
 }
@@ -404,14 +367,18 @@
 }
 
 .dashboard-panel h2 {
-    margin: -1.4rem -1.4rem 1.4rem;
-    padding: 1rem 1.4rem;
+    margin: -1.4rem -1.4rem 1.25rem;
+    padding: 0.6rem 1.4rem;
     background: var(--color-surface-muted);
     border-bottom: 1px solid var(--color-border);
     border-radius: var(--radius-default) var(--radius-default) 0 0;
     font-family: var(--font-heading);
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
 }
 
 .dashboard-panel h3 {
@@ -752,6 +719,28 @@
 .public-document-body {
     padding-top: 1rem;
     border-top: 1px solid var(--color-border);
+}
+
+.public-document-footnote {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #222222;
+    color: #333333;
+    font-family: var(--font-text);
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.55;
+}
+
+.public-document-footnote p {
+    margin: 0;
+}
+
+.dashboard-footnote-text {
+    color: #333333;
+    font-family: var(--font-text);
+    font-weight: 300;
+    line-height: 1.55;
 }
 
 .public-account-cta {

@@ -17,6 +17,7 @@
     }
 
     $descriptionHtml = \App\Models\Confirmation::sanitizeDescription(old('description'));
+    $footerNoteText = \App\Models\Confirmation::sanitizeFooterNote(old('footer_note'));
 @endphp
 
 @section('content')
@@ -184,7 +185,7 @@
                         </div>
                     </section>
 
-                    <article class="confirmation-document-preview" style="--preview-accent: {{ $user->primary_color ?: '#003B73' }};">
+                    <article class="confirmation-document-preview" style="--preview-accent: {{ $user->primary_color ?: 'var(--color-primary)' }};">
                         <header class="confirmation-document-header">
                             <div class="confirmation-document-logo">
                                 @if ($logoDataUri !== null)
@@ -193,8 +194,43 @@
                                     <span>{{ $user->company_name ?: config('app.name') }}</span>
                                 @endif
                             </div>
+                        </header>
+
+                        <div class="confirmation-document-party-row">
+                            <section
+                                class="confirmation-document-recipient confirmation-document-click-target"
+                                role="button"
+                                tabindex="0"
+                                data-builder-open="client"
+                                aria-expanded="false"
+                                aria-label="Opdrachtgever selecteren"
+                            >
+                                <p class="confirmation-document-label">Opdrachtgever</p>
+                                <strong data-preview-target="client-company">{{ $selectedContact?->company_name ?: 'Nog te selecteren' }}</strong>
+                                <span data-preview-target="client-person">{{ $selectedContact?->contactName() ?: 'Contactpersoon' }}</span>
+                                <span data-preview-target="client-email">{{ $selectedContact?->contact_email ?: 'E-mailadres opdrachtgever' }}</span>
+                                <span data-preview-target="client-address">
+                                    @if ($selectedContact)
+                                        @php
+                                            $selectedStreetLine = trim(implode(' ', array_filter([
+                                                $selectedContact->street_name,
+                                                $selectedContact->house_number,
+                                                $selectedContact->house_number_addition,
+                                            ])));
+                                            $selectedCityLine = trim(implode(' ', array_filter([
+                                                $selectedContact->postal_code,
+                                                $selectedContact->city,
+                                            ])));
+                                        @endphp
+                                        {{ collect([$selectedStreetLine, $selectedCityLine, $selectedContact->country])->filter()->implode(' · ') }}
+                                    @else
+                                        Adres opdrachtgever
+                                    @endif
+                                </span>
+                            </section>
 
                             <div class="confirmation-document-sender">
+                                <p class="confirmation-document-label">Bedrijfsgegevens</p>
                                 <strong>{{ $user->company_name ?: 'Jouw bedrijfsnaam' }}</strong>
                                 @forelse ($senderAddressLines as $line)
                                     <span>{{ $line }}</span>
@@ -206,39 +242,7 @@
                                     <span>KVK: {{ $user->kvk_number }}</span>
                                 @endif
                             </div>
-                        </header>
-
-                        <section
-                            class="confirmation-document-recipient confirmation-document-click-target"
-                            role="button"
-                            tabindex="0"
-                            data-builder-open="client"
-                            aria-expanded="false"
-                            aria-label="Opdrachtgever selecteren"
-                        >
-                            <p class="confirmation-document-label">Opdrachtgever</p>
-                            <strong data-preview-target="client-company">{{ $selectedContact?->company_name ?: 'Nog te selecteren' }}</strong>
-                            <span data-preview-target="client-person">{{ $selectedContact?->contactName() ?: 'Contactpersoon' }}</span>
-                            <span data-preview-target="client-email">{{ $selectedContact?->contact_email ?: 'E-mailadres opdrachtgever' }}</span>
-                            <span data-preview-target="client-address">
-                                @if ($selectedContact)
-                                    @php
-                                        $selectedStreetLine = trim(implode(' ', array_filter([
-                                            $selectedContact->street_name,
-                                            $selectedContact->house_number,
-                                            $selectedContact->house_number_addition,
-                                        ])));
-                                        $selectedCityLine = trim(implode(' ', array_filter([
-                                            $selectedContact->postal_code,
-                                            $selectedContact->city,
-                                        ])));
-                                    @endphp
-                                    {{ collect([$selectedStreetLine, $selectedCityLine, $selectedContact->country])->filter()->implode(' · ') }}
-                                @else
-                                    Adres opdrachtgever
-                                @endif
-                            </span>
-                        </section>
+                        </div>
 
                         <div
                             class="confirmation-document-click-target confirmation-document-content-target"
@@ -251,9 +255,8 @@
                             <section class="confirmation-document-title-row">
                                 <div>
                                     <p class="confirmation-document-label">Concept</p>
-                                    <h2>
+                                    <h2 class="confirmation-document-title">
                                         <span data-preview-target="title">{{ old('title') ?: 'Opdrachtbevestiging' }}</span>
-                                        <span>Concept</span>
                                     </h2>
                                 </div>
 
@@ -279,6 +282,17 @@
                                 </div>
                             </section>
 
+                        </div>
+
+                        <div class="confirmation-document-footnote">
+                            <textarea
+                                id="footer_note"
+                                name="footer_note"
+                                rows="2"
+                                aria-label="Voetnoot onderaan"
+                                placeholder="Voeg optioneel een voetnoot toe"
+                                data-preview-input="footer-note"
+                            >{{ $footerNoteText }}</textarea>
                         </div>
 
                         <footer class="confirmation-document-footer">

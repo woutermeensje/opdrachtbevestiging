@@ -2,6 +2,126 @@ import './bootstrap';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
+function looksLikeHtml(value) {
+    return /<\/?[a-z][\s\S]*>/i.test(value || '');
+}
+
+function stripHtml(value) {
+    return String(value || '').replace(/<[^>]*>/g, '').trim();
+}
+
+const quillToolbarOptions = [
+    [{ header: [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline'],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    ['blockquote', 'link'],
+    ['clean'],
+];
+
+const quillToolbarLabels = {
+    bold: 'Vet',
+    italic: 'Cursief',
+    underline: 'Onderstrepen',
+    blockquote: 'Citaat',
+    link: 'Link toevoegen',
+    clean: 'Opmaak wissen',
+};
+
+function isSafeRichTextUrl(value) {
+    const url = String(value || '').trim();
+
+    return !url.startsWith('//') && /^(https?:|mailto:|tel:|\/|#)/i.test(url);
+}
+
+function normalizeEditorHtml(html) {
+    const template = document.createElement('template');
+    template.innerHTML = html;
+
+    template.content.querySelectorAll('script, style, iframe, object, embed, form, input, button, textarea, select').forEach((node) => {
+        node.remove();
+    });
+
+    template.content.querySelectorAll('*').forEach((node) => {
+        Array.from(node.attributes).forEach((attribute) => {
+            const name = attribute.name.toLowerCase();
+            const tagName = node.tagName.toLowerCase();
+
+            if (tagName === 'a' && ['href', 'target', 'rel'].includes(name)) {
+                return;
+            }
+
+            node.removeAttribute(attribute.name);
+        });
+    });
+
+    template.content.querySelectorAll('a').forEach((link) => {
+        const href = link.getAttribute('href') || '';
+
+        if (!isSafeRichTextUrl(href)) {
+            link.removeAttribute('href');
+            link.removeAttribute('target');
+            link.removeAttribute('rel');
+            return;
+        }
+
+        if (/^https?:\/\//i.test(href)) {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+        }
+    });
+
+    const walker = document.createTreeWalker(template.content, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+        walker.currentNode.nodeValue = walker.currentNode.nodeValue.replace(/[\u00a0\u202f\u2007]+/g, ' ');
+    }
+
+    return template.innerHTML.trim();
+}
+
+function quillHtml(quill) {
+    const html = typeof quill.getSemanticHTML === 'function'
+        ? quill.getSemanticHTML()
+        : quill.root.innerHTML;
+
+    return normalizeEditorHtml(html);
+}
+
+function applyQuillToolbarLabels(toolbar) {
+    if (!toolbar) {
+        return;
+    }
+
+    Object.entries(quillToolbarLabels).forEach(([format, label]) => {
+        toolbar.querySelectorAll(`.ql-${format}`).forEach((control) => {
+            control.setAttribute('title', label);
+            control.setAttribute('aria-label', label);
+        });
+    });
+
+    toolbar.querySelectorAll('.ql-list[value="ordered"]').forEach((control) => {
+        control.setAttribute('title', 'Genummerde lijst');
+        control.setAttribute('aria-label', 'Genummerde lijst');
+    });
+
+    toolbar.querySelectorAll('.ql-list[value="bullet"]').forEach((control) => {
+        control.setAttribute('title', 'Opsomming');
+        control.setAttribute('aria-label', 'Opsomming');
+    });
+
+    toolbar.querySelectorAll('.ql-header').forEach((control) => {
+        control.setAttribute('title', 'Tekststijl');
+        control.setAttribute('aria-label', 'Tekststijl');
+    });
+}
+
+document.querySelectorAll('[data-theme-primary-color-default]').forEach((input) => {
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+
+    if (/^#[0-9a-f]{6}$/i.test(primaryColor)) {
+        input.value = primaryColor.toUpperCase();
+    }
+});
+
 document.querySelectorAll('[data-mobile-nav-toggle]').forEach((toggle) => {
     const sidebar = toggle.closest('.dashboard-sidebar');
 
@@ -200,11 +320,7 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
     };
 
     const cleanRichText = (html) => {
-        const template = document.createElement('template');
-        template.innerHTML = html;
-        template.content.querySelectorAll('script, style').forEach((node) => node.remove());
-
-        return template.innerHTML.trim();
+        return normalizeEditorHtml(html);
     };
 
     const setPreviewHtml = (name, value, fallbackHtml) => {
@@ -590,17 +706,20 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
     const quill = new Quill(editorEl, {
         theme: 'snow',
         placeholder: editorEl.dataset.quillPlaceholder ?? '',
+        bounds: wrapper,
         modules: {
-            toolbar: [
-                ['bold', 'italic', 'underline'],
-                [{ list: 'ordered' }, { list: 'bullet' }],
-            ],
+            toolbar: quillToolbarOptions,
         },
     });
     wrapper.__quill = quill;
+    applyQuillToolbarLabels(quill.getModule('toolbar')?.container);
 
     if (initialContent !== '') {
-        quill.clipboard.dangerouslyPasteHTML(initialContent);
+        if (looksLikeHtml(initialContent)) {
+            quill.clipboard.dangerouslyPasteHTML(normalizeEditorHtml(initialContent));
+        } else {
+            quill.setText(initialContent);
+        }
     }
 
     if (wrapper.dataset.aiAssist === 'true' && wrapper.dataset.aiAssistUrl) {
@@ -634,7 +753,7 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                         },
                         body: JSON.stringify({
-                            text: quill.getSemanticHTML(),
+                            text: quillHtml(quill),
                             context: wrapper.dataset.aiAssistContext ?? '',
                         }),
                     });
@@ -646,7 +765,7 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
                     }
 
                     quill.setText('');
-                    quill.clipboard.dangerouslyPasteHTML(data.html);
+                    quill.clipboard.dangerouslyPasteHTML(normalizeEditorHtml(data.html));
                     syncInput();
                 } catch (error) {
                     status.textContent = error.message ?? 'Er ging iets mis, probeer het opnieuw.';
@@ -664,9 +783,12 @@ document.querySelectorAll('[data-quill-field]').forEach((wrapper) => {
 
     const syncInput = () => {
         const isEmpty = quill.getText().trim() === '';
-        input.value = isEmpty ? '' : quill.getSemanticHTML();
-        quill.container.classList.toggle('is-invalid', hasAttemptedSubmit && isRequired && isEmpty);
+        input.value = isEmpty ? '' : quillHtml(quill);
+        const isInvalid = hasAttemptedSubmit && isRequired && isEmpty;
+        quill.container.classList.toggle('is-invalid', isInvalid);
+        wrapper.classList.toggle('is-invalid', isInvalid);
         input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('richtext:sync'));
     };
     wrapper.__syncQuillInput = syncInput;
 
@@ -800,15 +922,11 @@ document.querySelectorAll('[data-ai-toolkit]').forEach((panel) => {
         return lines.join('\n');
     };
 
-    const editorHtml = () => (
-        typeof descriptionEditor.getSemanticHTML === 'function'
-            ? descriptionEditor.getSemanticHTML()
-            : descriptionEditor.root.innerHTML
-    );
+    const editorHtml = () => quillHtml(descriptionEditor);
 
     const replaceDescription = (html) => {
         descriptionEditor.setText('');
-        descriptionEditor.clipboard.dangerouslyPasteHTML(html);
+        descriptionEditor.clipboard.dangerouslyPasteHTML(normalizeEditorHtml(html));
         descriptionWrapper.__syncQuillInput?.();
     };
 

@@ -141,24 +141,7 @@
     line-height: 1.45;
 }
 
-.auth-switch-account button {
-    appearance: none;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--color-primary);
-    cursor: pointer;
-    font-family: var(--font-ui);
-    font-size: inherit;
-    font-weight: 700;
-    line-height: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.16em;
-}
-
-.auth-switch-account button:hover {
-    color: var(--color-primary-strong);
-}
+/* .auth-switch-account button (+ :hover) staat in buttons.css */
 
 .auth-inline-link {
     margin: -0.1rem 0 0;

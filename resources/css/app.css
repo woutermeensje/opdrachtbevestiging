@@ -28,6 +28,7 @@
 @import './navigation.css';
 @import './auth.css';
 @import './dashboard.css';
+@import './create.css';
 @import './tariffs.css';
 @import './footer.css';
 
@@ -47,7 +48,7 @@
   --color-text: #333;
   --color-text-soft: #4b5563;
 
-  --color-primary: #003B73;
+  --color-primary: #7C5CFA;
   --color-primary-strong: color-mix(in srgb, var(--color-primary) 75%, black);
   --color-accent: #0C76DA;
   --color-success: #80D424;
