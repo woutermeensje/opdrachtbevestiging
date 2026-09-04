@@ -12,6 +12,24 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
+        $users = User::query()
+            ->select([
+                'id',
+                'name',
+                'company_name',
+                'email',
+                'email_verified_at',
+                'is_admin',
+                'subscription_status',
+                'subscription_plan',
+                'pending_subscription_plan',
+                'trial_ends_at',
+                'subscription_renews_at',
+                'created_at',
+            ])
+            ->latest()
+            ->get();
+
         return view('admin.dashboard', [
             'metrics' => [
                 'users' => User::count(),
@@ -19,6 +37,7 @@ class DashboardController extends Controller
                 'confirmations' => Confirmation::count(),
                 'quotes' => Quote::count(),
             ],
+            'users' => $users,
         ]);
     }
 }

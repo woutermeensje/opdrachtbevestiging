@@ -83,6 +83,14 @@ class ConfirmationFlowTest extends TestCase
             ->assertOk()
             ->assertDownload($confirmation->pdf_original_name);
 
+        $previewResponse = $this->actingAs($user)
+            ->get(route('dashboard.confirmations.pdf.preview', $confirmation));
+
+        $previewResponse
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringStartsWith('inline;', (string) $previewResponse->headers->get('content-disposition'));
+
         $this
             ->get(route('confirmations.public.show', $confirmation->public_token))
             ->assertOk()
@@ -222,6 +230,44 @@ class ConfirmationFlowTest extends TestCase
             ->assertDontSee('name="status"', false);
     }
 
+    public function test_confirmation_detail_uses_pdf_preview_layout(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create();
+        $confirmation = Confirmation::factory()->create([
+            'user_id' => $user->id,
+            'reference' => 'OB-DETAIL',
+            'title' => 'Nieuwe website opdracht',
+            'client_name' => 'Acme B.V.',
+            'client_contact_name' => 'Sanne Jansen',
+            'client_email' => 'sanne@acme.test',
+            'status' => 'verzonden',
+            'pdf_path' => 'confirmations/1/pdf/opdrachtbevestiging-ob-detail.pdf',
+            'pdf_original_name' => 'opdrachtbevestiging-ob-detail.pdf',
+            'pdf_mime_type' => 'application/pdf',
+            'sent_at' => now(),
+            'viewed_at' => now(),
+            'expires_at' => now()->addDays(14),
+        ]);
+
+        Storage::disk('local')->put($confirmation->pdf_path, '%PDF-1.4 test');
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard.confirmations.show', $confirmation))
+            ->assertOk()
+            ->assertSee('confirmation-builder-shell', false)
+            ->assertSee('confirmation-pdf-frame', false)
+            ->assertSee(route('dashboard.confirmations.pdf.preview', $confirmation), false)
+            ->assertSee('Download PDF')
+            ->assertSee('Online openen')
+            ->assertSee('Nogmaals versturen')
+            ->assertSee('Intrekken')
+            ->assertDontSee('dashboard-content-grid', false)
+            ->assertDontSee('Status en waarde');
+    }
+
     public function test_confirmation_stores_and_displays_optional_specifications(): void
     {
         Mail::fake();
@@ -284,10 +330,12 @@ class ConfirmationFlowTest extends TestCase
             ->actingAs($user)
             ->get(route('dashboard.confirmations.show', $confirmation))
             ->assertOk()
-            ->assertSee('Aanvullende specificaties')
-            ->assertSee('Website vernieuwing')
-            ->assertSee('Per uur')
-            ->assertSee('CMS-licentie door opdrachtgever.');
+            ->assertSee('confirmation-pdf-frame', false)
+            ->assertSee('Specificaties')
+            ->assertSee('7 ingevuld')
+            ->assertDontSee('Website vernieuwing')
+            ->assertDontSee('Per uur')
+            ->assertDontSee('CMS-licentie door opdrachtgever.');
 
         $this
             ->get(route('confirmations.public.show', $confirmation->public_token))

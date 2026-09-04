@@ -154,6 +154,52 @@ class User extends Authenticatable implements MustVerifyEmail
         return is_string($planName) ? $planName : null;
     }
 
+    public function accountStatusLabel(): string
+    {
+        if (! $this->hasVerifiedEmail()) {
+            return 'E-mail niet bevestigd';
+        }
+
+        if ($this->hasActiveSubscription()) {
+            return 'Actief';
+        }
+
+        if ($this->hasPendingSubscription()) {
+            return 'Betaling in behandeling';
+        }
+
+        if ($this->isOnTrial()) {
+            return 'Proefperiode';
+        }
+
+        if ($this->hasExpiredTrial()) {
+            return 'Proefperiode verlopen';
+        }
+
+        return 'Geen actief abonnement';
+    }
+
+    public function accountStatusTone(): string
+    {
+        if (! $this->hasVerifiedEmail()) {
+            return 'warning';
+        }
+
+        if ($this->hasActiveSubscription() || $this->isOnTrial()) {
+            return 'success';
+        }
+
+        if ($this->hasPendingSubscription()) {
+            return 'pending';
+        }
+
+        if ($this->hasExpiredTrial()) {
+            return 'danger';
+        }
+
+        return 'muted';
+    }
+
     /**
      * @return array<int, string>
      */

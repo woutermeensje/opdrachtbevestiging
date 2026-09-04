@@ -117,6 +117,7 @@ Route::middleware(['auth', 'verified', 'billing.active'])->group(function (): vo
     Route::get('/dashboard/opdrachtbevestigingen', [ConfirmationController::class, 'index'])->name('dashboard.confirmations');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}', [ConfirmationController::class, 'show'])->name('dashboard.confirmations.show');
     Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/pdf', [ConfirmationController::class, 'downloadPdf'])->name('dashboard.confirmations.pdf');
+    Route::get('/dashboard/opdrachtbevestigingen/{confirmation}/pdf/voorbeeld', [ConfirmationController::class, 'previewPdf'])->name('dashboard.confirmations.pdf.preview');
     Route::get('/dashboard/offertes', [QuoteController::class, 'index'])->name('dashboard.quotes');
     Route::get('/dashboard/offertes/aanmaken', [QuoteController::class, 'create'])->middleware('company.profile')->name('dashboard.quotes.create');
     Route::get('/dashboard/offertes/{quote}', [QuoteController::class, 'show'])->name('dashboard.quotes.show');

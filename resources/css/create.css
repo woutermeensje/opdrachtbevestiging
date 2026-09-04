@@ -348,6 +348,73 @@
    in forms.css. */
 
 /* -------------------------------
+   Detailpreview met PDF
+-------------------------------- */
+.confirmation-detail-shell {
+    grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+.confirmation-pdf-document-preview {
+    max-width: 980px;
+    min-height: 680px;
+    padding: 0;
+    background: var(--color-surface-muted);
+    overflow: hidden;
+}
+
+.confirmation-pdf-frame {
+    display: block;
+    width: 100%;
+    height: clamp(680px, calc(100vh - 190px), 980px);
+    border: 0;
+    background: var(--color-bg-white);
+}
+
+.confirmation-pdf-empty {
+    display: flex;
+    min-height: 620px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.confirmation-pdf-empty svg {
+    margin-bottom: 0.9rem;
+    color: var(--color-primary);
+}
+
+.confirmation-pdf-empty h2 {
+    margin: 0 0 0.45rem;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.confirmation-pdf-empty p {
+    max-width: 340px;
+    color: var(--color-text-soft);
+}
+
+.confirmation-detail-card dd span {
+    display: block;
+    margin-top: 0.1rem;
+    color: var(--color-text-soft);
+    font-size: calc(1rem - 3px);
+    line-height: 1.45;
+}
+
+.confirmation-detail-actions {
+    margin-top: 1rem;
+}
+
+.confirmation-detail-actions .btn,
+.confirmation-detail-actions .dashboard-action-form {
+    width: 100%;
+}
+
+/* -------------------------------
    Aside (statuskaart + hulpkaart)
 -------------------------------- */
 .confirmation-builder-aside {
@@ -427,6 +494,10 @@
         grid-template-columns: 1fr;
     }
 
+    .confirmation-detail-shell {
+        grid-template-columns: 1fr;
+    }
+
     .confirmation-builder-stage {
         padding: 0.75rem;
         overflow: visible;
@@ -440,6 +511,19 @@
     .confirmation-document-preview {
         min-height: auto;
         padding: 1.15rem;
+    }
+
+    .confirmation-pdf-document-preview {
+        padding: 0;
+    }
+
+    .confirmation-pdf-frame {
+        height: 72vh;
+        min-height: 420px;
+    }
+
+    .confirmation-pdf-empty {
+        min-height: 420px;
     }
 
     .confirmation-document-header,

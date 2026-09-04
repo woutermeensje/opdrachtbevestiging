@@ -168,6 +168,18 @@ class ConfirmationController extends Controller
         );
     }
 
+    public function previewPdf(Request $request, Confirmation $confirmation): StreamedResponse
+    {
+        abort_unless($confirmation->user_id === $request->user()->id, 403);
+        abort_unless($confirmation->hasPdf(), 404);
+
+        return Storage::disk('local')->response(
+            $confirmation->pdf_path,
+            $confirmation->pdf_original_name ?: $confirmation->pdfDownloadName(),
+            ['Content-Type' => $confirmation->pdf_mime_type ?: 'application/pdf'],
+        );
+    }
+
     public function send(Request $request, Confirmation $confirmation): RedirectResponse
     {
         abort_unless($confirmation->user_id === $request->user()->id, 403);

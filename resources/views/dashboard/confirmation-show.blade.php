@@ -3,137 +3,146 @@
 ])
 
 @php
-    $emailAttachmentSummary = $confirmation->emailAttachmentSummary();
-    $senderAddress = collect($confirmation->senderAddressLines())
-        ->map(fn (string $line): string => e($line))
-        ->implode('<br>');
-    $pdfLine = $confirmation->hasPdf()
-        ? '<p><strong>PDF:</strong> <a href="'.e(route('dashboard.confirmations.pdf', $confirmation)).'">Download opdrachtbevestiging</a></p>'
-        : '<p><strong>PDF:</strong> Nog niet gegenereerd. De PDF wordt gemaakt bij verzending.</p>';
-    $termsLine = $confirmation->terms_path
-        ? '<p><strong>Algemene voorwaarden:</strong> '.e($confirmation->terms_original_name ?: basename($confirmation->terms_path)).'</p>'
-        : '<p><strong>Algemene voorwaarden:</strong> Niet toegevoegd.</p>';
-    $signatureLine = $confirmation->signer_signature_path
-        ? '<p><strong>Handtekening:</strong> Vastgelegd in de PDF.</p>'
-        : '<p><strong>Handtekening:</strong> Nog niet gezet.</p>';
-    $retractForm = $confirmation->canBeRetracted()
-        ? '<form method="POST" action="'.e(route('dashboard.confirmations.retract', $confirmation)).'" class="dashboard-action-form" onsubmit="return confirm(\'Weet je zeker dat je deze opdrachtbevestiging wilt intrekken?\');">
-            '.csrf_field().'
-            <button type="submit" class="btn btn-danger">Intrekken</button>
-        </form>'
-        : '';
+    $statusClass = \Illuminate\Support\Str::slug($confirmation->status);
+    $statusLabel = ucfirst(str_replace('-', ' ', $confirmation->status));
+    $documentPreviewUrl = $confirmation->hasPdf()
+        ? route('dashboard.confirmations.pdf.preview', $confirmation).'#toolbar=0&navpanes=0'
+        : null;
+    $extraDocuments = collect([
+        $confirmation->terms_path ? 'Algemene voorwaarden' : null,
+        $confirmation->attachment_path ? 'Bijlage' : null,
+        $confirmation->quote_path ? 'Offerte' : null,
+    ])->filter()->values();
+    $specificationCount = collect($confirmation->filledSpecificationSections())
+        ->sum(fn (array $section): int => count($section['fields']));
+    $canSend = ! in_array($confirmation->status, ['getekend', 'ingetrokken'], true);
 @endphp
 
 @section('content')
     @include('partials.dashboard.page-header', [
-        'eyebrow' => 'Detail',
+        'eyebrow' => 'Opdrachtbevestiging',
         'title' => $confirmation->title,
-        'text' => 'Referentie '.$confirmation->reference.' voor '.$confirmation->client_name.' met contactpersoon '.$confirmation->client_contact_name.'.',
+        'text' => 'Referentie '.$confirmation->reference.' voor '.$confirmation->client_name.'.',
     ])
 
     @if (session('status'))
         <div class="dashboard-notice">{{ session('status') }}</div>
     @endif
 
-    <div class="dashboard-content-grid">
-        @include('partials.dashboard.panel', [
-            'title' => 'Opdrachtgever',
-            'slot' => '
-                <p><strong>Bedrijf:</strong> '.e($confirmation->client_name).'</p>
-                <p><strong>Contactpersoon:</strong> '.e($confirmation->client_contact_name ?: '-').'</p>
-                <p><strong>E-mail:</strong> '.e($confirmation->client_email).'</p>
-                <p><strong>KVK:</strong> '.e($confirmation->client_kvk_number ?: '-').'</p>
-            ',
-        ])
+    <div class="confirmation-builder-shell confirmation-detail-shell">
+        <div class="confirmation-builder-stage">
+            <article class="confirmation-document-preview confirmation-pdf-document-preview">
+                @if ($documentPreviewUrl !== null)
+                    <iframe
+                        class="confirmation-pdf-frame"
+                        src="{{ $documentPreviewUrl }}"
+                        title="PDF opdrachtbevestiging {{ $confirmation->reference }}"
+                    ></iframe>
+                @else
+                    <div class="confirmation-pdf-empty">
+                        @include('partials.icons.icon', ['name' => 'file-text', 'size' => 34])
+                        <h2>PDF nog niet gegenereerd</h2>
+                        <p>Verstuur de opdrachtbevestiging om de definitieve PDF aan te maken.</p>
+                    </div>
+                @endif
+            </article>
+        </div>
 
-        @include('partials.dashboard.panel', [
-            'title' => 'Opdrachtnemer',
-            'slot' => '
-                <p><strong>Bedrijf:</strong> '.e($confirmation->senderCompanyDisplayName()).'</p>
-                <p><strong>KVK:</strong> '.e($confirmation->sender_kvk_number ?: '-').'</p>
-                <p><strong>Adres:</strong><br>'.($senderAddress !== '' ? $senderAddress : '-').'</p>
-                <p><strong>Contact:</strong> '.e($confirmation->sender_name ?: '-').' ('.e($confirmation->sender_email ?: '-').')</p>
-            ',
-        ])
+        <aside class="confirmation-builder-aside confirmation-detail-aside">
+            <div class="confirmation-builder-status-card confirmation-detail-card">
+                <span class="dashboard-status dashboard-status-{{ $statusClass }}">{{ $statusLabel }}</span>
 
-        @include('partials.dashboard.panel', [
-            'title' => 'Status en waarde',
-            'slot' => '
-                <p><strong>Status:</strong> '.e($confirmation->status).'</p>
-                <p><strong>Vergoeding:</strong> EUR '.e(number_format((float) $confirmation->total_value, 2, ',', '.')).' ('.e($confirmation->valueVatLabel()).')</p>
-                <p><strong>Online voorbeeld:</strong> <a href="'.e($confirmation->publicUrl()).'" target="_blank" rel="noopener noreferrer">Open document</a></p>
-                '.$pdfLine.'
-                <div class="dashboard-panel-actions">
-                    <form method="POST" action="'.e(route('dashboard.confirmations.send', $confirmation)).'" class="dashboard-action-form">
-                        '.csrf_field().'
-                        <button type="submit" class="btn btn-primary">Per e-mail versturen</button>
-                    </form>
-                    '.$retractForm.'
+                <dl>
+                    <div>
+                        <dt>Opdrachtgever</dt>
+                        <dd>
+                            {{ $confirmation->client_name }}
+                            <span>{{ $confirmation->client_contact_name ?: $confirmation->client_email }}</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Referentie</dt>
+                        <dd>{{ $confirmation->reference }}</dd>
+                    </div>
+                    <div>
+                        <dt>Verzonden</dt>
+                        <dd>{{ $confirmation->sent_at?->format('d-m-Y H:i') ?? '-' }}</dd>
+                    </div>
+                    <div>
+                        <dt>Bekeken</dt>
+                        <dd>{{ $confirmation->viewed_at?->format('d-m-Y H:i') ?? '-' }}</dd>
+                    </div>
+                    <div>
+                        <dt>Akkoord</dt>
+                        <dd>
+                            {{ $confirmation->signed_at?->format('d-m-Y H:i') ?? '-' }}
+                            @if (filled($confirmation->signer_name))
+                                <span>{{ $confirmation->signer_name }}</span>
+                            @endif
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Vervaldatum</dt>
+                        <dd>{{ $confirmation->expires_at?->format('d-m-Y') ?? '-' }}</dd>
+                    </div>
+                    @if ($confirmation->agreement_date !== null)
+                        <div>
+                            <dt>Startdatum</dt>
+                            <dd>{{ $confirmation->agreement_date->format('d-m-Y') }}</dd>
+                        </div>
+                    @endif
+                    @if ((float) $confirmation->total_value > 0)
+                        <div>
+                            <dt>Vergoeding</dt>
+                            <dd>EUR {{ number_format((float) $confirmation->total_value, 2, ',', '.') }} <span>{{ $confirmation->valueVatLabel() }}</span></dd>
+                        </div>
+                    @endif
+                    <div>
+                        <dt>Specificaties</dt>
+                        <dd>{{ $specificationCount > 0 ? $specificationCount.' ingevuld' : 'Geen extra specificaties' }}</dd>
+                    </div>
+                    <div>
+                        <dt>Bijlagen</dt>
+                        <dd>{{ $extraDocuments->isNotEmpty() ? $extraDocuments->implode(', ') : 'Geen extra bijlagen' }}</dd>
+                    </div>
+                </dl>
+
+                <div class="confirmation-builder-submit-actions confirmation-detail-actions">
+                    @if ($confirmation->hasPdf())
+                        <a href="{{ route('dashboard.confirmations.pdf', $confirmation) }}" class="btn btn-secondary">
+                            @include('partials.icons.icon', ['name' => 'file-text', 'size' => 16])
+                            Download PDF
+                        </a>
+                    @endif
+
+                    @if (filled($confirmation->public_token))
+                        <a href="{{ $confirmation->publicUrl() }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                            Online openen
+                        </a>
+                    @endif
+
+                    @if ($canSend)
+                        <form method="POST" action="{{ route('dashboard.confirmations.send', $confirmation) }}" class="dashboard-action-form">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">
+                                {{ $confirmation->status === 'verzonden' ? 'Nogmaals versturen' : 'Per e-mail versturen' }}
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($confirmation->canBeRetracted())
+                        <form
+                            method="POST"
+                            action="{{ route('dashboard.confirmations.retract', $confirmation) }}"
+                            class="dashboard-action-form"
+                            onsubmit="return confirm('Weet je zeker dat je deze opdrachtbevestiging wilt intrekken?');"
+                        >
+                            @csrf
+                            <button type="submit" class="btn btn-danger">Intrekken</button>
+                        </form>
+                    @endif
                 </div>
-            ',
-        ])
-    </div>
-
-    <div class="dashboard-content-grid">
-        @include('partials.dashboard.panel', [
-            'title' => 'Belangrijke data',
-            'slot' => '
-                <p><strong>Startdatum:</strong> '.e(optional($confirmation->agreement_date)->format('d-m-Y') ?? '-').'</p>
-                <p><strong>Duur van de opdracht:</strong> '.e($confirmation->duration ?: '-').'</p>
-                <p><strong>Verzenddatum:</strong> '.e(optional($confirmation->sent_at)->format('d-m-Y') ?? '-').'</p>
-                <p><strong>Akkoorddatum:</strong> '.e(optional($confirmation->signed_at)->format('d-m-Y') ?? '-').'</p>
-                <p><strong>Vervaldatum:</strong> '.e(optional($confirmation->expires_at)->format('d-m-Y') ?? '-').'</p>
-                <p><strong>Bekeken op:</strong> '.e(optional($confirmation->viewed_at)->format('d-m-Y H:i') ?? '-').'</p>
-            ',
-        ])
-
-        @include('partials.dashboard.panel', [
-            'title' => 'Omschrijving',
-            'slot' => '<div class="dashboard-rich-content">'.$confirmation->descriptionHtml().'</div>',
-        ])
-
-        @if ($confirmation->footerNoteText() !== '')
-            @include('partials.dashboard.panel', [
-                'title' => 'Voetnoot',
-                'slot' => '<p class="dashboard-footnote-text">'.$confirmation->footerNoteHtml().'</p>',
-            ])
-        @endif
-
-        @if ($confirmation->hasSpecifications())
-            @include('partials.dashboard.panel', [
-                'title' => 'Aanvullende specificaties',
-                'slot' => view('partials.confirmations.specifications', ['confirmation' => $confirmation])->render(),
-            ])
-        @endif
-
-        @include('partials.dashboard.panel', [
-            'title' => 'Vaste afspraken',
-            'slot' => '
-                '.($confirmation->defaultAgreementsHtml() !== '' ? '<div class="dashboard-rich-content">'.$confirmation->defaultAgreementsHtml().'</div>' : '<p>Geen basis afspraken toegevoegd.</p>').'
-                '.$termsLine.'
-            ',
-        ])
-    </div>
-
-    <div class="dashboard-content-grid">
-        @include('partials.dashboard.panel', [
-            'title' => 'E-mailverzending',
-            'slot' => '
-                <p><strong>Afzender:</strong> '.e($confirmation->sender_name ?: '-').' ('.e($confirmation->sender_email ?: '-').')</p>
-                <p><strong>Ontvanger:</strong> '.e($confirmation->client_contact_name ?: $confirmation->client_name).' ('.e($confirmation->client_email).')</p>
-                <p><strong>Inhoud:</strong> De volledige opdrachtbevestiging staat in de e-mailtekst.</p>
-                <p><strong>Bijlagen:</strong> '.e($emailAttachmentSummary ?: 'Geen bijlage of offerte toegevoegd.').'</p>
-            ',
-        ])
-
-        @include('partials.dashboard.panel', [
-            'title' => 'Akkoord',
-            'slot' => '
-                <p><strong>Akkoord door:</strong> '.e($confirmation->signer_name ?: '-').'</p>
-                <p><strong>IP-adres:</strong> '.e($confirmation->signer_ip ?: '-').'</p>
-                '.$signatureLine.'
-                <p><strong>Laatste weergave:</strong> '.e(optional($confirmation->viewed_at)->format('d-m-Y H:i') ?? '-').'</p>
-            ',
-        ])
+            </div>
+        </aside>
     </div>
 @endsection
