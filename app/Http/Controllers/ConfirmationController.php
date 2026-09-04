@@ -45,12 +45,6 @@ class ConfirmationController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        if ($request->filled('total_value')) {
-            $request->merge([
-                'total_value' => $this->normalizeAmount((string) $request->input('total_value')),
-            ]);
-        }
-
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'contact_id' => ['required', 'integer'],
@@ -59,7 +53,7 @@ class ConfirmationController extends Controller
             'agreement_date' => ['nullable', 'date'],
             'duration' => ['nullable', 'string', 'max:255'],
             'total_value' => ['nullable', 'numeric', 'min:0'],
-            'vat_rate' => ['nullable', 'integer', 'in:0,9,21'],
+            'value_vat_type' => ['nullable', 'in:excl,incl'],
             'attachment' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg', 'max:10240'],
             'quote' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg', 'max:10240'],
             'submit_action' => ['nullable', 'string', 'in:send,test'],
@@ -107,8 +101,7 @@ class ConfirmationController extends Controller
             'agreement_date' => $validated['agreement_date'] ?? null,
             'duration' => $validated['duration'] ?? null,
             'total_value' => $validated['total_value'] ?? 0,
-            'value_vat_type' => 'excl',
-            'vat_rate' => $validated['vat_rate'] ?? 21,
+            'value_vat_type' => $validated['value_vat_type'] ?? 'excl',
             'public_token' => Str::random(40),
             'status' => 'concept',
             'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
@@ -370,37 +363,5 @@ class ConfirmationController extends Controller
         } while (Confirmation::query()->where('reference', $reference)->exists());
 
         return $reference;
-    }
-
-    /**
-     * Zet een in het Nederlands ingevoerd bedrag ("5.000", "5.000,50",
-     * "€ 1.234,56") om naar een machineleesbaar getal ("5000", "5000.50").
-     * Punt = duizendtalscheiding, komma = decimaalteken.
-     */
-    private function normalizeAmount(string $value): string
-    {
-        $value = preg_replace('/[^0-9.,]/', '', $value) ?? '';
-
-        if (str_contains($value, ',')) {
-            // Nederlandse notatie: punt = duizendtal, komma = decimaal.
-            return str_replace(['.', ','], ['', '.'], $value);
-        }
-
-        $dotCount = substr_count($value, '.');
-
-        if ($dotCount === 0) {
-            return $value;
-        }
-
-        if ($dotCount > 1) {
-            // Meerdere punten kunnen alleen duizendtalscheidingen zijn.
-            return str_replace('.', '', $value);
-        }
-
-        // Eén punt: exact 3 cijfers erachter lezen we als duizendtal ("5.000"),
-        // anders als decimaalteken ("1250.50").
-        [$whole, $rest] = explode('.', $value, 2);
-
-        return strlen($rest) === 3 ? $whole.$rest : $value;
     }
 }

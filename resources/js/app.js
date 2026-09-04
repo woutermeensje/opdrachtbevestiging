@@ -151,52 +151,6 @@ document.querySelectorAll('[data-color-field]').forEach((field) => {
     renderSwatch();
 });
 
-document.querySelectorAll('[data-amount-input]').forEach((input) => {
-    const toNumeric = (raw) => {
-        let value = String(raw).replace(/[^0-9.,]/g, '');
-
-        if (value.includes(',')) {
-            return value.replace(/\./g, '').replace(',', '.');
-        }
-
-        const dotCount = (value.match(/\./g) || []).length;
-
-        if (dotCount === 0) {
-            return value;
-        }
-
-        if (dotCount > 1) {
-            return value.replace(/\./g, '');
-        }
-
-        const [whole, rest] = value.split('.');
-
-        return rest.length === 3 ? whole + rest : value;
-    };
-
-    const format = () => {
-        const numeric = toNumeric(input.value);
-
-        if (numeric === '' || Number.isNaN(Number(numeric))) {
-            return;
-        }
-
-        const [whole, fraction] = numeric.split('.');
-        const grouped = Number(whole || '0').toLocaleString('nl-NL');
-
-        input.value = fraction !== undefined
-            ? `${grouped},${fraction.padEnd(2, '0').slice(0, 2)}`
-            : grouped;
-    };
-
-    input.addEventListener('input', () => {
-        input.value = input.value.replace(/[^0-9.,]/g, '');
-    });
-
-    input.addEventListener('blur', format);
-    format();
-});
-
 document.querySelectorAll('[data-mobile-nav-toggle]').forEach((toggle) => {
     const sidebar = toggle.closest('.dashboard-sidebar');
 

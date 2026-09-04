@@ -58,8 +58,6 @@ class ConfirmationFlowTest extends TestCase
                 'contact_id' => $contact->id,
                 'description' => '<p>Ontwikkeling van een <strong>marketingwebsite</strong>.</p>',
                 'footer_note' => "Betaling binnen 14 dagen.\n<script>alert(1)</script>",
-                'total_value' => '5.000',
-                'vat_rate' => '9',
             ]);
 
         $confirmation = Confirmation::query()->first();
@@ -72,9 +70,7 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('info@acme.test', $confirmation->client_email);
         $this->assertSame(['Keizersgracht 24 A', '1015 CJ Amsterdam', 'Nederland'], $confirmation->clientAddressLines());
         $this->assertSame('verzonden', $confirmation->status);
-        $this->assertSame('5000.00', $confirmation->total_value);
-        $this->assertSame(9, $confirmation->vat_rate);
-        $this->assertSame('excl. 9% btw', $confirmation->valueVatLabel());
+        $this->assertSame('0.00', $confirmation->total_value);
         $this->assertNotNull($confirmation->sent_at);
         $this->assertNotNull($confirmation->pdf_path);
         $this->assertSame('<p>Ontwikkeling van een <strong>marketingwebsite</strong>.</p>', $confirmation->description);
@@ -199,10 +195,8 @@ class ConfirmationFlowTest extends TestCase
             ->assertDontSee('Startdatum')
             ->assertDontSee('Periode')
             ->assertDontSee('Tarief')
-            ->assertSee('name="total_value"', false)
-            ->assertSee('name="vat_rate"', false)
-            ->assertSee('data-amount-input', false)
-            ->assertSee('21% (algemeen tarief)')
+            ->assertDontSee('Vergoeding')
+            ->assertDontSee('BTW-percentage')
             ->assertDontSee('confirmation-document-summary-grid', false)
             ->assertDontSee('confirmation-document-terms', false)
             ->assertDontSee('name="specifications[general][client_reference]"', false)
@@ -222,6 +216,8 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Vaste gegevens')
             ->assertDontSee('name="agreement_date"', false)
             ->assertDontSee('name="duration"', false)
+            ->assertDontSee('name="total_value"', false)
+            ->assertDontSee('name="value_vat_type"', false)
             ->assertDontSee('name="termination_terms"', false)
             ->assertDontSee('name="status"', false);
     }
@@ -389,7 +385,7 @@ class ConfirmationFlowTest extends TestCase
                 'agreement_date' => '2026-08-01',
                 'duration' => '3 maanden',
                 'total_value' => '1250.50',
-                'vat_rate' => '21',
+                'value_vat_type' => 'incl',
             ]);
 
         $confirmation = Confirmation::query()->first();
@@ -398,7 +394,7 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('2026-08-01', $confirmation->agreement_date->toDateString());
         $this->assertSame('3 maanden', $confirmation->duration);
         $this->assertSame('1250.50', $confirmation->total_value);
-        $this->assertSame(21, $confirmation->vat_rate);
+        $this->assertSame('incl', $confirmation->value_vat_type);
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
             $mail->assertHasAttachment(
