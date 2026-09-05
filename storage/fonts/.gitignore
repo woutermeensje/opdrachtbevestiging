@@ -1,14 +1,7 @@
-# Alleen de bron-fontbestanden en de licentie committen.
-# dompdf genereert hier bij het renderen cache-bestanden
-# (*.ufm, *.ufm.json, gehashte *.ttf-kopieën, installed-fonts.json) —
-# die horen niet in versiebeheer.
+# dompdf gebruikt deze map als font-cache: het genereert hier bij het renderen
+# metrics-/cachebestanden (*.ufm, *.ufm.json, gehashte *.ttf-kopieën,
+# installed-fonts.json). Die horen niet in versiebeheer.
+#
+# De bron-fontbestanden (Aptos) staan in public/fonts/aptos/.
 *
-
 !.gitignore
-!OFL.txt
-!Poppins-Light.ttf
-!Poppins-Regular.ttf
-!Poppins-Medium.ttf
-!Poppins-SemiBold.ttf
-!Poppins-Bold.ttf
-!Poppins-Italic.ttf
