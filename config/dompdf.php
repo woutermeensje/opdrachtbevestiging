@@ -111,7 +111,7 @@ return [
          * Whether to enable font subsetting or not.
          *
          * Aangezet zodat alleen de daadwerkelijk gebruikte glyphs van de
-         * ingesloten Poppins-fonts in de PDF terechtkomen (kleinere bestanden).
+         * ingesloten Aptos-fonts in de PDF terechtkomen (kleinere bestanden).
          */
         'enable_font_subsetting' => true,
 

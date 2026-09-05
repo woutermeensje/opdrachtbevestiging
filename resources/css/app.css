@@ -3,7 +3,6 @@
 ================================ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 /* ===============================
    TAILWIND
@@ -16,7 +15,49 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Aptos', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ===============================
+   APTOS WEBFONT
+   Aptos wordt niet door Google Fonts gehost; we laden de TTF-bestanden
+   via jsDelivr (GitHub-mirror ironveil/ttf-aptos, vastgezet op commit).
+   Gebruikers met Aptos lokaal geïnstalleerd gebruiken die versie.
+================================ */
+@font-face {
+  font-family: 'Aptos';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Aptos'),
+       url('https://cdn.jsdelivr.net/gh/ironveil/ttf-aptos@64f511374b173d0d0618455e57d1e7aacd910818/Aptos.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Aptos';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Aptos Italic'),
+       url('https://cdn.jsdelivr.net/gh/ironveil/ttf-aptos@64f511374b173d0d0618455e57d1e7aacd910818/Aptos%20Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Aptos';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Aptos Bold'),
+       url('https://cdn.jsdelivr.net/gh/ironveil/ttf-aptos@64f511374b173d0d0618455e57d1e7aacd910818/Aptos%20Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Aptos';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Aptos Bold Italic'),
+       url('https://cdn.jsdelivr.net/gh/ironveil/ttf-aptos@64f511374b173d0d0618455e57d1e7aacd910818/Aptos%20Bold%20Italic.ttf') format('truetype');
 }
 
 /* ===============================
@@ -91,7 +132,7 @@
   /* Typography */
   --font-ui: 'Inter', sans-serif;
   --font-heading: 'Work Sans', sans-serif;
-  --font-text: 'Poppins', sans-serif;
+  --font-text: 'Aptos', 'Segoe UI', sans-serif;
 
   /* Spacing */
   --space-1: 0.25rem;

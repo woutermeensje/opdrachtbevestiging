@@ -12,7 +12,7 @@
         body {
             margin: 0;
             color: #333333;
-            font-family: 'Poppins', 'DejaVu Sans', Arial, sans-serif;
+            font-family: 'Aptos', 'DejaVu Sans', Arial, sans-serif;
             font-size: 14px;
             line-height: 1.55;
         }

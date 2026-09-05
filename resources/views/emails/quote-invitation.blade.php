@@ -15,7 +15,7 @@
     $textStyle = 'margin:0 0 12px;font-size:15px;line-height:1.6;color:#333333;';
     $dividerStyle = 'margin-top:24px;padding-top:20px;border-top:1px solid #dedede;';
 @endphp
-<body bgcolor="{{ $themeBackground }}" style="margin:0;padding:0;background:{{ $themeBackground }};font-family:Poppins,Arial,Helvetica,sans-serif;color:#333333;">
+<body bgcolor="{{ $themeBackground }}" style="margin:0;padding:0;background:{{ $themeBackground }};font-family:Aptos,'Segoe UI',Arial,Helvetica,sans-serif;color:#333333;">
     <div style="width:100%;background:{{ $themeBackground }};padding:64px 24px;box-sizing:border-box;">
         <div style="max-width:720px;margin:0 auto;">
             <div style="{{ $blockStyle }}">
