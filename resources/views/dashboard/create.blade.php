@@ -4,9 +4,12 @@
 
 @php
     $user = auth()->user();
-    $selectedContactId = old('contact_id');
+    $draft = $draft ?? null;
+    $selectedContactId = old('contact_id', $draft?->contact_id);
     $selectedContact = $selectedContactId ? $contacts->firstWhere('id', (int) $selectedContactId) : null;
     $senderName = trim((string) $user->first_name.' '.(string) $user->last_name);
+    $senderCompanyDisplayName = $user->companyDisplayName();
+    $senderLegalCompanyName = $user->companyLegalNameForDisplay();
     $senderAddressLines = $user->companyAddressLines();
     $logoDataUri = null;
 
@@ -16,8 +19,9 @@
         );
     }
 
-    $descriptionHtml = \App\Models\Confirmation::sanitizeDescription(old('description'));
-    $footerNoteText = \App\Models\Confirmation::sanitizeFooterNote(old('footer_note'))
+    $draftTitle = old('title', $draft?->title);
+    $descriptionHtml = \App\Models\Confirmation::sanitizeDescription(old('description', $draft?->description));
+    $footerNoteText = \App\Models\Confirmation::sanitizeFooterNote(old('footer_note', $draft?->footer_note))
         ?? \App\Models\Confirmation::defaultFooterNoteForUser($user);
 @endphp
 
@@ -32,6 +36,17 @@
 
     @if (session('status'))
         <div class="dashboard-notice">{{ session('status') }}</div>
+    @endif
+
+    @if ($draft && ! $errors->any())
+        <div class="dashboard-notice confirmation-draft-notice">
+            <span>Je vorige concept is hersteld. Wijzigingen worden automatisch als concept bewaard tot je verzendt.</span>
+            <form method="POST" action="{{ route('dashboard.create.draft.discard') }}">
+                @csrf
+                <input type="hidden" name="draft_id" value="{{ $draft->id }}">
+                <button type="submit" class="confirmation-draft-notice-reset">Opnieuw beginnen</button>
+            </form>
+        </div>
     @endif
 
     @if ($contacts->isEmpty())
@@ -51,8 +66,10 @@
             enctype="multipart/form-data"
             data-confirmation-builder
             data-initial-panel="{{ $errors->has('contact_id') ? 'client' : ($errors->any() ? 'confirmation' : '') }}"
+            data-draft-url="{{ route('dashboard.create.draft') }}"
         >
             @csrf
+            <input type="hidden" name="draft_id" value="{{ $draft?->id }}" data-draft-id>
 
             <div class="confirmation-builder-shell">
                 <div class="confirmation-builder-stage">
@@ -171,7 +188,7 @@
                                     id="title"
                                     name="title"
                                     type="text"
-                                    value="{{ old('title') }}"
+                                    value="{{ $draftTitle }}"
                                     placeholder="Bijvoorbeeld: Opdrachtbevestiging interim recruitment"
                                     data-preview-input="title"
                                 >
@@ -182,7 +199,7 @@
                             <label for="description_editor">Omschrijving van de opdracht</label>
                             <div class="quill-field" data-quill-field data-ai-assist="true" data-ai-assist-context="opdrachtbeschrijving" data-ai-assist-url="{{ route('dashboard.ai-assist.text') }}">
                                 <div id="description_editor" class="quill-editor" data-quill-editor data-quill-required="true" data-quill-placeholder="Beschrijf de opdracht...">{!! $descriptionHtml ?? '' !!}</div>
-                                <textarea id="description" name="description" class="quill-editor-input" data-quill-input data-preview-input="description">{{ old('description') }}</textarea>
+                                <textarea id="description" name="description" class="quill-editor-input" data-quill-input data-preview-input="description">{{ old('description', $draft?->description) }}</textarea>
                             </div>
                         </div>
 
@@ -196,9 +213,9 @@
                         <header class="confirmation-document-header">
                             <div class="confirmation-document-logo">
                                 @if ($logoDataUri !== null)
-                                    <img src="{{ $logoDataUri }}" alt="{{ $user->company_name }} logo">
+                                    <img src="{{ $logoDataUri }}" alt="{{ $senderCompanyDisplayName }} logo">
                                 @else
-                                    <span>{{ $user->company_name ?: config('app.name') }}</span>
+                                    <span>{{ $senderCompanyDisplayName }}</span>
                                 @endif
                             </div>
 
@@ -211,7 +228,10 @@
                         <div class="confirmation-document-party-row">
                             <div class="confirmation-document-sender">
                                 <p class="confirmation-document-label">Opdrachtnemer</p>
-                                <strong>{{ $user->company_name ?: 'Jouw bedrijfsnaam' }}</strong>
+                                <strong>{{ $senderCompanyDisplayName }}</strong>
+                                @if ($senderLegalCompanyName !== null)
+                                    <span>{{ $senderLegalCompanyName }}</span>
+                                @endif
                                 @forelse ($senderAddressLines as $line)
                                     <span>{{ $line }}</span>
                                 @empty
@@ -274,7 +294,7 @@
                             <section class="confirmation-document-section">
                                 <div class="confirmation-document-field">
                                     <p class="confirmation-document-label">Titel</p>
-                                    @php($previewTitle = old('title'))
+                                    @php($previewTitle = $draftTitle)
                                     <p class="confirmation-document-title">
                                         <span
                                             class="{{ filled($previewTitle) ? '' : 'is-placeholder' }}"

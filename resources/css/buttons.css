@@ -16,25 +16,22 @@
     font-size: 0.9rem;
     letter-spacing: 0.01em;
     border: 1px solid transparent;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.12);
     cursor: pointer;
     line-height: 1;
     text-align: center;
     vertical-align: middle;
     white-space: nowrap;
     user-select: none;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .btn:hover {
     text-decoration: none;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .btn:active {
     transform: translateY(1px);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 .btn:disabled,
@@ -42,7 +39,6 @@
     cursor: not-allowed;
     opacity: 0.55;
     transform: none;
-    box-shadow: none;
 }
 
 .btn-small {

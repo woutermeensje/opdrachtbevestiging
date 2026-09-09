@@ -50,12 +50,10 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     background: var(--color-bg-white);
-    box-shadow: var(--box-shadow-default);
 }
 
 .tariff-plan-featured {
     border-color: var(--color-primary);
-    box-shadow: 0 16px 40px rgba(0, 59, 115, 0.1);
 }
 
 .tariff-badge {
@@ -165,7 +163,6 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     background: var(--color-bg-white);
-    box-shadow: var(--box-shadow-default);
 }
 
 .tariffs-note p {

@@ -94,7 +94,7 @@ class BillingFlowTest extends TestCase
         Http::assertSent(function ($request): bool {
             return $request->url() === 'https://api.mollie.com/v2/customers/cst_123/payments'
                 && $request['sequenceType'] === 'first'
-                && $request['amount']['value'] === '24.14'
+                && $request['amount']['value'] === '33.28'
                 && $request['metadata']['plan'] === 'monthly';
         });
     }

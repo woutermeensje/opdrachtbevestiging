@@ -37,6 +37,7 @@ class ConfirmationFactory extends Factory
             'status' => fake()->randomElement(['concept', 'verzonden', 'getekend']),
             'sender_name' => fake()->name(),
             'sender_email' => fake()->safeEmail(),
+            'sender_company_trade_name' => null,
             'attachment_path' => null,
             'attachment_original_name' => null,
             'attachment_mime_type' => null,

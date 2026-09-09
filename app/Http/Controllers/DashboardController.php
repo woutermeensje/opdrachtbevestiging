@@ -15,14 +15,14 @@ class DashboardController extends Controller
     public function index(): View
     {
         $user = auth()->user();
-        $confirmations = $user->confirmations()->latest()->take(5)->get();
+        $confirmations = $user->confirmations()->published()->latest()->take(5)->get();
 
         return view('dashboard.index', [
             'metrics' => [
-                'total' => $user->confirmations()->count(),
-                'drafts' => $user->confirmations()->where('status', 'concept')->count(),
-                'signed' => $user->confirmations()->where('status', 'getekend')->count(),
-                'value' => (float) $user->confirmations()->sum('total_value'),
+                'total' => $user->confirmations()->published()->count(),
+                'drafts' => $user->confirmations()->published()->where('status', 'concept')->count(),
+                'signed' => $user->confirmations()->published()->where('status', 'getekend')->count(),
+                'value' => (float) $user->confirmations()->published()->sum('total_value'),
             ],
             'contactCount' => $user->contacts()->count(),
             'recentConfirmations' => $confirmations,
@@ -93,6 +93,7 @@ class DashboardController extends Controller
     {
         $validated = $request->validate([
             'company_name' => ['required', 'string', 'max:255'],
+            'company_trade_name' => ['nullable', 'string', 'max:255'],
             'kvk_number' => ['required', 'digits:8'],
             'street_name' => ['nullable', 'string', 'max:255'],
             'house_number' => ['nullable', 'string', 'max:20'],
@@ -101,6 +102,10 @@ class DashboardController extends Controller
             'city' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $validated['company_trade_name'] = filled($validated['company_trade_name'] ?? null)
+            ? trim($validated['company_trade_name'])
+            : null;
 
         $request->user()
             ->forceFill($validated)

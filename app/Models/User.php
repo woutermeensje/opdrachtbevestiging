@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_name',
         'phone_number',
         'company_name',
+        'company_trade_name',
         'kvk_number',
         'street_name',
         'house_number',
@@ -107,6 +108,34 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasCompletedCompanyProfile(): bool
     {
         return filled($this->company_name) && filled($this->kvk_number);
+    }
+
+    public function companyDisplayName(): string
+    {
+        return $this->company_trade_name
+            ?: $this->company_name
+            ?: config('app.name');
+    }
+
+    public function companyLegalNameForDisplay(): ?string
+    {
+        $companyName = trim((string) $this->company_name);
+
+        if ($companyName === '' || $companyName === trim($this->companyDisplayName())) {
+            return null;
+        }
+
+        return $companyName;
+    }
+
+    public function companyFooterDisplayName(): string
+    {
+        $displayName = $this->companyDisplayName();
+        $legalName = $this->companyLegalNameForDisplay();
+
+        return $legalName !== null
+            ? "{$displayName} ({$legalName})"
+            : $displayName;
     }
 
     public function hasActiveSubscription(): bool

@@ -52,6 +52,10 @@
             <label for="company_name_confirmed">Bedrijfsnaam</label>
             <input id="company_name_confirmed" name="company_name" type="text" value="{{ old('company_name', $user->company_name) }}" data-kvk-target="company_name" required>
 
+            <label for="company_trade_name">Handelsnaam</label>
+            <input id="company_trade_name" name="company_trade_name" type="text" value="{{ old('company_trade_name', $user->company_trade_name) }}" placeholder="Bijvoorbeeld: Student Inhuren">
+            <p class="form-help">Optioneel. Als je dit invult, gebruiken opdrachtbevestigingen deze naam als zichtbare afzender.</p>
+
             <h3>Adresgegevens</h3>
 
             <div class="grid-3">

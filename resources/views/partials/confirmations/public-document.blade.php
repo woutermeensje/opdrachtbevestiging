@@ -1,5 +1,6 @@
 @php
     $senderAddressLines = $confirmation->senderAddressLines();
+    $senderLegalCompanyName = $confirmation->senderLegalCompanyName();
     $logo = $confirmation->senderCompanyLogoDataUri();
     $footerNoteText = $confirmation->footerNoteText();
 @endphp
@@ -20,6 +21,9 @@
         <div>
             <p><strong>Opdrachtnemer</strong></p>
             <p>{{ $confirmation->senderCompanyDisplayName() }}</p>
+            @if ($senderLegalCompanyName !== null)
+                <p>{{ $senderLegalCompanyName }}</p>
+            @endif
             @foreach ($senderAddressLines as $line)
                 <p>{{ $line }}</p>
             @endforeach

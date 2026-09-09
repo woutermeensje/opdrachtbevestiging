@@ -28,7 +28,7 @@
         [
             'name' => 'Maandelijks',
             'eyebrow' => 'Flexibel starten',
-            'price' => '€19,95',
+            'price' => '€27,50',
             'priceNote' => 'excl. 21% btw per maand',
             'description' => 'Voor professionals die doorlopend opdrachtbevestigingen willen versturen zonder direct jaarlijks vast te leggen.',
             'features' => [
@@ -46,11 +46,11 @@
         [
             'name' => 'Jaarlijks',
             'eyebrow' => 'Meeste voordeel',
-            'price' => '€199',
+            'price' => '€149',
             'priceNote' => 'excl. 21% btw per jaar',
             'description' => 'Voor wie het platform structureel gebruikt en voordeliger uit wil zijn dan maandelijks betalen.',
             'features' => [
-                'Bespaar €40,40 per jaar',
+                'Bespaar €181 per jaar',
                 'Incl. Kamer van Koophandel API',
                 'Accordering trails',
                 'Domein extensies',
@@ -110,7 +110,7 @@
             </div>
 
             <div class="tariffs-note">
-                <p><strong>Jaarlijks is voordeliger.</strong> Twaalf maanden los kost €239,40 excl. btw. Met jaarlijks betaal je €199 excl. btw en houd je €40,40 voordeel.</p>
+                <p><strong>Jaarlijks is voordeliger.</strong> Twaalf maanden los kost €330 excl. btw. Met jaarlijks betaal je €149 excl. btw en houd je €181 voordeel.</p>
             </div>
         </div>
     </section>

@@ -142,6 +142,8 @@ Route::middleware(['auth', 'verified', 'billing.active'])->group(function (): vo
     Route::middleware('company.profile')->group(function (): void {
         Route::get('/dashboard/aanmaken', [ConfirmationController::class, 'create'])->name('dashboard.create');
         Route::post('/dashboard/aanmaken', [ConfirmationController::class, 'store'])->name('dashboard.create.store');
+        Route::post('/dashboard/aanmaken/concept', [ConfirmationController::class, 'storeDraft'])->name('dashboard.create.draft');
+        Route::post('/dashboard/aanmaken/concept/verwijderen', [ConfirmationController::class, 'discardDraft'])->name('dashboard.create.draft.discard');
         Route::post('/dashboard/ai-assist/tekst', [AiAssistController::class, 'improveConfirmationText'])
             ->middleware('throttle:20,1')
             ->name('dashboard.ai-assist.text');

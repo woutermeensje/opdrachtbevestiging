@@ -121,6 +121,7 @@ class ConfirmationFlowTest extends TestCase
             'first_name' => 'Wouter',
             'last_name' => 'Meens',
             'company_name' => 'SRM',
+            'company_trade_name' => 'Student Inhuren',
             'kvk_number' => '85994847',
             'street_name' => 'Brinklande',
             'house_number' => '10',
@@ -146,7 +147,7 @@ class ConfirmationFlowTest extends TestCase
             ]);
 
         $confirmation = Confirmation::query()->firstOrFail();
-        $expectedFooterNote = 'Deze opdrachtbevestiging is opgesteld door Wouter Meens van SRM, 85994847, Brinklande 10, 2641 RE Pijnacker, Nederland. Contactgegevens: wouter@inhuren.com.';
+        $expectedFooterNote = 'Deze opdrachtbevestiging is opgesteld door Wouter Meens van Student Inhuren (SRM), 85994847, Brinklande 10, 2641 RE Pijnacker, Nederland. Contactgegevens: wouter@inhuren.com.';
 
         $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
         $this->assertSame($expectedFooterNote, $confirmation->footer_note);
@@ -566,6 +567,7 @@ class ConfirmationFlowTest extends TestCase
 
         $user = User::factory()->create([
             'company_name' => 'Studio Wouter',
+            'company_trade_name' => 'Studio Wouter Creative',
             'kvk_number' => '12345678',
             'street_name' => 'Keizersgracht',
             'house_number' => '1',
@@ -600,6 +602,9 @@ class ConfirmationFlowTest extends TestCase
 
         $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
         $this->assertSame('Studio Wouter', $confirmation->sender_company_name);
+        $this->assertSame('Studio Wouter Creative', $confirmation->sender_company_trade_name);
+        $this->assertSame('Studio Wouter Creative', $confirmation->senderCompanyDisplayName());
+        $this->assertSame('Studio Wouter', $confirmation->senderLegalCompanyName());
         $this->assertSame('12345678', $confirmation->sender_kvk_number);
         $this->assertSame('<p>Betaling binnen <strong>14 dagen</strong>.</p>', $confirmation->default_agreements);
         $this->assertNotNull($confirmation->terms_path);
@@ -705,6 +710,7 @@ class ConfirmationFlowTest extends TestCase
             'first_name' => 'Wouter',
             'last_name' => 'Meens',
             'company_name' => 'Studio Wouter',
+            'company_trade_name' => 'Studio Wouter Projects',
             'email' => 'wouter@example.test',
         ]);
         $confirmation = $user->confirmations()->create([
@@ -736,12 +742,13 @@ class ConfirmationFlowTest extends TestCase
         $this->assertNotNull($confirmation->sent_at);
         $this->assertNotNull($confirmation->pdf_path);
         $this->assertSame('Studio Wouter', $confirmation->sender_company_name);
+        $this->assertSame('Studio Wouter Projects', $confirmation->sender_company_trade_name);
         $this->assertNull($confirmation->signhost_transaction_id);
 
         Storage::disk('local')->assertExists($confirmation->pdf_path);
 
         Mail::assertSent(ConfirmationInvitationMail::class, function (ConfirmationInvitationMail $mail) use ($confirmation): bool {
-            $mail->assertHasSubject('Opdrachtbevestiging van Studio Wouter');
+            $mail->assertHasSubject('Opdrachtbevestiging van Studio Wouter Projects');
             $mail->assertDontSeeInHtml($confirmation->title);
             $mail->assertDontSeeInText($confirmation->title);
             $mail->assertSeeInHtml('Hoi Sanne,');

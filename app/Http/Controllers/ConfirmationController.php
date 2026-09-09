@@ -8,6 +8,7 @@ use App\Models\Confirmation;
 use App\Models\User;
 use App\Services\ConfirmationPdfService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -28,6 +29,7 @@ class ConfirmationController extends Controller
     {
         $confirmations = $request->user()
             ->confirmations()
+            ->published()
             ->latest()
             ->get();
 
@@ -36,16 +38,100 @@ class ConfirmationController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('dashboard.create', [
-            'contacts' => auth()->user()->contacts()->orderBy('company_name')->get(),
+            'contacts' => $request->user()->contacts()->orderBy('company_name')->get(),
+            'draft' => $this->resumableDraft($request->user()),
         ]);
+    }
+
+    /**
+     * Slaat de aanmaakwizard automatisch op als concept. Wordt aangeroepen
+     * vanuit de browser bij het verlaten van /dashboard/aanmaken zonder te
+     * verzenden, en tussentijds terwijl er wordt getypt.
+     */
+    public function storeDraft(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'draft_id' => ['nullable', 'integer'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'contact_id' => ['nullable', 'integer'],
+            'description' => ['nullable', 'string', 'max:20000'],
+            'footer_note' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $draft = $this->findDraft($request->user(), $validated['draft_id'] ?? null);
+
+        $title = trim((string) ($validated['title'] ?? ''));
+        $description = Confirmation::sanitizeDescription($validated['description'] ?? null);
+        $footerNote = Confirmation::sanitizeFooterNote($validated['footer_note'] ?? null);
+        $defaultFooterNote = Confirmation::defaultFooterNoteForUser($request->user());
+
+        $contact = filled($validated['contact_id'] ?? null)
+            ? $request->user()->contacts()->find($validated['contact_id'])
+            : null;
+
+        $hasContent = $title !== ''
+            || filled($description)
+            || $contact !== null
+            || (filled($footerNote) && $footerNote !== $defaultFooterNote);
+
+        if (! $hasContent) {
+            // Niets zinvols ingevuld: geen leeg concept aanmaken, wel een
+            // bestaand concept opruimen als alles is leeggemaakt.
+            $draft?->delete();
+
+            return response()->json(['draft_id' => null]);
+        }
+
+        $attributes = [
+            'contact_id' => $contact?->id,
+            'title' => $title,
+            'client_name' => $contact?->company_name ?? '',
+            'client_contact_name' => $contact?->contactName(),
+            'client_email' => $contact?->contact_email ?? '',
+            'client_kvk_number' => $contact?->kvk_number,
+            'client_street_name' => $contact?->street_name,
+            'client_house_number' => $contact?->house_number,
+            'client_house_number_addition' => $contact?->house_number_addition,
+            'client_postal_code' => $contact?->postal_code,
+            'client_city' => $contact?->city,
+            'client_country' => $contact?->country,
+            'description' => $description,
+            'footer_note' => $footerNote,
+            'status' => 'concept',
+            'is_draft' => true,
+        ];
+
+        if ($draft !== null) {
+            $draft->forceFill($attributes)->save();
+        } else {
+            $draft = $request->user()->confirmations()->create($attributes + [
+                'reference' => $this->generateReference(),
+                'public_token' => Str::random(40),
+                'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
+                'sender_email' => $request->user()->email,
+            ]);
+        }
+
+        return response()->json(['draft_id' => $draft->id]);
+    }
+
+    /**
+     * Verwijdert het automatisch opgeslagen concept ("opnieuw beginnen").
+     */
+    public function discardDraft(Request $request): RedirectResponse
+    {
+        $this->findDraft($request->user(), $request->integer('draft_id'))?->delete();
+
+        return redirect()->route('dashboard.create');
     }
 
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'draft_id' => ['nullable', 'integer'],
             'title' => ['required', 'string', 'max:255'],
             'contact_id' => ['required', 'integer'],
             'description' => ['required', 'string'],
@@ -81,9 +167,10 @@ class ConfirmationController extends Controller
             ->contacts()
             ->findOrFail($validated['contact_id']);
 
-        $confirmation = $request->user()->confirmations()->create([
+        $draft = $this->findDraft($request->user(), $validated['draft_id'] ?? null);
+
+        $attributes = [
             'contact_id' => $contact->id,
-            'reference' => $this->generateReference(),
             'title' => $validated['title'],
             'client_name' => $contact->company_name,
             'client_contact_name' => $contact->contactName(),
@@ -102,11 +189,21 @@ class ConfirmationController extends Controller
             'duration' => $validated['duration'] ?? null,
             'total_value' => $validated['total_value'] ?? 0,
             'value_vat_type' => $validated['value_vat_type'] ?? 'excl',
-            'public_token' => Str::random(40),
             'status' => 'concept',
+            'is_draft' => false,
             'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
             'sender_email' => $request->user()->email,
-        ] + $this->profileSnapshotAttributes($request->user()));
+        ] + $this->profileSnapshotAttributes($request->user());
+
+        if ($draft !== null) {
+            $draft->forceFill($attributes)->save();
+            $confirmation = $draft;
+        } else {
+            $confirmation = $request->user()->confirmations()->create($attributes + [
+                'reference' => $this->generateReference(),
+                'public_token' => Str::random(40),
+            ]);
+        }
 
         $this->copyProfileFilesToConfirmation($confirmation);
 
@@ -150,6 +247,7 @@ class ConfirmationController extends Controller
     public function show(Request $request, Confirmation $confirmation): View
     {
         abort_unless($confirmation->user_id === $request->user()->id, 403);
+        abort_if($confirmation->is_draft, 404);
 
         return view('dashboard.confirmation-show', [
             'confirmation' => $confirmation,
@@ -183,6 +281,7 @@ class ConfirmationController extends Controller
     public function send(Request $request, Confirmation $confirmation): RedirectResponse
     {
         abort_unless($confirmation->user_id === $request->user()->id, 403);
+        abort_if($confirmation->is_draft, 404);
 
         if ($confirmation->public_token === null) {
             $confirmation->forceFill([
@@ -257,6 +356,7 @@ class ConfirmationController extends Controller
     {
         return [
             'sender_company_name' => $user->company_name,
+            'sender_company_trade_name' => $user->company_trade_name,
             'sender_kvk_number' => $user->kvk_number,
             'sender_street_name' => $user->street_name,
             'sender_house_number' => $user->house_number,
@@ -375,5 +475,30 @@ class ConfirmationController extends Controller
         } while (Confirmation::query()->where('reference', $reference)->exists());
 
         return $reference;
+    }
+
+    /**
+     * Het meest recente automatisch opgeslagen concept van deze gebruiker dat
+     * nog niet is verzonden, om de aanmaakwizard mee te herstellen.
+     */
+    private function resumableDraft(User $user): ?Confirmation
+    {
+        return $user->confirmations()
+            ->where('is_draft', true)
+            ->whereNull('sent_at')
+            ->latest('updated_at')
+            ->first();
+    }
+
+    private function findDraft(User $user, int|string|null $draftId): ?Confirmation
+    {
+        if (! filled($draftId)) {
+            return null;
+        }
+
+        return $user->confirmations()
+            ->where('is_draft', true)
+            ->whereNull('sent_at')
+            ->find($draftId);
     }
 }

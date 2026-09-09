@@ -12,7 +12,7 @@ return [
     'plans' => [
         'monthly' => [
             'name' => 'Maandelijks',
-            'amount_ex_vat' => env('BILLING_MONTHLY_AMOUNT_EX_VAT', '19.95'),
+            'amount_ex_vat' => env('BILLING_MONTHLY_AMOUNT_EX_VAT', '27.50'),
             'interval' => '1 month',
             'period' => 'month',
             'description' => 'Maandelijks abonnement Opdrachtbevestiging.nl',
@@ -21,7 +21,7 @@ return [
 
         'yearly' => [
             'name' => 'Jaarlijks',
-            'amount_ex_vat' => env('BILLING_YEARLY_AMOUNT_EX_VAT', '199.00'),
+            'amount_ex_vat' => env('BILLING_YEARLY_AMOUNT_EX_VAT', '149.00'),
             'interval' => '12 months',
             'period' => 'year',
             'description' => 'Jaarabonnement Opdrachtbevestiging.nl',

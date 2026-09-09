@@ -1,6 +1,6 @@
 @php
     $recipientName = $confirmation->client_contact_name ?: $confirmation->client_name;
-    $senderCompany = $confirmation->user->company_name ?: $confirmation->sender_name;
+    $senderCompany = $confirmation->senderCompanyDisplayName();
 @endphp
 Opdrachtbevestiging {{ $confirmation->reference }} ingetrokken
 

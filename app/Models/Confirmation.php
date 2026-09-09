@@ -36,9 +36,11 @@ class Confirmation extends Model
         'value_vat_type',
         'public_token',
         'status',
+        'is_draft',
         'sender_name',
         'sender_email',
         'sender_company_name',
+        'sender_company_trade_name',
         'sender_kvk_number',
         'sender_street_name',
         'sender_house_number',
@@ -80,6 +82,7 @@ class Confirmation extends Model
     {
         return [
             'total_value' => 'decimal:2',
+            'is_draft' => 'boolean',
             'specifications' => 'array',
             'agreement_date' => 'date',
             'sent_at' => 'datetime',
@@ -328,6 +331,17 @@ class Confirmation extends Model
         return $this->belongsTo(Contact::class);
     }
 
+    /**
+     * Alleen bewust opgeslagen opdrachtbevestigingen; automatisch opgeslagen
+     * concepten van de aanmaakwizard blijven buiten overzichten en tellingen.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<Confirmation>  $query
+     */
+    public function scopePublished($query): void
+    {
+        $query->where('is_draft', false);
+    }
+
     public static function sanitizeDescription(?string $description): ?string
     {
         if ($description === null) {
@@ -414,7 +428,7 @@ class Confirmation extends Model
 
         return self::buildDefaultFooterNote(
             $senderName,
-            $user->company_name,
+            $user->companyFooterDisplayName(),
             $user->kvk_number,
             implode(', ', $user->companyAddressLines()),
             $user->email,
@@ -467,7 +481,7 @@ class Confirmation extends Model
 
         return self::buildDefaultFooterNote(
             $senderName,
-            $this->senderCompanyDisplayName(),
+            $this->senderCompanyFooterDisplayName(),
             $kvkNumber,
             implode(', ', $this->senderAddressLines()),
             $senderEmail,
@@ -508,10 +522,33 @@ class Confirmation extends Model
 
     public function senderCompanyDisplayName(): string
     {
-        return $this->sender_company_name
+        return $this->sender_company_trade_name
+            ?: $this->sender_company_name
+            ?: $this->user?->company_trade_name
             ?: $this->user?->company_name
             ?: $this->sender_name
             ?: 'Opdrachtnemer';
+    }
+
+    public function senderLegalCompanyName(): ?string
+    {
+        $companyName = trim((string) ($this->sender_company_name ?: $this->user?->company_name));
+
+        if ($companyName === '' || $companyName === trim($this->senderCompanyDisplayName())) {
+            return null;
+        }
+
+        return $companyName;
+    }
+
+    public function senderCompanyFooterDisplayName(): string
+    {
+        $displayName = $this->senderCompanyDisplayName();
+        $legalName = $this->senderLegalCompanyName();
+
+        return $legalName !== null
+            ? "{$displayName} ({$legalName})"
+            : $displayName;
     }
 
     /**

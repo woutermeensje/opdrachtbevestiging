@@ -96,7 +96,6 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     background: var(--color-bg-white);
-    box-shadow: var(--shadow-popover);
 }
 
 .dashboard-topbar-menu a {
@@ -287,7 +286,6 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     padding: 1rem 1.1rem;
-    box-shadow: var(--box-shadow-default);
 }
 
 .dashboard-metric-card strong {
@@ -354,7 +352,6 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     padding: 1.4rem;
-    box-shadow: var(--box-shadow-default);
 }
 
 .dashboard-panel-wide {
@@ -438,7 +435,6 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     background: var(--color-bg-white);
-    box-shadow: var(--box-shadow-default);
 }
 
 .dashboard-billing-banner strong,
@@ -479,12 +475,10 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     background: var(--color-bg-white);
-    box-shadow: var(--box-shadow-default);
 }
 
 .billing-plan-card-featured {
     border-color: var(--color-primary);
-    box-shadow: 0 16px 40px rgba(0, 59, 115, 0.1);
 }
 
 .billing-plan-badge {
@@ -797,7 +791,6 @@
         padding: 1rem 1.25rem 1.25rem;
         border-right: 1px solid var(--color-border);
         background: var(--color-bg-white);
-        box-shadow: var(--shadow-popover);
         overflow-y: auto;
         visibility: hidden;
         transform: translateX(-100%);

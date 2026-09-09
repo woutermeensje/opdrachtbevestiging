@@ -160,6 +160,7 @@ class CompanyProfileGateTest extends TestCase
             ->withoutMiddleware(ValidateCsrfToken::class)
             ->post(route('dashboard.profile.company.update'), [
                 'company_name' => 'Acme B.V.',
+                'company_trade_name' => 'Acme Studio',
                 'kvk_number' => '12345678',
                 'street_name' => 'Keizersgracht',
                 'house_number' => '1',
@@ -173,6 +174,7 @@ class CompanyProfileGateTest extends TestCase
         $user->refresh();
         $this->assertTrue($user->hasCompletedCompanyProfile());
         $this->assertSame('Acme B.V.', $user->company_name);
+        $this->assertSame('Acme Studio', $user->company_trade_name);
         $this->assertSame('12345678', $user->kvk_number);
 
         $this->actingAs($user)->get(route('dashboard.create'))->assertOk();

@@ -306,6 +306,7 @@
 </head>
 @php
     $senderAddressLines = $confirmation->senderAddressLines();
+    $senderLegalCompanyName = $confirmation->senderLegalCompanyName();
     $clientAddressLines = $confirmation->clientAddressLines();
     $logo = $confirmation->senderCompanyLogoDataUri();
     $signature = $confirmation->signerSignatureDataUri();
@@ -337,6 +338,9 @@
                 <h2 class="document-label">Opdrachtnemer</h2>
                 <p>
                     <strong>{{ $confirmation->senderCompanyDisplayName() }}</strong><br>
+                    @if ($senderLegalCompanyName !== null)
+                        {{ $senderLegalCompanyName }}<br>
+                    @endif
                     @foreach ($senderAddressLines as $line)
                         {{ $line }}<br>
                     @endforeach

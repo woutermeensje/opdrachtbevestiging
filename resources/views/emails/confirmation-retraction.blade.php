@@ -7,7 +7,7 @@
 </head>
 @php
     $recipientName = $confirmation->client_contact_name ?: $confirmation->client_name;
-    $senderCompany = $confirmation->user->company_name ?: $confirmation->sender_name;
+    $senderCompany = $confirmation->senderCompanyDisplayName();
     $themeBackground = '#FBFAF8';
     $blockStyle = 'width:100%;background:#ffffff;border:1px solid #dedede;border-radius:5px;box-sizing:border-box;padding:28px;';
     $textStyle = 'margin:0 0 12px;font-size:15px;line-height:1.6;color:#333333;';

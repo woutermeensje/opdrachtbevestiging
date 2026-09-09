@@ -135,7 +135,6 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     background: var(--color-bg-white);
-    box-shadow: var(--box-shadow-default);
 }
 
 .admin-metric-label {
@@ -190,7 +189,6 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-default);
     background: var(--color-bg-white);
-    box-shadow: var(--box-shadow-default);
 }
 
 .admin-users-table {
