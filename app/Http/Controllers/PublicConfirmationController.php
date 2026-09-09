@@ -25,6 +25,7 @@ class PublicConfirmationController extends Controller
     {
         $confirmation = Confirmation::query()
             ->where('public_token', $token)
+            ->where('is_draft', false)
             ->firstOrFail();
 
         if ($confirmation->status === 'getekend') {
@@ -46,6 +47,7 @@ class PublicConfirmationController extends Controller
     {
         $confirmation = Confirmation::query()
             ->where('public_token', $token)
+            ->where('is_draft', false)
             ->firstOrFail();
 
         if ($confirmation->status !== 'getekend') {
@@ -61,6 +63,7 @@ class PublicConfirmationController extends Controller
     {
         $confirmation = Confirmation::query()
             ->where('public_token', $token)
+            ->where('is_draft', false)
             ->firstOrFail();
 
         abort_unless($confirmation->hasPdf(), 404);
@@ -76,6 +79,7 @@ class PublicConfirmationController extends Controller
     {
         $confirmation = Confirmation::query()
             ->where('public_token', $token)
+            ->where('is_draft', false)
             ->firstOrFail();
 
         abort_if($confirmation->status !== 'verzonden' || $confirmation->signed_at !== null, 409);

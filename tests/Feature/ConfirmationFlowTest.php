@@ -1084,6 +1084,198 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame('ander@example.test', $otherContact->fresh()->contact_email);
     }
 
+    public function test_create_wizard_autosaves_a_concept_draft(): void
+    {
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->postJson(route('dashboard.create.draft'), [
+                'title' => 'Concept in wording',
+                'contact_id' => $contact->id,
+                'description' => '<p>Half afgemaakte tekst.</p>',
+            ]);
+
+        $response->assertOk();
+
+        $draft = Confirmation::query()->firstOrFail();
+        $this->assertSame($response->json('draft_id'), $draft->id);
+        $this->assertTrue($draft->is_draft);
+        $this->assertSame('concept', $draft->status);
+        $this->assertSame('Concept in wording', $draft->title);
+        $this->assertSame($contact->id, $draft->contact_id);
+        $this->assertSame('Acme B.V.', $draft->client_name);
+        $this->assertNull($draft->sent_at);
+
+        // Concept blijft buiten de overzichten tot het bewust verzonden is.
+        $this->actingAs($user)
+            ->get(route('dashboard.confirmations'))
+            ->assertOk()
+            ->assertDontSee('Concept in wording');
+
+        $this->assertSame(0, $user->confirmations()->published()->count());
+    }
+
+    public function test_autosave_updates_the_same_draft_and_ignores_empty_input(): void
+    {
+        $user = User::factory()->create();
+
+        $first = $this
+            ->actingAs($user)
+            ->postJson(route('dashboard.create.draft'), [
+                'title' => 'Eerste versie',
+            ]);
+
+        $draftId = $first->json('draft_id');
+        $this->assertNotNull($draftId);
+
+        $this
+            ->actingAs($user)
+            ->postJson(route('dashboard.create.draft'), [
+                'draft_id' => $draftId,
+                'title' => 'Tweede versie',
+            ])
+            ->assertOk()
+            ->assertJson(['draft_id' => $draftId]);
+
+        $this->assertSame(1, Confirmation::query()->count());
+        $this->assertSame('Tweede versie', Confirmation::query()->find($draftId)->title);
+
+        // Alles leeggemaakt terwijl er een concept bestaat: dat concept wordt opgeruimd.
+        $empty = $this
+            ->actingAs($user)
+            ->postJson(route('dashboard.create.draft'), ['draft_id' => $draftId]);
+
+        $empty->assertOk()->assertJson(['draft_id' => null]);
+        $this->assertSame(0, Confirmation::query()->count());
+    }
+
+    public function test_create_page_resumes_the_autosaved_draft(): void
+    {
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $user->confirmations()->create([
+            'reference' => 'OB-DRAFT01',
+            'contact_id' => $contact->id,
+            'title' => 'Herstelde titel',
+            'client_name' => 'Acme B.V.',
+            'client_email' => 'info@acme.test',
+            'description' => '<p>Eerder getypte omschrijving.</p>',
+            'public_token' => 'draft-token-1',
+            'status' => 'concept',
+            'is_draft' => true,
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard.create'))
+            ->assertOk()
+            ->assertSee('Je vorige concept is hersteld', false)
+            ->assertSee('Opnieuw beginnen')
+            ->assertSee('Herstelde titel', false)
+            ->assertSee('Eerder getypte omschrijving.', false);
+    }
+
+    public function test_sending_adopts_the_autosaved_draft_instead_of_duplicating(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Acme B.V.',
+            'contact_email' => 'info@acme.test',
+        ]);
+
+        $draft = $user->confirmations()->create([
+            'reference' => 'OB-DRAFT02',
+            'contact_id' => $contact->id,
+            'title' => 'Concept',
+            'client_name' => 'Acme B.V.',
+            'client_email' => 'info@acme.test',
+            'description' => '<p>Concepttekst.</p>',
+            'public_token' => 'draft-token-2',
+            'status' => 'concept',
+            'is_draft' => true,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'draft_id' => $draft->id,
+                'title' => 'Definitieve opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Definitieve tekst.</p>',
+            ]);
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $draft->id));
+
+        $this->assertSame(1, Confirmation::query()->count());
+
+        $draft->refresh();
+        $this->assertFalse($draft->is_draft);
+        $this->assertSame('verzonden', $draft->status);
+        $this->assertSame('Definitieve opdracht', $draft->title);
+        $this->assertSame('OB-DRAFT02', $draft->reference);
+        $this->assertNotNull($draft->sent_at);
+    }
+
+    public function test_user_can_discard_the_autosaved_draft(): void
+    {
+        $user = User::factory()->create();
+
+        $draft = $user->confirmations()->create([
+            'reference' => 'OB-DRAFT03',
+            'title' => 'Weg ermee',
+            'client_name' => '',
+            'client_email' => '',
+            'public_token' => 'draft-token-3',
+            'status' => 'concept',
+            'is_draft' => true,
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.draft.discard'), ['draft_id' => $draft->id])
+            ->assertRedirect(route('dashboard.create'));
+
+        $this->assertNull(Confirmation::query()->find($draft->id));
+    }
+
+    public function test_autosaved_draft_cannot_be_opened_or_sent_directly(): void
+    {
+        $user = User::factory()->create();
+
+        $draft = $user->confirmations()->create([
+            'reference' => 'OB-DRAFT04',
+            'title' => 'Verborgen',
+            'client_name' => '',
+            'client_email' => '',
+            'public_token' => 'draft-token-4',
+            'status' => 'concept',
+            'is_draft' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard.confirmations.show', $draft->id))
+            ->assertNotFound();
+
+        $this->actingAs($user)
+            ->post(route('dashboard.confirmations.send', $draft->id))
+            ->assertNotFound();
+    }
+
     private function signatureDataUri(): string
     {
         return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=';

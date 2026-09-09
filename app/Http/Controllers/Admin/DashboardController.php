@@ -34,7 +34,7 @@ class DashboardController extends Controller
             'metrics' => [
                 'users' => User::count(),
                 'admins' => User::where('is_admin', true)->count(),
-                'confirmations' => Confirmation::count(),
+                'confirmations' => Confirmation::query()->published()->count(),
                 'quotes' => Quote::count(),
             ],
             'users' => $users,

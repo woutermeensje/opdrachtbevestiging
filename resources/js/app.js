@@ -489,6 +489,8 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         }
     });
 
+    let submitted = false;
+
     builder.addEventListener('submit', (event) => {
         const contactValue = builder.querySelector('[data-contact-search-value]');
         const contactInput = builder.querySelector('[data-contact-search-input]');
@@ -496,7 +498,10 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         const descriptionInput = builder.querySelector('[data-quill-input]');
         const descriptionWrapper = builder.querySelector('[data-quill-field]');
 
+        submitted = true;
+
         if (contactValue && contactInput && contactValue.value.trim() === '') {
+            submitted = false;
             event.preventDefault();
             openPanel('client');
             contactInput.setCustomValidity('Kies een opdrachtgever uit de lijst.');
@@ -506,6 +511,7 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         }
 
         if (titleInput && titleInput.value.trim() === '') {
+            submitted = false;
             event.preventDefault();
             openPanel('confirmation');
             titleInput.setCustomValidity('Vul een titel in.');
@@ -515,11 +521,100 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         }
 
         if (descriptionInput && descriptionInput.value.trim() === '') {
+            submitted = false;
             event.preventDefault();
             openPanel('confirmation');
             descriptionWrapper?.__quill?.focus();
         }
     });
+
+    // Automatisch als concept opslaan: tijdens het typen (met vertraging) en
+    // zodra de pagina wordt verlaten zonder te verzenden.
+    const draftUrl = builder.dataset.draftUrl;
+    const draftIdInput = builder.querySelector('[data-draft-id]');
+
+    if (draftUrl && draftIdInput) {
+        const csrfToken = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+        const titleInput = builder.querySelector('#title');
+        const descriptionInput = builder.querySelector('[data-quill-input]');
+        const footerInput = builder.querySelector('[name="footer_note"]');
+        const contactValueInput = builder.querySelector('[data-contact-search-value]');
+
+        let dirty = false;
+        let saving = false;
+        let saveTimer = null;
+
+        const draftBody = () => {
+            const params = new URLSearchParams();
+            params.set('_token', csrfToken());
+            params.set('draft_id', draftIdInput.value || '');
+            params.set('title', titleInput?.value ?? '');
+            params.set('contact_id', contactValueInput?.value ?? '');
+            params.set('description', descriptionInput?.value ?? '');
+            params.set('footer_note', footerInput?.value ?? '');
+
+            return params;
+        };
+
+        const hasDraftContent = () => {
+            return (titleInput?.value ?? '').trim() !== ''
+                || (contactValueInput?.value ?? '').trim() !== ''
+                || stripHtml(descriptionInput?.value ?? '').trim() !== '';
+        };
+
+        const saveDraft = async ({ beacon = false } = {}) => {
+            if (submitted || saving || !dirty) {
+                return;
+            }
+
+            if (!draftIdInput.value && !hasDraftContent()) {
+                return;
+            }
+
+            dirty = false;
+
+            if (beacon) {
+                navigator.sendBeacon?.(draftUrl, draftBody());
+                return;
+            }
+
+            saving = true;
+
+            try {
+                const response = await fetch(draftUrl, {
+                    method: 'POST',
+                    headers: { Accept: 'application/json' },
+                    body: draftBody(),
+                    keepalive: true,
+                });
+
+                if (response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    draftIdInput.value = data.draft_id ? String(data.draft_id) : '';
+                }
+            } catch (error) {
+                dirty = true;
+            } finally {
+                saving = false;
+            }
+        };
+
+        const scheduleSave = () => {
+            dirty = true;
+            window.clearTimeout(saveTimer);
+            saveTimer = window.setTimeout(() => saveDraft(), 1500);
+        };
+
+        builder.addEventListener('input', scheduleSave);
+        builder.addEventListener('change', scheduleSave);
+
+        window.addEventListener('pagehide', () => saveDraft({ beacon: true }));
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                saveDraft({ beacon: true });
+            }
+        });
+    }
 
     builder.querySelectorAll('[data-preview-input]').forEach((field) => updatePreviewFromField(field));
 
