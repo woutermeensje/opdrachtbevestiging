@@ -11,6 +11,10 @@
     $senderCompanyDisplayName = $user->companyDisplayName();
     $senderLegalCompanyName = $user->companyLegalNameForDisplay();
     $senderAddressLines = $user->companyAddressLines();
+    $senderRole = \App\Models\Confirmation::normalizeSenderRole(old('sender_role', $draft?->sender_role));
+    $senderRoleOptions = \App\Models\Confirmation::senderRoleOptions();
+    $senderRoleLabel = \App\Models\Confirmation::senderRoleLabelFor($senderRole);
+    $clientRoleLabel = \App\Models\Confirmation::clientRoleLabelFor($senderRole);
     $logoDataUri = null;
 
     if (filled($user->company_logo_path) && \Illuminate\Support\Facades\Storage::disk('local')->exists($user->company_logo_path)) {
@@ -29,7 +33,7 @@
     @include('partials.dashboard.page-header', [
         'eyebrow' => 'Aanmaken',
         'title' => 'Nieuwe opdrachtbevestiging',
-        'text' => 'Begin met de visuele opdrachtbevestiging en vul daarna gericht de opdrachtgever en inhoud aan.',
+        'text' => 'Begin met de visuele opdrachtbevestiging en vul daarna gericht de relatie en inhoud aan.',
     ])
 
     @include('partials.forms.errors')
@@ -53,8 +57,8 @@
         @include('partials.dashboard.panel', [
             'title' => 'Voeg eerst een contact toe',
             'slot' => '
-                <p>Je hebt nog geen opdrachtgever in je account staan. Voeg eerst een bedrijf en contactpersoon toe.</p>
-                <p><a href="'.e(route('dashboard.contacts.create')).'" class="btn btn-primary">Opdrachtgever toevoegen</a></p>
+                <p>Je hebt nog geen relatie in je account staan. Voeg eerst een bedrijf en contactpersoon toe.</p>
+                <p><a href="'.e(route('dashboard.contacts.create')).'" class="btn btn-primary">Contact toevoegen</a></p>
             ',
         ])
     @else
@@ -67,6 +71,7 @@
             data-confirmation-builder
             data-initial-panel="{{ $errors->has('contact_id') ? 'client' : ($errors->any() ? 'confirmation' : '') }}"
             data-draft-url="{{ route('dashboard.create.draft') }}"
+            data-default-sender-role="{{ \App\Models\Confirmation::DEFAULT_SENDER_ROLE }}"
         >
             @csrf
             <input type="hidden" name="draft_id" value="{{ $draft?->id }}" data-draft-id>
@@ -77,7 +82,7 @@
                         <div class="confirmation-edit-panel-header">
                             <div>
                                 <p class="confirmation-edit-panel-eyebrow">Stap 1</p>
-                                <h2>Opdrachtgever selecteren</h2>
+                                <h2 data-party-role-target="client-select-title">{{ $clientRoleLabel }} selecteren</h2>
                             </div>
                             <button type="button" class="btn btn-secondary confirmation-edit-panel-close" data-builder-close aria-label="Sluiten" title="Sluiten">
                                 <span aria-hidden="true">X</span>
@@ -86,13 +91,13 @@
 
                         <div class="confirmation-edit-panel-grid">
                             <div class="contact-search" data-contact-search>
-                                <label for="contact_search">Opdrachtgever</label>
+                                <label for="contact_search" data-party-role-target="client-label">{{ $clientRoleLabel }}</label>
                                 <input
                                     id="contact_search"
                                     class="contact-search-input"
                                     type="search"
                                     value="{{ $selectedContact?->company_name }}"
-                                    placeholder="Zoek opdrachtgever"
+                                    placeholder="Zoek relatie"
                                     autocomplete="off"
                                     role="combobox"
                                     aria-autocomplete="list"
@@ -136,7 +141,7 @@
                                             <span>{{ collect([$contact->contactName(), $contact->contact_email, $contact->city])->filter()->implode(' - ') }}</span>
                                         </button>
                                     @endforeach
-                                    <div class="contact-search-empty" data-contact-search-empty hidden>Geen opdrachtgever gevonden</div>
+                                    <div class="contact-search-empty" data-contact-search-empty hidden>Geen relatie gevonden</div>
                                 </div>
                             </div>
 
@@ -226,8 +231,22 @@
                         </header>
 
                         <div class="confirmation-document-party-row">
+                            <div class="confirmation-document-role-control">
+                                <label for="sender_role">Mijn rol</label>
+                                <select id="sender_role" name="sender_role" data-preview-input="sender-role" data-sender-role-select>
+                                    @foreach ($senderRoleOptions as $value => $label)
+                                        <option
+                                            value="{{ $value }}"
+                                            data-sender-label="{{ \App\Models\Confirmation::senderRoleLabelFor($value) }}"
+                                            data-client-label="{{ \App\Models\Confirmation::clientRoleLabelFor($value) }}"
+                                            @selected($senderRole === $value)
+                                        >{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div class="confirmation-document-sender">
-                                <p class="confirmation-document-label">Opdrachtnemer</p>
+                                <p class="confirmation-document-label" data-preview-target="sender-role-label">{{ $senderRoleLabel }}</p>
                                 <strong>{{ $senderCompanyDisplayName }}</strong>
                                 @if ($senderLegalCompanyName !== null)
                                     <span>{{ $senderLegalCompanyName }}</span>
@@ -248,14 +267,15 @@
                                 role="button"
                                 tabindex="0"
                                 data-builder-open="client"
-                            aria-expanded="false"
-                            aria-label="Opdrachtgever selecteren"
-                        >
-                            <span class="confirmation-document-edit-affordance" aria-hidden="true"></span>
-                            <p class="confirmation-document-label">Opdrachtgever</p>
-                            <strong data-preview-target="client-company">{{ $selectedContact?->company_name ?: 'Nog te selecteren' }}</strong>
+                                aria-expanded="false"
+                                aria-label="{{ $clientRoleLabel }} selecteren"
+                                data-party-role-aria-client
+                            >
+                                <span class="confirmation-document-edit-affordance" aria-hidden="true"></span>
+                                <p class="confirmation-document-label" data-preview-target="client-role-label" data-party-role-target="client-label">{{ $clientRoleLabel }}</p>
+                                <strong data-preview-target="client-company">{{ $selectedContact?->company_name ?: 'Nog te selecteren' }}</strong>
                                 <span data-preview-target="client-person">{{ $selectedContact?->contactName() ?: 'Contactpersoon' }}</span>
-                                <span data-preview-target="client-email">{{ $selectedContact?->contact_email ?: 'E-mailadres opdrachtgever' }}</span>
+                                <span data-preview-target="client-email">{{ $selectedContact?->contact_email ?: 'E-mailadres' }}</span>
                                 <span data-preview-target="client-address">
                                     @if ($selectedContact)
                                         @php
@@ -271,7 +291,7 @@
                                         @endphp
                                         {{ collect([$selectedStreetLine, $selectedCityLine, $selectedContact->country])->filter()->implode(' · ') }}
                                     @else
-                                        Adres opdrachtgever
+                                        Adres
                                     @endif
                                 </span>
                             </section>
@@ -337,7 +357,7 @@
                         <span class="dashboard-status dashboard-status-concept">Concept</span>
                         <dl>
                             <div>
-                                <dt>Opdrachtgever</dt>
+                                <dt data-preview-target="aside-client-role">{{ $clientRoleLabel }}</dt>
                                 <dd data-preview-target="aside-client">{{ $selectedContact?->company_name ?: 'Nog niet geselecteerd' }}</dd>
                             </div>
                             <div>

@@ -363,6 +363,40 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         target.innerHTML = html === '' ? fallbackHtml : html;
     };
 
+    const lowerFirst = (value) => {
+        const text = `${value ?? ''}`.trim();
+
+        return text === '' ? '' : `${text.charAt(0).toLowerCase()}${text.slice(1)}`;
+    };
+
+    const currentClientRoleLabel = () => {
+        const roleSelect = builder.querySelector('[data-sender-role-select]');
+
+        return roleSelect?.selectedOptions?.[0]?.dataset.clientLabel || 'Opdrachtgever';
+    };
+
+    const updatePartyRolePreview = (field) => {
+        const option = field?.selectedOptions?.[0];
+        const senderLabel = option?.dataset.senderLabel || 'Opdrachtnemer';
+        const clientLabel = option?.dataset.clientLabel || 'Opdrachtgever';
+
+        setPreviewText('sender-role-label', senderLabel);
+        setPreviewText('client-role-label', clientLabel);
+        setPreviewText('aside-client-role', clientLabel);
+
+        builder.querySelectorAll('[data-party-role-target="client-label"]').forEach((target) => {
+            target.textContent = clientLabel;
+        });
+
+        builder.querySelectorAll('[data-party-role-target="client-select-title"]').forEach((target) => {
+            target.textContent = `${clientLabel} selecteren`;
+        });
+
+        builder.querySelectorAll('[data-party-role-aria-client]').forEach((target) => {
+            target.setAttribute('aria-label', `${clientLabel} selecteren`);
+        });
+    };
+
     const openPanel = (panelName, shouldFocus = true) => {
         panels.forEach((panel) => {
             const isOpen = panel.dataset.builderPanel === panelName;
@@ -401,11 +435,12 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         const person = option.dataset.contactPerson ?? '';
         const email = option.dataset.contactEmail ?? '';
         const address = (option.dataset.contactAddress ?? '').split('||').filter(Boolean).join(' · ');
+        const clientLabel = lowerFirst(currentClientRoleLabel());
 
         setPreviewText('client-company', option.dataset.contactCompany || option.dataset.contactLabel, 'Nog te selecteren');
         setPreviewText('client-person', person, 'Contactpersoon');
-        setPreviewText('client-email', email, 'E-mailadres opdrachtgever');
-        setPreviewText('client-address', address, 'Adres opdrachtgever');
+        setPreviewText('client-email', email, `E-mailadres ${clientLabel}`);
+        setPreviewText('client-address', address, `Adres ${clientLabel}`);
         setPreviewText('aside-client', option.dataset.contactCompany || option.dataset.contactLabel, 'Nog niet geselecteerd');
 
         const personField = builder.querySelector('[data-selected-contact-person]');
@@ -438,6 +473,11 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
 
             setPreviewText('title', field.value, 'Bijvoorbeeld: Website development');
             titleTarget?.classList.toggle('is-placeholder', !hasTitle);
+            return;
+        }
+
+        if (previewName === 'sender-role') {
+            updatePartyRolePreview(field);
             return;
         }
 
@@ -504,7 +544,7 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
             submitted = false;
             event.preventDefault();
             openPanel('client');
-            contactInput.setCustomValidity('Kies een opdrachtgever uit de lijst.');
+            contactInput.setCustomValidity(`Kies een ${lowerFirst(currentClientRoleLabel()) || 'relatie'} uit de lijst.`);
             contactInput.reportValidity();
             contactInput.addEventListener('input', () => contactInput.setCustomValidity(''), { once: true });
             return;
@@ -539,6 +579,8 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         const descriptionInput = builder.querySelector('[data-quill-input]');
         const footerInput = builder.querySelector('[name="footer_note"]');
         const contactValueInput = builder.querySelector('[data-contact-search-value]');
+        const senderRoleInput = builder.querySelector('[data-sender-role-select]');
+        const defaultSenderRole = builder.dataset.defaultSenderRole ?? '';
 
         let dirty = false;
         let saving = false;
@@ -552,6 +594,7 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
             params.set('contact_id', contactValueInput?.value ?? '');
             params.set('description', descriptionInput?.value ?? '');
             params.set('footer_note', footerInput?.value ?? '');
+            params.set('sender_role', senderRoleInput?.value ?? defaultSenderRole);
 
             return params;
         };
@@ -559,7 +602,8 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         const hasDraftContent = () => {
             return (titleInput?.value ?? '').trim() !== ''
                 || (contactValueInput?.value ?? '').trim() !== ''
-                || stripHtml(descriptionInput?.value ?? '').trim() !== '';
+                || stripHtml(descriptionInput?.value ?? '').trim() !== ''
+                || (senderRoleInput?.value ?? defaultSenderRole) !== defaultSenderRole;
         };
 
         const saveDraft = async ({ beacon = false } = {}) => {
@@ -643,6 +687,12 @@ document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
     let activeIndex = -1;
 
     const normalise = (value) => value.toLocaleLowerCase('nl-NL');
+    const contactRoleLabel = () => {
+        const label = contactSearch.querySelector('label')?.textContent?.trim() || 'Relatie';
+
+        return `${label.charAt(0).toLocaleLowerCase('nl-NL')}${label.slice(1)}`;
+    };
+    const missingContactMessage = () => `Kies een ${contactRoleLabel()} uit de lijst.`;
 
     const openList = () => {
         results.hidden = false;
@@ -788,7 +838,7 @@ document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
 
     input.addEventListener('invalid', () => {
         if (!valueInput.value) {
-            input.setCustomValidity('Kies een opdrachtgever uit de lijst.');
+            input.setCustomValidity(missingContactMessage());
         }
     });
 
@@ -809,7 +859,7 @@ document.querySelectorAll('[data-contact-search]').forEach((contactSearch) => {
             return;
         }
 
-        input.setCustomValidity('Kies een opdrachtgever uit de lijst.');
+        input.setCustomValidity(missingContactMessage());
         input.reportValidity();
         event.preventDefault();
     });

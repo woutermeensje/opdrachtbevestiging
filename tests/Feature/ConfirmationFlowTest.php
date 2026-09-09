@@ -176,6 +176,11 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Opdrachtgever selecteren')
             ->assertSee('Opdrachtbevestiging invullen')
             ->assertSee('Concept')
+            ->assertSee('name="sender_role"', false)
+            ->assertSee('data-sender-role-select', false)
+            ->assertSee('Inlener')
+            ->assertSee('Samenwerkingspartner')
+            ->assertSee('Leverancier')
             ->assertSee('name="title"', false)
             ->assertSee('data-quill-editor', false)
             ->assertSee('name="footer_note"', false)
@@ -229,6 +234,55 @@ class ConfirmationFlowTest extends TestCase
             ->assertDontSee('name="value_vat_type"', false)
             ->assertDontSee('name="termination_terms"', false)
             ->assertDontSee('name="status"', false);
+    }
+
+    public function test_confirmation_can_store_sender_role_per_document(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create([
+            'company_name' => 'Sustainable Recruitment Marketing B.V.',
+            'company_trade_name' => 'Student Inhuren',
+        ]);
+        $contact = Contact::factory()->create([
+            'user_id' => $user->id,
+            'company_name' => 'Domio',
+            'contact_email' => 'jaime@example.test',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'sender_role' => 'opdrachtgever',
+                'title' => 'Inhuur recruitment',
+                'contact_id' => $contact->id,
+                'description' => '<p>Studentenwerving voor het project.</p>',
+                'submit_action' => 'test',
+            ]);
+
+        $confirmation = Confirmation::query()->firstOrFail();
+
+        $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
+        $this->assertSame('opdrachtgever', $confirmation->sender_role);
+        $this->assertSame('Opdrachtgever', $confirmation->senderRoleLabel());
+        $this->assertSame('Opdrachtnemer', $confirmation->clientRoleLabel());
+        $this->assertSame('Student Inhuren', $confirmation->senderCompanyDisplayName());
+
+        $this
+            ->actingAs($user)
+            ->get(route('dashboard.confirmations.show', $confirmation))
+            ->assertOk()
+            ->assertSee('Opdrachtnemer')
+            ->assertSee('Domio');
+
+        $this
+            ->get(route('confirmations.public.show', $confirmation->public_token))
+            ->assertOk()
+            ->assertSee('Opdrachtgever')
+            ->assertSee('Opdrachtnemer')
+            ->assertSee('Student Inhuren')
+            ->assertSee('Sustainable Recruitment Marketing B.V.');
     }
 
     public function test_confirmation_detail_uses_pdf_preview_layout(): void
@@ -673,7 +727,7 @@ class ConfirmationFlowTest extends TestCase
             ->assertOk()
             ->assertSee('Opdrachtbevestigingen')
             ->assertSee('Referentie')
-            ->assertSee('Opdrachtgever')
+            ->assertSee('Relatie')
             ->assertSee('Verzenddatum')
             ->assertSee('PDF')
             ->assertSee('OB-2026-001')
@@ -1096,6 +1150,7 @@ class ConfirmationFlowTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->postJson(route('dashboard.create.draft'), [
+                'sender_role' => 'inlener',
                 'title' => 'Concept in wording',
                 'contact_id' => $contact->id,
                 'description' => '<p>Half afgemaakte tekst.</p>',
@@ -1107,17 +1162,22 @@ class ConfirmationFlowTest extends TestCase
         $this->assertSame($response->json('draft_id'), $draft->id);
         $this->assertTrue($draft->is_draft);
         $this->assertSame('concept', $draft->status);
+        $this->assertSame('inlener', $draft->sender_role);
         $this->assertSame('Concept in wording', $draft->title);
         $this->assertSame($contact->id, $draft->contact_id);
         $this->assertSame('Acme B.V.', $draft->client_name);
         $this->assertNull($draft->sent_at);
 
-        // Concept blijft buiten de overzichten tot het bewust verzonden is.
+        // Het concept staat in het overzicht en linkt terug naar de wizard.
         $this->actingAs($user)
             ->get(route('dashboard.confirmations'))
             ->assertOk()
-            ->assertDontSee('Concept in wording');
+            ->assertSee($draft->reference)
+            ->assertSee('Concept (niet verzonden)')
+            ->assertSee('Verder invullen')
+            ->assertDontSee(route('dashboard.confirmations.show', $draft), false);
 
+        // Maar het telt nog niet mee in de statistieken/publieke overzichten.
         $this->assertSame(0, $user->confirmations()->published()->count());
     }
 
@@ -1173,6 +1233,7 @@ class ConfirmationFlowTest extends TestCase
             'description' => '<p>Eerder getypte omschrijving.</p>',
             'public_token' => 'draft-token-1',
             'status' => 'concept',
+            'sender_role' => 'leverancier',
             'is_draft' => true,
         ]);
 
@@ -1182,6 +1243,7 @@ class ConfirmationFlowTest extends TestCase
             ->assertOk()
             ->assertSee('Je vorige concept is hersteld', false)
             ->assertSee('Opnieuw beginnen')
+            ->assertSee('Afnemer selecteren')
             ->assertSee('Herstelde titel', false)
             ->assertSee('Eerder getypte omschrijving.', false);
     }
@@ -1253,13 +1315,13 @@ class ConfirmationFlowTest extends TestCase
         $this->assertNull(Confirmation::query()->find($draft->id));
     }
 
-    public function test_autosaved_draft_cannot_be_opened_or_sent_directly(): void
+    public function test_autosaved_draft_detail_and_send_route_back_to_the_wizard(): void
     {
         $user = User::factory()->create();
 
         $draft = $user->confirmations()->create([
             'reference' => 'OB-DRAFT04',
-            'title' => 'Verborgen',
+            'title' => 'Nog niet af',
             'client_name' => '',
             'client_email' => '',
             'public_token' => 'draft-token-4',
@@ -1269,10 +1331,17 @@ class ConfirmationFlowTest extends TestCase
 
         $this->actingAs($user)
             ->get(route('dashboard.confirmations.show', $draft->id))
-            ->assertNotFound();
+            ->assertRedirect(route('dashboard.create'));
 
         $this->actingAs($user)
             ->post(route('dashboard.confirmations.send', $draft->id))
+            ->assertRedirect(route('dashboard.create'));
+
+        $this->assertSame('concept', $draft->fresh()->status);
+        $this->assertNull($draft->fresh()->sent_at);
+
+        // Publiek blijft een concept onbereikbaar.
+        $this->get(route('confirmations.public.show', $draft->public_token))
             ->assertNotFound();
     }
 

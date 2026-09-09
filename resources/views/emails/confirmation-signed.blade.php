@@ -37,7 +37,7 @@
                     <p style="{{ $labelStyle }}">Getekend door</p>
                     <p style="{{ $valueStyle }}">{{ $confirmation->signer_name }}@if ($signedDate !== null) &middot; {{ $signedDate }}@endif</p>
 
-                    <p style="{{ $labelStyle }}">Opdrachtnemer</p>
+                    <p style="{{ $labelStyle }}">{{ $confirmation->senderRoleLabel() }}</p>
                     <p style="margin:0;font-size:15px;line-height:1.5;color:#333333;font-weight:700;">{{ $senderCompany }}</p>
                 </div>
 

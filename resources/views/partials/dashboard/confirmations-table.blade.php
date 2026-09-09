@@ -3,7 +3,7 @@
         <thead>
             <tr>
                 <th>Referentie</th>
-                <th>Opdrachtgever</th>
+                <th>Relatie</th>
                 <th>Status</th>
                 <th>Verzenddatum</th>
                 <th>PDF</th>
@@ -15,9 +15,13 @@
                 <tr>
                     <td>{{ $confirmation->reference }}</td>
                     <td>
-                        <strong>{{ $confirmation->client_name }}</strong>
+                        <strong>{{ $confirmation->client_name ?: 'Nog geen relatie' }}</strong>
                     </td>
-                    <td><span class="dashboard-status dashboard-status-{{ $confirmation->status }}">{{ ucfirst($confirmation->status) }}</span></td>
+                    <td>
+                        <span class="dashboard-status dashboard-status-{{ $confirmation->status }}">
+                            {{ $confirmation->is_draft ? 'Concept (niet verzonden)' : ucfirst($confirmation->status) }}
+                        </span>
+                    </td>
                     <td>{{ optional($confirmation->sent_at)->format('d-m-Y') ?? '-' }}</td>
                     <td>
                         @if ($confirmation->hasPdf())
@@ -26,7 +30,13 @@
                             <span class="dashboard-table-subtle">-</span>
                         @endif
                     </td>
-                    <td><a href="{{ route('dashboard.confirmations.show', $confirmation) }}">Bekijken</a></td>
+                    <td>
+                        @if ($confirmation->is_draft)
+                            <a href="{{ route('dashboard.create') }}">Verder invullen</a>
+                        @else
+                            <a href="{{ route('dashboard.confirmations.show', $confirmation) }}">Bekijken</a>
+                        @endif
+                    </td>
                 </tr>
             @endforeach
         </tbody>

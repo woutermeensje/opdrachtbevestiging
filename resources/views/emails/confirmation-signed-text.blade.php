@@ -20,7 +20,7 @@ Getekend door: {{ $confirmation->signer_name }}
 @if ($signedDate !== null)
 Datum: {{ $signedDate }}
 @endif
-Opdrachtnemer: {{ $senderCompany }}
+{{ $confirmation->senderRoleLabel() }}: {{ $senderCompany }}
 
 @if ($forClient)
 Zelf ook opdrachtbevestigingen versturen? Maak gratis een account aan op Opdrachtbevestiging.nl:

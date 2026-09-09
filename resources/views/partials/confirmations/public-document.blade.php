@@ -19,7 +19,7 @@
 
     <div class="public-document-grid">
         <div>
-            <p><strong>Opdrachtnemer</strong></p>
+            <p><strong>{{ $confirmation->senderRoleLabel() }}</strong></p>
             <p>{{ $confirmation->senderCompanyDisplayName() }}</p>
             @if ($senderLegalCompanyName !== null)
                 <p>{{ $senderLegalCompanyName }}</p>
@@ -32,7 +32,7 @@
             @endif
         </div>
         <div>
-            <p><strong>Opdrachtgever</strong></p>
+            <p><strong>{{ $confirmation->clientRoleLabel() }}</strong></p>
             <p>{{ $confirmation->client_name }}</p>
             <p>{{ $confirmation->client_contact_name ?: '-' }}</p>
             <p>{{ $confirmation->client_email }}</p>

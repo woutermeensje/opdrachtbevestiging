@@ -29,7 +29,6 @@ class ConfirmationController extends Controller
     {
         $confirmations = $request->user()
             ->confirmations()
-            ->published()
             ->latest()
             ->get();
 
@@ -55,6 +54,7 @@ class ConfirmationController extends Controller
     {
         $validated = $request->validate([
             'draft_id' => ['nullable', 'integer'],
+            'sender_role' => ['nullable', 'string', 'in:'.implode(',', Confirmation::senderRoleValues())],
             'title' => ['nullable', 'string', 'max:255'],
             'contact_id' => ['nullable', 'integer'],
             'description' => ['nullable', 'string', 'max:20000'],
@@ -64,6 +64,7 @@ class ConfirmationController extends Controller
         $draft = $this->findDraft($request->user(), $validated['draft_id'] ?? null);
 
         $title = trim((string) ($validated['title'] ?? ''));
+        $senderRole = Confirmation::normalizeSenderRole($validated['sender_role'] ?? null);
         $description = Confirmation::sanitizeDescription($validated['description'] ?? null);
         $footerNote = Confirmation::sanitizeFooterNote($validated['footer_note'] ?? null);
         $defaultFooterNote = Confirmation::defaultFooterNoteForUser($request->user());
@@ -73,6 +74,7 @@ class ConfirmationController extends Controller
             : null;
 
         $hasContent = $title !== ''
+            || $senderRole !== Confirmation::DEFAULT_SENDER_ROLE
             || filled($description)
             || $contact !== null
             || (filled($footerNote) && $footerNote !== $defaultFooterNote);
@@ -101,12 +103,16 @@ class ConfirmationController extends Controller
             'description' => $description,
             'footer_note' => $footerNote,
             'status' => 'concept',
+            'sender_role' => $senderRole,
             'is_draft' => true,
         ];
 
         if ($draft !== null) {
             $draft->forceFill($attributes)->save();
         } else {
+            // Hooguit één automatisch concept per gebruiker.
+            $request->user()->confirmations()->where('is_draft', true)->delete();
+
             $draft = $request->user()->confirmations()->create($attributes + [
                 'reference' => $this->generateReference(),
                 'public_token' => Str::random(40),
@@ -132,6 +138,7 @@ class ConfirmationController extends Controller
     {
         $validated = $request->validate([
             'draft_id' => ['nullable', 'integer'],
+            'sender_role' => ['nullable', 'string', 'in:'.implode(',', Confirmation::senderRoleValues())],
             'title' => ['required', 'string', 'max:255'],
             'contact_id' => ['required', 'integer'],
             'description' => ['required', 'string'],
@@ -190,6 +197,7 @@ class ConfirmationController extends Controller
             'total_value' => $validated['total_value'] ?? 0,
             'value_vat_type' => $validated['value_vat_type'] ?? 'excl',
             'status' => 'concept',
+            'sender_role' => Confirmation::normalizeSenderRole($validated['sender_role'] ?? null),
             'is_draft' => false,
             'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
             'sender_email' => $request->user()->email,
@@ -244,10 +252,15 @@ class ConfirmationController extends Controller
             ->with('status', 'Opdrachtbevestiging is per e-mail verzonden naar '.$confirmation->client_email.'.');
     }
 
-    public function show(Request $request, Confirmation $confirmation): View
+    public function show(Request $request, Confirmation $confirmation): View|RedirectResponse
     {
         abort_unless($confirmation->user_id === $request->user()->id, 403);
-        abort_if($confirmation->is_draft, 404);
+
+        // Een automatisch opgeslagen concept heeft nog geen detailpagina:
+        // daar ga je in de aanmaakwizard mee verder.
+        if ($confirmation->is_draft) {
+            return redirect()->route('dashboard.create');
+        }
 
         return view('dashboard.confirmation-show', [
             'confirmation' => $confirmation,
@@ -281,7 +294,11 @@ class ConfirmationController extends Controller
     public function send(Request $request, Confirmation $confirmation): RedirectResponse
     {
         abort_unless($confirmation->user_id === $request->user()->id, 403);
-        abort_if($confirmation->is_draft, 404);
+
+        // Een automatisch opgeslagen concept wordt eerst in de wizard afgerond.
+        if ($confirmation->is_draft) {
+            return redirect()->route('dashboard.create');
+        }
 
         if ($confirmation->public_token === null) {
             $confirmation->forceFill([
@@ -333,7 +350,7 @@ class ConfirmationController extends Controller
 
         return redirect()
             ->route('dashboard.confirmations.show', $confirmation)
-            ->with('status', 'Opdrachtbevestiging is ingetrokken. De opdrachtgever is per e-mail geinformeerd.');
+            ->with('status', 'Opdrachtbevestiging is ingetrokken. De relatie is per e-mail geinformeerd.');
     }
 
     private function sendConfirmationEmail(Confirmation $confirmation): void

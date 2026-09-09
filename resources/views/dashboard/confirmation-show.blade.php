@@ -54,7 +54,7 @@
 
                 <dl>
                     <div>
-                        <dt>Opdrachtgever</dt>
+                        <dt>{{ $confirmation->clientRoleLabel() }}</dt>
                         <dd>
                             {{ $confirmation->client_name }}
                             <span>{{ $confirmation->client_contact_name ?: $confirmation->client_email }}</span>

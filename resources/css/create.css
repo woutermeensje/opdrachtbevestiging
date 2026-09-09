@@ -152,6 +152,27 @@
     margin-bottom: 5rem;
 }
 
+.confirmation-document-role-control {
+    grid-column: 1 / -1;
+    width: min(100%, 260px);
+    margin: -1.4rem 0 0.35rem;
+}
+
+.confirmation-document-role-control label {
+    margin-bottom: 0.35rem;
+    color: var(--color-text-soft);
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.confirmation-document-role-control select {
+    min-height: 36px;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
 .confirmation-document-sender,
 .confirmation-document-recipient,
 .confirmation-document-date {

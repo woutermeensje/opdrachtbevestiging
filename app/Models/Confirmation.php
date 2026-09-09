@@ -14,6 +14,31 @@ class Confirmation extends Model
 {
     use HasFactory;
 
+    public const DEFAULT_SENDER_ROLE = 'opdrachtnemer';
+
+    private const PARTY_ROLE_LABELS = [
+        'opdrachtnemer' => [
+            'sender' => 'Opdrachtnemer',
+            'client' => 'Opdrachtgever',
+        ],
+        'opdrachtgever' => [
+            'sender' => 'Opdrachtgever',
+            'client' => 'Opdrachtnemer',
+        ],
+        'inlener' => [
+            'sender' => 'Inlener',
+            'client' => 'Uitlener',
+        ],
+        'samenwerkingspartner' => [
+            'sender' => 'Samenwerkingspartner',
+            'client' => 'Samenwerkingspartner',
+        ],
+        'leverancier' => [
+            'sender' => 'Leverancier',
+            'client' => 'Afnemer',
+        ],
+    ];
+
     protected $fillable = [
         'user_id',
         'contact_id',
@@ -36,6 +61,7 @@ class Confirmation extends Model
         'value_vat_type',
         'public_token',
         'status',
+        'sender_role',
         'is_draft',
         'sender_name',
         'sender_email',
@@ -91,6 +117,54 @@ class Confirmation extends Model
             'viewed_at' => 'datetime',
             'pdf_generated_at' => 'datetime',
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function senderRoleOptions(): array
+    {
+        return array_map(
+            fn (array $labels): string => $labels['sender'],
+            self::PARTY_ROLE_LABELS,
+        );
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function senderRoleValues(): array
+    {
+        return array_keys(self::PARTY_ROLE_LABELS);
+    }
+
+    public static function normalizeSenderRole(?string $role): string
+    {
+        $role = trim((string) $role);
+
+        return array_key_exists($role, self::PARTY_ROLE_LABELS)
+            ? $role
+            : self::DEFAULT_SENDER_ROLE;
+    }
+
+    public static function senderRoleLabelFor(?string $role): string
+    {
+        return self::PARTY_ROLE_LABELS[self::normalizeSenderRole($role)]['sender'];
+    }
+
+    public static function clientRoleLabelFor(?string $role): string
+    {
+        return self::PARTY_ROLE_LABELS[self::normalizeSenderRole($role)]['client'];
+    }
+
+    public function senderRoleLabel(): string
+    {
+        return self::senderRoleLabelFor($this->sender_role);
+    }
+
+    public function clientRoleLabel(): string
+    {
+        return self::clientRoleLabelFor($this->sender_role);
     }
 
     /**
@@ -527,7 +601,7 @@ class Confirmation extends Model
             ?: $this->user?->company_trade_name
             ?: $this->user?->company_name
             ?: $this->sender_name
-            ?: 'Opdrachtnemer';
+            ?: $this->senderRoleLabel();
     }
 
     public function senderLegalCompanyName(): ?string

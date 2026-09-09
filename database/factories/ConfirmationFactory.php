@@ -35,6 +35,7 @@ class ConfirmationFactory extends Factory
             'public_token' => fake()->sha1(),
             'total_value' => fake()->randomFloat(2, 250, 7500),
             'status' => fake()->randomElement(['concept', 'verzonden', 'getekend']),
+            'sender_role' => Confirmation::DEFAULT_SENDER_ROLE,
             'sender_name' => fake()->name(),
             'sender_email' => fake()->safeEmail(),
             'sender_company_trade_name' => null,

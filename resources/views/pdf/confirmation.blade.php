@@ -335,7 +335,7 @@
 
         <div class="party-row">
             <section class="party-cell">
-                <h2 class="document-label">Opdrachtnemer</h2>
+                <h2 class="document-label">{{ $confirmation->senderRoleLabel() }}</h2>
                 <p>
                     <strong>{{ $confirmation->senderCompanyDisplayName() }}</strong><br>
                     @if ($senderLegalCompanyName !== null)
@@ -351,7 +351,7 @@
                 </p>
             </section>
             <section class="party-cell party-cell-right">
-                <h2 class="document-label">Opdrachtgever</h2>
+                <h2 class="document-label">{{ $confirmation->clientRoleLabel() }}</h2>
                 <p>
                     <strong>{{ $confirmation->client_name }}</strong><br>
                     {{ $confirmation->client_contact_name ?: '-' }}<br>
@@ -454,7 +454,7 @@
         @else
             <div class="signature-box">
                 <p class="meta">Ruimte voor digitale handtekening na akkoord.</p>
-                <p class="signature-line">Naam en handtekening opdrachtgever</p>
+                <p class="signature-line">Naam en handtekening {{ \Illuminate\Support\Str::lcfirst($confirmation->clientRoleLabel()) }}</p>
             </div>
         @endif
     </section>
