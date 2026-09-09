@@ -55,6 +55,7 @@ class ConfirmationController extends Controller
         $validated = $request->validate([
             'draft_id' => ['nullable', 'integer'],
             'sender_role' => ['nullable', 'string', 'in:'.implode(',', Confirmation::senderRoleValues())],
+            'client_role' => ['nullable', 'string', 'in:'.implode(',', Confirmation::clientRoleValues())],
             'title' => ['nullable', 'string', 'max:255'],
             'contact_id' => ['nullable', 'integer'],
             'description' => ['nullable', 'string', 'max:20000'],
@@ -65,6 +66,7 @@ class ConfirmationController extends Controller
 
         $title = trim((string) ($validated['title'] ?? ''));
         $senderRole = Confirmation::normalizeSenderRole($validated['sender_role'] ?? null);
+        $clientRole = Confirmation::normalizeClientRole($validated['client_role'] ?? null, $senderRole);
         $description = Confirmation::sanitizeDescription($validated['description'] ?? null);
         $footerNote = Confirmation::sanitizeFooterNote($validated['footer_note'] ?? null);
         $defaultFooterNote = Confirmation::defaultFooterNoteForUser($request->user());
@@ -75,6 +77,7 @@ class ConfirmationController extends Controller
 
         $hasContent = $title !== ''
             || $senderRole !== Confirmation::DEFAULT_SENDER_ROLE
+            || $clientRole !== Confirmation::defaultClientRoleForSenderRole($senderRole)
             || filled($description)
             || $contact !== null
             || (filled($footerNote) && $footerNote !== $defaultFooterNote);
@@ -104,6 +107,7 @@ class ConfirmationController extends Controller
             'footer_note' => $footerNote,
             'status' => 'concept',
             'sender_role' => $senderRole,
+            'client_role' => $clientRole,
             'is_draft' => true,
         ];
 
@@ -139,6 +143,7 @@ class ConfirmationController extends Controller
         $validated = $request->validate([
             'draft_id' => ['nullable', 'integer'],
             'sender_role' => ['nullable', 'string', 'in:'.implode(',', Confirmation::senderRoleValues())],
+            'client_role' => ['nullable', 'string', 'in:'.implode(',', Confirmation::clientRoleValues())],
             'title' => ['required', 'string', 'max:255'],
             'contact_id' => ['required', 'integer'],
             'description' => ['required', 'string'],
@@ -175,6 +180,7 @@ class ConfirmationController extends Controller
             ->findOrFail($validated['contact_id']);
 
         $draft = $this->findDraft($request->user(), $validated['draft_id'] ?? null);
+        $senderRole = Confirmation::normalizeSenderRole($validated['sender_role'] ?? null);
 
         $attributes = [
             'contact_id' => $contact->id,
@@ -197,7 +203,8 @@ class ConfirmationController extends Controller
             'total_value' => $validated['total_value'] ?? 0,
             'value_vat_type' => $validated['value_vat_type'] ?? 'excl',
             'status' => 'concept',
-            'sender_role' => Confirmation::normalizeSenderRole($validated['sender_role'] ?? null),
+            'sender_role' => $senderRole,
+            'client_role' => Confirmation::normalizeClientRole($validated['client_role'] ?? null, $senderRole),
             'is_draft' => false,
             'sender_name' => trim((string) $request->user()->first_name.' '.(string) $request->user()->last_name),
             'sender_email' => $request->user()->email,

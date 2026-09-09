@@ -329,6 +329,10 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
     const panels = Array.from(builder.querySelectorAll('[data-builder-panel]'));
     const openButtons = Array.from(builder.querySelectorAll('[data-builder-open]'));
     const closeButtons = Array.from(builder.querySelectorAll('[data-builder-close]'));
+    const senderRoleSelect = builder.querySelector('[data-sender-role-select]');
+    const clientRoleSelect = builder.querySelector('[data-client-role-select]');
+    let initialisingRolePreview = true;
+    let clientRoleTouched = false;
 
     const previewTarget = (name) => builder.querySelector(`[data-preview-target="${name}"]`);
 
@@ -370,17 +374,20 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
     };
 
     const currentClientRoleLabel = () => {
-        const roleSelect = builder.querySelector('[data-sender-role-select]');
-
-        return roleSelect?.selectedOptions?.[0]?.dataset.clientLabel || 'Opdrachtgever';
+        return clientRoleSelect?.selectedOptions?.[0]?.dataset.roleLabel || 'Opdrachtgever';
     };
 
-    const updatePartyRolePreview = (field) => {
-        const option = field?.selectedOptions?.[0];
-        const senderLabel = option?.dataset.senderLabel || 'Opdrachtnemer';
-        const clientLabel = option?.dataset.clientLabel || 'Opdrachtgever';
+    const selectedRoleLabel = (field, fallback) => {
+        return field?.selectedOptions?.[0]?.dataset.roleLabel || fallback;
+    };
 
-        setPreviewText('sender-role-label', senderLabel);
+    const updateSenderRolePreview = (field) => {
+        setPreviewText('sender-role-label', selectedRoleLabel(field, 'Opdrachtnemer'));
+    };
+
+    const updateClientRolePreview = (field) => {
+        const clientLabel = selectedRoleLabel(field, 'Opdrachtgever');
+
         setPreviewText('client-role-label', clientLabel);
         setPreviewText('aside-client-role', clientLabel);
 
@@ -395,6 +402,21 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         builder.querySelectorAll('[data-party-role-aria-client]').forEach((target) => {
             target.setAttribute('aria-label', `${clientLabel} selecteren`);
         });
+    };
+
+    const syncClientRoleFromSender = (field) => {
+        if (!clientRoleSelect || clientRoleTouched || initialisingRolePreview) {
+            return;
+        }
+
+        const counterpartRole = field?.selectedOptions?.[0]?.dataset.counterpartRole;
+
+        if (!counterpartRole) {
+            return;
+        }
+
+        clientRoleSelect.value = counterpartRole;
+        updateClientRolePreview(clientRoleSelect);
     };
 
     const openPanel = (panelName, shouldFocus = true) => {
@@ -477,7 +499,17 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         }
 
         if (previewName === 'sender-role') {
-            updatePartyRolePreview(field);
+            updateSenderRolePreview(field);
+            syncClientRoleFromSender(field);
+            return;
+        }
+
+        if (previewName === 'client-role') {
+            if (!initialisingRolePreview) {
+                clientRoleTouched = true;
+            }
+
+            updateClientRolePreview(field);
             return;
         }
 
@@ -579,8 +611,8 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
         const descriptionInput = builder.querySelector('[data-quill-input]');
         const footerInput = builder.querySelector('[name="footer_note"]');
         const contactValueInput = builder.querySelector('[data-contact-search-value]');
-        const senderRoleInput = builder.querySelector('[data-sender-role-select]');
         const defaultSenderRole = builder.dataset.defaultSenderRole ?? '';
+        const defaultClientRole = builder.dataset.defaultClientRole ?? '';
 
         let dirty = false;
         let saving = false;
@@ -594,7 +626,8 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
             params.set('contact_id', contactValueInput?.value ?? '');
             params.set('description', descriptionInput?.value ?? '');
             params.set('footer_note', footerInput?.value ?? '');
-            params.set('sender_role', senderRoleInput?.value ?? defaultSenderRole);
+            params.set('sender_role', senderRoleSelect?.value ?? defaultSenderRole);
+            params.set('client_role', clientRoleSelect?.value ?? defaultClientRole);
 
             return params;
         };
@@ -603,7 +636,8 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
             return (titleInput?.value ?? '').trim() !== ''
                 || (contactValueInput?.value ?? '').trim() !== ''
                 || stripHtml(descriptionInput?.value ?? '').trim() !== ''
-                || (senderRoleInput?.value ?? defaultSenderRole) !== defaultSenderRole;
+                || (senderRoleSelect?.value ?? defaultSenderRole) !== defaultSenderRole
+                || (clientRoleSelect?.value ?? defaultClientRole) !== defaultClientRole;
         };
 
         const saveDraft = async ({ beacon = false } = {}) => {
@@ -661,6 +695,12 @@ document.querySelectorAll('[data-confirmation-builder]').forEach((builder) => {
     }
 
     builder.querySelectorAll('[data-preview-input]').forEach((field) => updatePreviewFromField(field));
+    initialisingRolePreview = false;
+    clientRoleTouched = Boolean(
+        clientRoleSelect
+        && senderRoleSelect?.selectedOptions?.[0]?.dataset.counterpartRole
+        && clientRoleSelect.value !== senderRoleSelect.selectedOptions[0].dataset.counterpartRole,
+    );
 
     const initialContact = builder.querySelector(`[data-contact-search-option][data-contact-id="${builder.querySelector('[data-contact-search-value]')?.value}"]`);
     updateContactPreview(initialContact);

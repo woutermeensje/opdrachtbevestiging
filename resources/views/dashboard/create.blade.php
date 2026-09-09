@@ -12,9 +12,11 @@
     $senderLegalCompanyName = $user->companyLegalNameForDisplay();
     $senderAddressLines = $user->companyAddressLines();
     $senderRole = \App\Models\Confirmation::normalizeSenderRole(old('sender_role', $draft?->sender_role));
+    $clientRole = \App\Models\Confirmation::normalizeClientRole(old('client_role', $draft?->client_role), $senderRole);
     $senderRoleOptions = \App\Models\Confirmation::senderRoleOptions();
+    $clientRoleOptions = \App\Models\Confirmation::clientRoleOptions();
     $senderRoleLabel = \App\Models\Confirmation::senderRoleLabelFor($senderRole);
-    $clientRoleLabel = \App\Models\Confirmation::clientRoleLabelFor($senderRole);
+    $clientRoleLabel = \App\Models\Confirmation::clientRoleLabelFor($clientRole, $senderRole);
     $logoDataUri = null;
 
     if (filled($user->company_logo_path) && \Illuminate\Support\Facades\Storage::disk('local')->exists($user->company_logo_path)) {
@@ -72,6 +74,7 @@
             data-initial-panel="{{ $errors->has('contact_id') ? 'client' : ($errors->any() ? 'confirmation' : '') }}"
             data-draft-url="{{ route('dashboard.create.draft') }}"
             data-default-sender-role="{{ \App\Models\Confirmation::DEFAULT_SENDER_ROLE }}"
+            data-default-client-role="{{ \App\Models\Confirmation::DEFAULT_CLIENT_ROLE }}"
         >
             @csrf
             <input type="hidden" name="draft_id" value="{{ $draft?->id }}" data-draft-id>
@@ -231,18 +234,33 @@
                         </header>
 
                         <div class="confirmation-document-party-row">
-                            <div class="confirmation-document-role-control">
-                                <label for="sender_role">Mijn rol</label>
-                                <select id="sender_role" name="sender_role" data-preview-input="sender-role" data-sender-role-select>
-                                    @foreach ($senderRoleOptions as $value => $label)
-                                        <option
-                                            value="{{ $value }}"
-                                            data-sender-label="{{ \App\Models\Confirmation::senderRoleLabelFor($value) }}"
-                                            data-client-label="{{ \App\Models\Confirmation::clientRoleLabelFor($value) }}"
-                                            @selected($senderRole === $value)
-                                        >{{ $label }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="confirmation-document-role-controls">
+                                <div class="confirmation-document-role-control">
+                                    <label for="sender_role">Mijn rol</label>
+                                    <select id="sender_role" name="sender_role" data-preview-input="sender-role" data-sender-role-select>
+                                        @foreach ($senderRoleOptions as $value => $label)
+                                            <option
+                                                value="{{ $value }}"
+                                                data-role-label="{{ $label }}"
+                                                data-counterpart-role="{{ \App\Models\Confirmation::defaultClientRoleForSenderRole($value) }}"
+                                                @selected($senderRole === $value)
+                                            >{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="confirmation-document-role-control">
+                                    <label for="client_role">Rol relatie</label>
+                                    <select id="client_role" name="client_role" data-preview-input="client-role" data-client-role-select>
+                                        @foreach ($clientRoleOptions as $value => $label)
+                                            <option
+                                                value="{{ $value }}"
+                                                data-role-label="{{ $label }}"
+                                                @selected($clientRole === $value)
+                                            >{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="confirmation-document-sender">

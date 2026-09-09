@@ -152,10 +152,18 @@
     margin-bottom: 5rem;
 }
 
-.confirmation-document-role-control {
+.confirmation-document-role-controls {
     grid-column: 1 / -1;
-    width: min(100%, 260px);
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    column-gap: clamp(2.5rem, 6vw, 4.5rem);
+    row-gap: 0.85rem;
     margin: -1.4rem 0 0.35rem;
+}
+
+.confirmation-document-role-control {
+    width: min(100%, 260px);
 }
 
 .confirmation-document-role-control label {
@@ -519,7 +527,8 @@
     }
 
     .confirmation-document-header,
-    .confirmation-document-party-row {
+    .confirmation-document-party-row,
+    .confirmation-document-role-controls {
         grid-template-columns: 1fr;
     }
 

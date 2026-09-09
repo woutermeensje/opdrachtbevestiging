@@ -15,28 +15,26 @@ class Confirmation extends Model
     use HasFactory;
 
     public const DEFAULT_SENDER_ROLE = 'opdrachtnemer';
+    public const DEFAULT_CLIENT_ROLE = 'opdrachtgever';
 
     private const PARTY_ROLE_LABELS = [
-        'opdrachtnemer' => [
-            'sender' => 'Opdrachtnemer',
-            'client' => 'Opdrachtgever',
-        ],
-        'opdrachtgever' => [
-            'sender' => 'Opdrachtgever',
-            'client' => 'Opdrachtnemer',
-        ],
-        'inlener' => [
-            'sender' => 'Inlener',
-            'client' => 'Uitlener',
-        ],
-        'samenwerkingspartner' => [
-            'sender' => 'Samenwerkingspartner',
-            'client' => 'Samenwerkingspartner',
-        ],
-        'leverancier' => [
-            'sender' => 'Leverancier',
-            'client' => 'Afnemer',
-        ],
+        'opdrachtnemer' => 'Opdrachtnemer',
+        'opdrachtgever' => 'Opdrachtgever',
+        'inlener' => 'Inlener',
+        'uitlener' => 'Uitlener',
+        'samenwerkingspartner' => 'Samenwerkingspartner',
+        'leverancier' => 'Leverancier',
+        'afnemer' => 'Afnemer',
+    ];
+
+    private const DEFAULT_CLIENT_ROLES_BY_SENDER = [
+        'opdrachtnemer' => 'opdrachtgever',
+        'opdrachtgever' => 'opdrachtnemer',
+        'inlener' => 'uitlener',
+        'uitlener' => 'inlener',
+        'samenwerkingspartner' => 'samenwerkingspartner',
+        'leverancier' => 'afnemer',
+        'afnemer' => 'leverancier',
     ];
 
     protected $fillable = [
@@ -62,6 +60,7 @@ class Confirmation extends Model
         'public_token',
         'status',
         'sender_role',
+        'client_role',
         'is_draft',
         'sender_name',
         'sender_email',
@@ -124,16 +123,29 @@ class Confirmation extends Model
      */
     public static function senderRoleOptions(): array
     {
-        return array_map(
-            fn (array $labels): string => $labels['sender'],
-            self::PARTY_ROLE_LABELS,
-        );
+        return self::PARTY_ROLE_LABELS;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function clientRoleOptions(): array
+    {
+        return self::PARTY_ROLE_LABELS;
     }
 
     /**
      * @return array<int, string>
      */
     public static function senderRoleValues(): array
+    {
+        return array_keys(self::PARTY_ROLE_LABELS);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function clientRoleValues(): array
     {
         return array_keys(self::PARTY_ROLE_LABELS);
     }
@@ -147,14 +159,29 @@ class Confirmation extends Model
             : self::DEFAULT_SENDER_ROLE;
     }
 
-    public static function senderRoleLabelFor(?string $role): string
+    public static function defaultClientRoleForSenderRole(?string $senderRole): string
     {
-        return self::PARTY_ROLE_LABELS[self::normalizeSenderRole($role)]['sender'];
+        return self::DEFAULT_CLIENT_ROLES_BY_SENDER[self::normalizeSenderRole($senderRole)]
+            ?? self::DEFAULT_CLIENT_ROLE;
     }
 
-    public static function clientRoleLabelFor(?string $role): string
+    public static function normalizeClientRole(?string $role, ?string $senderRole = null): string
     {
-        return self::PARTY_ROLE_LABELS[self::normalizeSenderRole($role)]['client'];
+        $role = trim((string) $role);
+
+        return array_key_exists($role, self::PARTY_ROLE_LABELS)
+            ? $role
+            : self::defaultClientRoleForSenderRole($senderRole);
+    }
+
+    public static function senderRoleLabelFor(?string $role): string
+    {
+        return self::PARTY_ROLE_LABELS[self::normalizeSenderRole($role)];
+    }
+
+    public static function clientRoleLabelFor(?string $role, ?string $senderRole = null): string
+    {
+        return self::PARTY_ROLE_LABELS[self::normalizeClientRole($role, $senderRole)];
     }
 
     public function senderRoleLabel(): string
@@ -164,7 +191,7 @@ class Confirmation extends Model
 
     public function clientRoleLabel(): string
     {
-        return self::clientRoleLabelFor($this->sender_role);
+        return self::clientRoleLabelFor($this->client_role, $this->sender_role);
     }
 
     /**

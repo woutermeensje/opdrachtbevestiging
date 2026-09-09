@@ -178,9 +178,13 @@ class ConfirmationFlowTest extends TestCase
             ->assertSee('Concept')
             ->assertSee('name="sender_role"', false)
             ->assertSee('data-sender-role-select', false)
+            ->assertSee('name="client_role"', false)
+            ->assertSee('data-client-role-select', false)
             ->assertSee('Inlener')
+            ->assertSee('Uitlener')
             ->assertSee('Samenwerkingspartner')
             ->assertSee('Leverancier')
+            ->assertSee('Afnemer')
             ->assertSee('name="title"', false)
             ->assertSee('data-quill-editor', false)
             ->assertSee('name="footer_note"', false)
@@ -255,6 +259,7 @@ class ConfirmationFlowTest extends TestCase
             ->actingAs($user)
             ->post(route('dashboard.create.store'), [
                 'sender_role' => 'opdrachtgever',
+                'client_role' => 'leverancier',
                 'title' => 'Inhuur recruitment',
                 'contact_id' => $contact->id,
                 'description' => '<p>Studentenwerving voor het project.</p>',
@@ -265,22 +270,23 @@ class ConfirmationFlowTest extends TestCase
 
         $response->assertRedirect(route('dashboard.confirmations.show', $confirmation));
         $this->assertSame('opdrachtgever', $confirmation->sender_role);
+        $this->assertSame('leverancier', $confirmation->client_role);
         $this->assertSame('Opdrachtgever', $confirmation->senderRoleLabel());
-        $this->assertSame('Opdrachtnemer', $confirmation->clientRoleLabel());
+        $this->assertSame('Leverancier', $confirmation->clientRoleLabel());
         $this->assertSame('Student Inhuren', $confirmation->senderCompanyDisplayName());
 
         $this
             ->actingAs($user)
             ->get(route('dashboard.confirmations.show', $confirmation))
             ->assertOk()
-            ->assertSee('Opdrachtnemer')
+            ->assertSee('Leverancier')
             ->assertSee('Domio');
 
         $this
             ->get(route('confirmations.public.show', $confirmation->public_token))
             ->assertOk()
             ->assertSee('Opdrachtgever')
-            ->assertSee('Opdrachtnemer')
+            ->assertSee('Leverancier')
             ->assertSee('Student Inhuren')
             ->assertSee('Sustainable Recruitment Marketing B.V.');
     }
@@ -1151,6 +1157,7 @@ class ConfirmationFlowTest extends TestCase
             ->actingAs($user)
             ->postJson(route('dashboard.create.draft'), [
                 'sender_role' => 'inlener',
+                'client_role' => 'uitlener',
                 'title' => 'Concept in wording',
                 'contact_id' => $contact->id,
                 'description' => '<p>Half afgemaakte tekst.</p>',
@@ -1163,6 +1170,7 @@ class ConfirmationFlowTest extends TestCase
         $this->assertTrue($draft->is_draft);
         $this->assertSame('concept', $draft->status);
         $this->assertSame('inlener', $draft->sender_role);
+        $this->assertSame('uitlener', $draft->client_role);
         $this->assertSame('Concept in wording', $draft->title);
         $this->assertSame($contact->id, $draft->contact_id);
         $this->assertSame('Acme B.V.', $draft->client_name);
@@ -1234,6 +1242,7 @@ class ConfirmationFlowTest extends TestCase
             'public_token' => 'draft-token-1',
             'status' => 'concept',
             'sender_role' => 'leverancier',
+            'client_role' => 'samenwerkingspartner',
             'is_draft' => true,
         ]);
 
@@ -1243,7 +1252,7 @@ class ConfirmationFlowTest extends TestCase
             ->assertOk()
             ->assertSee('Je vorige concept is hersteld', false)
             ->assertSee('Opnieuw beginnen')
-            ->assertSee('Afnemer selecteren')
+            ->assertSee('Samenwerkingspartner selecteren')
             ->assertSee('Herstelde titel', false)
             ->assertSee('Eerder getypte omschrijving.', false);
     }
