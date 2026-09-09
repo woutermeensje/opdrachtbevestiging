@@ -17,9 +17,17 @@ class Confirmation extends Model
     public const DEFAULT_SENDER_ROLE = 'opdrachtnemer';
     public const DEFAULT_CLIENT_ROLE = 'opdrachtgever';
 
-    private const PARTY_ROLE_LABELS = [
+    private const SENDER_ROLE_LABELS = [
         'opdrachtnemer' => 'Opdrachtnemer',
         'opdrachtgever' => 'Opdrachtgever',
+        'inlener' => 'Inlener',
+        'samenwerkingspartner' => 'Samenwerkingspartner',
+        'leverancier' => 'Leverancier',
+    ];
+
+    private const CLIENT_ROLE_LABELS = [
+        'opdrachtgever' => 'Opdrachtgever',
+        'opdrachtnemer' => 'Opdrachtnemer',
         'inlener' => 'Inlener',
         'uitlener' => 'Uitlener',
         'samenwerkingspartner' => 'Samenwerkingspartner',
@@ -31,10 +39,8 @@ class Confirmation extends Model
         'opdrachtnemer' => 'opdrachtgever',
         'opdrachtgever' => 'opdrachtnemer',
         'inlener' => 'uitlener',
-        'uitlener' => 'inlener',
         'samenwerkingspartner' => 'samenwerkingspartner',
         'leverancier' => 'afnemer',
-        'afnemer' => 'leverancier',
     ];
 
     protected $fillable = [
@@ -123,7 +129,7 @@ class Confirmation extends Model
      */
     public static function senderRoleOptions(): array
     {
-        return self::PARTY_ROLE_LABELS;
+        return self::SENDER_ROLE_LABELS;
     }
 
     /**
@@ -131,7 +137,7 @@ class Confirmation extends Model
      */
     public static function clientRoleOptions(): array
     {
-        return self::PARTY_ROLE_LABELS;
+        return self::CLIENT_ROLE_LABELS;
     }
 
     /**
@@ -139,7 +145,7 @@ class Confirmation extends Model
      */
     public static function senderRoleValues(): array
     {
-        return array_keys(self::PARTY_ROLE_LABELS);
+        return array_keys(self::SENDER_ROLE_LABELS);
     }
 
     /**
@@ -147,14 +153,14 @@ class Confirmation extends Model
      */
     public static function clientRoleValues(): array
     {
-        return array_keys(self::PARTY_ROLE_LABELS);
+        return array_keys(self::CLIENT_ROLE_LABELS);
     }
 
     public static function normalizeSenderRole(?string $role): string
     {
         $role = trim((string) $role);
 
-        return array_key_exists($role, self::PARTY_ROLE_LABELS)
+        return array_key_exists($role, self::SENDER_ROLE_LABELS)
             ? $role
             : self::DEFAULT_SENDER_ROLE;
     }
@@ -169,19 +175,19 @@ class Confirmation extends Model
     {
         $role = trim((string) $role);
 
-        return array_key_exists($role, self::PARTY_ROLE_LABELS)
+        return array_key_exists($role, self::CLIENT_ROLE_LABELS)
             ? $role
             : self::defaultClientRoleForSenderRole($senderRole);
     }
 
     public static function senderRoleLabelFor(?string $role): string
     {
-        return self::PARTY_ROLE_LABELS[self::normalizeSenderRole($role)];
+        return self::SENDER_ROLE_LABELS[self::normalizeSenderRole($role)];
     }
 
     public static function clientRoleLabelFor(?string $role, ?string $senderRole = null): string
     {
-        return self::PARTY_ROLE_LABELS[self::normalizeClientRole($role, $senderRole)];
+        return self::CLIENT_ROLE_LABELS[self::normalizeClientRole($role, $senderRole)];
     }
 
     public function senderRoleLabel(): string

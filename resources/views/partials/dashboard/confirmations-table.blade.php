@@ -16,6 +16,7 @@
                     <td>{{ $confirmation->reference }}</td>
                     <td>
                         <strong>{{ $confirmation->client_name ?: 'Nog geen relatie' }}</strong>
+                        <div class="dashboard-table-subtle">{{ $confirmation->clientRoleLabel() }}</div>
                     </td>
                     <td>
                         <span class="dashboard-status dashboard-status-{{ $confirmation->status }}">

@@ -5,37 +5,46 @@
     <title>Opdrachtbevestiging {{ $confirmation->reference }}</title>
     @include('pdf.partials.fonts')
     <style>
+        /* ===============================================================
+           Eén type- en ritmesysteem voor de hele PDF.
+           - lopende tekst : 13px / 1.55 / gewicht 400
+           - eyebrow-label : 9.5px / 700 / hoofdletters (zoals de e-mails)
+           - documenttitel : 21px / 700
+           - verticaal ritme in stappen van ~4px (10 / 14 / 22 / 32 / 40)
+           =============================================================== */
         @page {
-            margin: 46px 52px;
+            margin: 44px 52px;
         }
 
         body {
             margin: 0;
             color: #333333;
             font-family: 'Aptos', 'DejaVu Sans', Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.55;
+            font-size: 13px;
+            line-height: 1.5;
+            font-weight: 400;
         }
 
         h1,
         h2,
         h3,
         p {
-            margin-top: 0;
+            margin: 0;
         }
 
-        p {
-            margin-bottom: 0;
+        strong {
+            font-weight: 700;
         }
 
         .document {
             width: 100%;
         }
 
+        /* --- Kop: logo + datum ------------------------------------------ */
         .document-header {
             display: table;
             width: 100%;
-            margin-bottom: 72px;
+            margin-bottom: 40px;
             table-layout: fixed;
         }
 
@@ -57,8 +66,8 @@
         .document-logo-text {
             display: inline-block;
             color: {{ $themePrimaryColor }};
-            font-size: 44px;
-            font-weight: bold;
+            font-size: 40px;
+            font-weight: 700;
             line-height: 1;
         }
 
@@ -67,127 +76,131 @@
             text-align: right;
         }
 
+        /* --- Eyebrow-label (elke sectiekop) --------------------------- */
         .document-label {
-            margin: 0 0 8px;
-            color: #333333;
-            font-size: 16px;
-            font-weight: bold;
-            line-height: 1.2;
+            margin: 0 0 6px;
+            color: #6b6b6b;
+            font-size: 9.5px;
+            font-weight: 700;
+            line-height: 1.3;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .document-date-value {
-            color: #333333;
-            font-size: 15px;
-            font-weight: 300;
-            line-height: 1.35;
+            margin: 0;
         }
 
+        /* --- Partijen ------------------------------------------------- */
         .party-row {
             display: table;
             width: 100%;
-            margin-bottom: 76px;
+            margin-bottom: 40px;
             table-layout: fixed;
         }
 
         .party-cell {
             display: table-cell;
             width: 50%;
-            padding-right: 46px;
+            padding-right: 40px;
             vertical-align: top;
         }
 
         .party-cell-right {
             padding-right: 0;
-            padding-left: 46px;
+            padding-left: 40px;
         }
 
         .party-cell p {
-            color: #333333;
-            font-size: 15px;
-            font-weight: 300;
-            line-height: 1.45;
+            margin: 0;
         }
 
         .party-cell strong {
-            font-weight: 300;
+            font-weight: 700;
         }
 
+        /* --- Hoofdinhoud -------------------------------------------- */
         .document-content {
-            margin-bottom: 34px;
+            margin-bottom: 32px;
         }
 
         .document-main-heading {
-            margin: 0 0 48px;
-            color: #333333;
-            font-size: 16px;
-            font-weight: bold;
-            line-height: 1.25;
+            margin: 0 0 32px;
+            color: #1a1a1a;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
         }
 
         .document-field {
-            margin-bottom: 34px;
+            margin-bottom: 22px;
+        }
+
+        .document-field:last-child {
+            margin-bottom: 0;
         }
 
         .document-field-title {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .document-title-value {
             margin: 0;
-            color: #333333;
-            font-size: 15px;
-            font-weight: 300;
-            line-height: 1.7;
         }
 
+        /* --- Rich text (omschrijving, basis afspraken) --------------- */
         .rich-content {
             max-width: 100%;
-            color: #333333;
-            font-size: 15px;
-            font-weight: 300;
-            line-height: 1.7;
+        }
+
+        .rich-content > *:first-child {
+            margin-top: 0;
         }
 
         .rich-content p {
             margin: 0 0 10px;
         }
 
+        .rich-content > *:last-child {
+            margin-bottom: 0;
+        }
+
         .rich-content h1,
         .rich-content h2,
         .rich-content h3 {
-            margin: 0 0 8px;
-            color: #333333;
-            font-weight: bold;
+            margin: 16px 0 6px;
+            color: #1a1a1a;
+            font-weight: 700;
             line-height: 1.3;
         }
 
         .rich-content h1 {
-            font-size: 18px;
+            font-size: 15px;
         }
 
         .rich-content h2 {
-            font-size: 16px;
+            font-size: 13.5px;
         }
 
         .rich-content h3 {
-            font-size: 14px;
+            font-size: 12.5px;
         }
 
         .rich-content ul,
         .rich-content ol {
-            margin-top: 0;
-            margin-bottom: 10px;
+            margin: 0 0 10px;
             padding-left: 18px;
         }
 
         .rich-content li {
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .rich-content blockquote {
-            margin: 0 0 10px;
-            padding: 6px 10px;
-            border-left: 3px solid {{ $themePrimaryColor }};
+            margin: 10px 0;
+            padding: 6px 12px;
+            border-left: 2px solid {{ $themePrimaryColor }};
             background: #f5f6f8;
             color: #4b5563;
         }
@@ -197,15 +210,16 @@
             text-decoration: underline;
         }
 
+        /* --- Ondersteunende secties -------------------------------- */
         .supporting-section {
-            margin: 0 0 22px;
-            padding-top: 18px;
+            margin: 0 0 20px;
+            padding-top: 16px;
             border-top: 1px solid #dedede;
             page-break-inside: avoid;
         }
 
-        .supporting-section .document-label {
-            margin-bottom: 10px;
+        .supporting-section:last-of-type {
+            margin-bottom: 0;
         }
 
         .details-table,
@@ -218,8 +232,8 @@
         .details-table td,
         .confirmation-specifications-table th,
         .confirmation-specifications-table td {
-            padding: 6px 0;
-            border-top: 1px solid #dedede;
+            padding: 5px 0;
+            border-top: 1px solid #ededed;
             text-align: left;
             vertical-align: top;
         }
@@ -235,12 +249,12 @@
         .confirmation-specifications-table th {
             width: 34%;
             padding-right: 12px;
-            color: #333333;
-            font-weight: bold;
+            color: #6b6b6b;
+            font-weight: 700;
         }
 
         .confirmation-specifications-summary-section {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .confirmation-specifications-summary-section:last-child {
@@ -248,10 +262,10 @@
         }
 
         .confirmation-specifications-summary-section h3 {
-            margin: 0 0 8px;
-            color: #333333;
-            font-size: 14px;
-            font-weight: bold;
+            margin: 0 0 6px;
+            color: #1a1a1a;
+            font-size: 12.5px;
+            font-weight: 700;
         }
 
         .document-list {
@@ -260,18 +274,19 @@
         }
 
         .document-list li {
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .meta {
-            color: #666666;
-            font-size: 12px;
+            margin: 0;
+            color: #8a8a8a;
+            font-size: 11px;
         }
 
         .signature-box {
-            min-height: 110px;
+            min-height: 104px;
             margin-top: 10px;
-            border: 1px dashed #999999;
+            border: 1px dashed #b8b8b8;
             padding: 12px;
         }
 
@@ -282,25 +297,24 @@
         }
 
         .signature-line {
-            margin-top: 55px;
-            border-top: 1px solid #999999;
+            margin-top: 48px;
+            border-top: 1px solid #b8b8b8;
             padding-top: 6px;
-            color: #666666;
+            color: #8a8a8a;
         }
 
         .footer-note {
-            margin: 34px 0 0;
+            margin: 32px 0 0;
             padding-top: 14px;
             border-top: 1px solid #222222;
-            color: #333333;
-            font-size: 15px;
-            font-weight: 300;
-            line-height: 1.55;
             text-align: center;
         }
 
         .footer-note p {
             margin: 0;
+            color: #6b6b6b;
+            font-size: 11.5px;
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -367,7 +381,7 @@
         </div>
 
         <section class="document-content">
-            <h1 class="document-main-heading">Opdrachtbevestiging opstellen</h1>
+            <h1 class="document-main-heading">Opdrachtbevestiging</h1>
 
             <div class="document-field document-field-title">
                 <h2 class="document-label">Titel</h2>
