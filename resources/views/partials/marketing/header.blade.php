@@ -10,7 +10,7 @@
     <div class="mk-header__inner">
         <div class="mk-header__brand">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Opdrachtbevestiging.nl" class="mk-header__logo" width="437" height="124">
+                <span class="mk-header__logo">Opdrachtbevestiging.nl</span>
                 <img src="{{ asset('images/logo-icon.png') }}" alt="Opdrachtbevestiging.nl" class="mk-header__favicon" width="36" height="36">
             </a>
         </div>
