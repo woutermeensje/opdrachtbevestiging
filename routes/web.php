@@ -12,6 +12,7 @@ use App\Http\Controllers\EmailVerificationPromptController;
 use App\Http\Controllers\KvkLookupController;
 use App\Http\Controllers\KvkSearchController;
 use App\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\OpstellenController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\PublicConfirmationController;
@@ -44,7 +45,10 @@ Route::get('/sitemap.xml', function (): Response {
         ['loc' => route('pages.create-confirmation'), 'priority' => '0.8'],
         ['loc' => route('pages.pricing'), 'priority' => '0.7'],
         ['loc' => route('pages.contact'), 'priority' => '0.6'],
-    ]);
+    ])->concat(collect(array_keys(config('opstellen.types')))->map(fn (string $type): array => [
+        'loc' => route('opstellen.show', $type),
+        'priority' => '0.8',
+    ]));
 
     return response()->view('seo.sitemap', [
         'pages' => $pages,
@@ -53,6 +57,9 @@ Route::get('/sitemap.xml', function (): Response {
 });
 
 Route::get('/', fn () => view('welcome'))->name('home');
+Route::get('/opstellen/{type}', [OpstellenController::class, 'show'])
+    ->whereIn('type', array_keys(config('opstellen.types')))
+    ->name('opstellen.show');
 Route::get('/hoe-het-werkt', [PageController::class, 'howItWorks'])->name('pages.how-it-works');
 Route::get('/wat-is-een-opdrachtbevestiging', [PageController::class, 'whatIsConfirmation'])->name('pages.what-is-confirmation');
 Route::get('/opdrachtbevestiging-opstellen', [PageController::class, 'createConfirmation'])->name('pages.create-confirmation');

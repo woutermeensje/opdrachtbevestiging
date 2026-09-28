@@ -8,17 +8,6 @@
         'Domein extensies',
         'Geen juridische kennis nodig',
     ];
-
-    // Zelfde paden als op de WordPress-site, zodat de URL's in Google behouden blijven.
-    $documentTypes = [
-        'engagement-letter' => 'Engagement letter opstellen',
-        'inkooporder' => 'Inkooporder opstellen',
-        'opdrachtbevestiging' => 'Opdrachtbevestiging opstellen',
-        'opdrachtbon' => 'Opdrachtbon opstellen',
-        'orderbevestiging' => 'Orderbevestiging opstellen',
-        'plaatsingsbevestiging' => 'Plaatsingsbevestiging opstellen',
-        'projectbevestiging' => 'Projectbevestiging opstellen',
-    ];
 @endphp
 
 @extends('layouts.marketing', [
@@ -78,15 +67,7 @@
     <section class="mk-section" aria-labelledby="mk-types-title">
         <h2 id="mk-types-title" class="mk-section__title">Alle typen bevestigingen:</h2>
 
-        <ul class="mk-directory">
-            @foreach ($documentTypes as $slug => $label)
-                <li>
-                    <a class="mk-directory__item" href="{{ url('/opstellen/'.$slug) }}">
-                        <span class="mk-directory__name">{{ $label }}</span>
-                    </a>
-                </li>
-            @endforeach
-        </ul>
+        @include('partials.marketing.opstellen-directory')
     </section>
 
     <section class="mk-section">
