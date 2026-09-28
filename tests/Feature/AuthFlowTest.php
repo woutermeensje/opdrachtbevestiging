@@ -93,11 +93,16 @@ class AuthFlowTest extends TestCase
             ->assertSee('Welkom terug, Wouter');
     }
 
-    public function test_inloggen_page_redirects_to_home(): void
+    public function test_inloggen_page_shows_login_form(): void
     {
-        $response = $this->get('/inloggen');
+        $this->get('/inloggen')
+            ->assertOk()
+            ->assertSee('Inloggen');
+    }
 
-        $response->assertRedirect('/');
+    public function test_login_alias_redirects_to_inloggen(): void
+    {
+        $this->get('/login')->assertRedirect('/inloggen');
     }
 
     public function test_unverified_user_is_redirected_to_email_verification_notice(): void

@@ -108,7 +108,7 @@
   --color-text: #333;
   --color-text-soft: #4b5563;
 
-  --color-primary: #7C5CFA;
+  --color-primary: #2F5F80;
   --color-primary-strong: color-mix(in srgb, var(--color-primary) 75%, black);
   --color-accent: #0C76DA;
   --color-success: #80D424;
@@ -130,7 +130,7 @@
   --icon-teal-soft: #FBFAF8;
   --icon-mint: #059669;
   --icon-mint-soft: #FBFAF8;
-  --icon-violet: #7c3aed;
+  --icon-violet: var(--color-primary);
   --icon-violet-soft: #FBFAF8;
   --chip-blue: var(--color-primary);
   --chip-pink: #db2777;

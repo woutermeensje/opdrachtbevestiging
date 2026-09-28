@@ -56,13 +56,13 @@
                             autocomplete="off"
                             inputmode="text"
                             pattern="#[0-9A-Fa-f]{6}"
-                            placeholder="#7C5CFA"
-                            title="Voer een hex-kleurcode in, bijvoorbeeld #7C5CFA"
+                            placeholder="#2F5F80"
+                            title="Voer een hex-kleurcode in, bijvoorbeeld #2F5F80"
                             data-color-input
                             @if (! $primaryColor) data-theme-primary-color-default="true" @endif
                         >
                     </div>
-                    <p class="form-help">Hex-kleurcode, bijvoorbeeld <code>#7C5CFA</code>.</p>
+                    <p class="form-help">Hex-kleurcode, bijvoorbeeld <code>#2F5F80</code>.</p>
                 </div>
                 <div>
                     <label for="secondary_color">Secundaire kleur</label>

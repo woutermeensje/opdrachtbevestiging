@@ -38,6 +38,7 @@ Route::get('/robots.txt', function (): Response {
 
 Route::get('/sitemap.xml', function (): Response {
     $pages = collect([
+        ['loc' => route('home'), 'priority' => '1.0'],
         ['loc' => route('pages.how-it-works'), 'priority' => '0.8'],
         ['loc' => route('pages.what-is-confirmation'), 'priority' => '0.8'],
         ['loc' => route('pages.create-confirmation'), 'priority' => '0.8'],
@@ -51,6 +52,7 @@ Route::get('/sitemap.xml', function (): Response {
     ])->header('Content-Type', 'application/xml; charset=UTF-8');
 });
 
+Route::get('/', fn () => view('welcome'))->name('home');
 Route::get('/hoe-het-werkt', [PageController::class, 'howItWorks'])->name('pages.how-it-works');
 Route::get('/wat-is-een-opdrachtbevestiging', [PageController::class, 'whatIsConfirmation'])->name('pages.what-is-confirmation');
 Route::get('/opdrachtbevestiging-opstellen', [PageController::class, 'createConfirmation'])->name('pages.create-confirmation');
@@ -68,11 +70,10 @@ Route::post('/mollie/webhook', [BillingController::class, 'webhook'])
     ->name('billing.webhook');
 
 Route::redirect('/register', '/registreren');
-Route::redirect('/login', '/');
-Route::get('/inloggen', fn () => redirect('/'));
+Route::redirect('/login', '/inloggen');
 
 Route::middleware('guest')->group(function (): void {
-    Route::get('/', fn () => view('welcome'))->name('login');
+    Route::get('/inloggen', fn () => view('auth.login'))->name('login');
     Route::get('/registreren', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/registreren', [AuthController::class, 'register'])->name('register.store');
     Route::post('/inloggen', [AuthController::class, 'login'])->name('login.store');
