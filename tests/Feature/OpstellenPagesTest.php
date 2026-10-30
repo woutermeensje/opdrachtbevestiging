@@ -11,7 +11,7 @@ class OpstellenPagesTest extends TestCase
         foreach (config('opstellen.types') as $slug => $name) {
             $this->get('/opstellen/'.$slug)
                 ->assertOk()
-                ->assertSee('<title>'.$name.' opstellen - Opdrachtbevestiging.nl</title>', false)
+                ->assertSee('<title>'.$name.' opstellen | Opdrachtbevestiging.nl</title>', false)
                 ->assertSee('<link rel="canonical" href="'.route('opstellen.show', $slug).'">', false);
         }
     }

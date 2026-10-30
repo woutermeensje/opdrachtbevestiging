@@ -564,6 +564,44 @@ class ConfirmationFlowTest extends TestCase
         });
     }
 
+    public function test_large_transparent_logo_is_shrunk_before_generating_pdf(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        // Grote transparante PNG's lieten DomPDF eerder door de geheugenlimiet gaan.
+        $image = imagecreatetruecolor(3000, 1500);
+        imagesavealpha($image, true);
+        imagefill($image, 0, 0, imagecolorallocatealpha($image, 0, 0, 0, 127));
+        ob_start();
+        imagepng($image);
+        Storage::disk('local')->put('profiles/logo.png', ob_get_clean());
+        imagedestroy($image);
+
+        $user = User::factory()->create([
+            'company_logo_path' => 'profiles/logo.png',
+            'company_logo_original_name' => 'logo.png',
+            'company_logo_mime_type' => 'image/png',
+        ]);
+        $contact = Contact::factory()->create(['user_id' => $user->id]);
+
+        $this
+            ->actingAs($user)
+            ->post(route('dashboard.create.store'), [
+                'title' => 'Nieuwe website opdracht',
+                'contact_id' => $contact->id,
+                'description' => '<p>Ontwikkeling van een website.</p>',
+                'submit_action' => 'test',
+            ])
+            ->assertSessionHas('status', fn (string $status): bool => str_starts_with($status, 'Testmail is verzonden'));
+
+        $confirmation = Confirmation::query()->first();
+        [$width, $height] = getimagesizefromstring(Storage::disk('local')->get($confirmation->sender_company_logo_path));
+
+        $this->assertSame([800, 400], [$width, $height]);
+        Storage::disk('local')->assertExists($confirmation->pdf_path);
+    }
+
     public function test_authenticated_user_can_create_confirmation_with_attachment_and_quote(): void
     {
         Mail::fake();

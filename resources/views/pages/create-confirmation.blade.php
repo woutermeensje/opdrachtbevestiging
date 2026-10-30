@@ -37,7 +37,7 @@
         'class' => 'page-card-wide',
         'title' => 'Gerelateerde pagina\'s',
         'slot' => '
-            <p>Wil je eerst meer achtergrond? Lees dan <a href="'.e(route('pages.what-is-confirmation')).'">wat een opdrachtbevestiging is</a> of bekijk direct <a href="'.e(route('pages.pricing')).'">de prijzen</a>.</p>
+            <p>Wil je eerst meer achtergrond? Lees dan <a href="'.e(route('pages.what-is-confirmation')).'">wat een opdrachtbevestiging is</a> of bekijk direct <a href="'.e(route('pages.tariffs')).'">de tarieven</a>.</p>
         ',
     ])
 @endsection

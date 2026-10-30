@@ -1,5 +1,5 @@
 @php
-    $metaDescription = 'Een projectbevestiging opstellen voor jouw opdrachtgever of relatie via het platform van Opdrachtbevestiging.nl.';
+    $metaDescription = 'Een projectbevestiging opstellen? Leg scope, planning, budget en meerwerk vooraf vast en laat je opdrachtgever online akkoord geven.';
 @endphp
 
 @extends('layouts.opstellen')

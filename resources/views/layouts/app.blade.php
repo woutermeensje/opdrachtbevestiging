@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="nl">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,11 +8,13 @@
     <meta name="description" content="{{ $metaDescription ?? 'Opdrachtbevestiging.nl helpt je om afspraken en opdrachtbevestigingen eenvoudig digitaal vast te leggen en te versturen.' }}">
     <meta name="robots" content="{{ $metaRobots ?? 'index,follow' }}">
     <link rel="canonical" href="{{ $canonical ?? url()->current() }}">
+    <meta property="og:locale" content="nl_NL">
     <meta property="og:type" content="{{ $ogType ?? 'website' }}">
     <meta property="og:title" content="{{ $ogTitle ?? ($title ?? config('app.name')) }}">
     <meta property="og:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Opdrachtbevestiging.nl helpt je om afspraken en opdrachtbevestigingen eenvoudig digitaal vast te leggen en te versturen.') }}">
     <meta property="og:url" content="{{ $canonical ?? url()->current() }}">
-    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:site_name" content="Opdrachtbevestiging.nl">
+    <meta property="og:image" content="{{ asset('images/logo-icon.png') }}">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ $ogTitle ?? ($title ?? config('app.name')) }}">
     <meta name="twitter:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Opdrachtbevestiging.nl helpt je om afspraken en opdrachtbevestigingen eenvoudig digitaal vast te leggen en te versturen.') }}">

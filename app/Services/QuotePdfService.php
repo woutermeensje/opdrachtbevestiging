@@ -9,9 +9,14 @@ use RuntimeException;
 
 class QuotePdfService
 {
+    public function __construct(
+        private readonly LogoResizer $logoResizer,
+    ) {}
+
     public function generate(Quote $quote): void
     {
         $quote->loadMissing('user');
+        $this->logoResizer->shrinkStored($quote->sender_company_logo_path);
 
         $path = 'quotes/'.$quote->id.'/pdf/'.$quote->pdfDownloadName();
         $contents = Pdf::loadView('pdf.quote', [

@@ -92,55 +92,6 @@
     grid-column: 1 / -1;
 }
 
-.pricing-card {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    min-height: 100%;
-}
-
-.pricing-card-featured {
-    border-color: var(--color-primary);
-    background: var(--color-bg-white);
-}
-
-.pricing-card-wide {
-    grid-column: 1 / -1;
-}
-
-.pricing-kicker {
-    color: var(--color-text-subtle);
-    margin: 0;
-}
-
-.pricing-amount {
-    margin: 0;
-    font-size: 2.35rem;
-    line-height: 1.1;
-    font-weight: 700;
-    font-family: var(--font-heading);
-    color: var(--color-text);
-}
-
-.pricing-amount span {
-    display: block;
-    margin-top: 0.35rem;
-    font-size: 0.95rem;
-    font-weight: 400;
-    font-family: var(--font-text);
-    color: var(--color-text-subtle);
-}
-
-.pricing-list {
-    margin: 0;
-    padding-left: 1.1rem;
-    color: var(--color-text);
-}
-
-.pricing-list li + li {
-    margin-top: 0.55rem;
-}
-
 /* ===============================
    CARDS / GRID
 ================================ */
@@ -202,10 +153,6 @@
 
     .hero h1 {
         font-size: 1.8rem;
-    }
-
-    .pricing-amount {
-        font-size: 2rem;
     }
 
     .page-content-grid { grid-template-columns: 1fr; }

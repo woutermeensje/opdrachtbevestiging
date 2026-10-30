@@ -1,5 +1,5 @@
 @extends('layouts.app', [
-    'title' => 'Opdrachtbevestiging '.$confirmation->reference.' - getekend',
+    'title' => 'Opdrachtbevestiging '.$confirmation->reference.' | Getekend',
     'metaDescription' => 'Opdrachtbevestiging getekend.',
     'metaRobots' => 'noindex,nofollow,noarchive',
     'canonical' => route('confirmations.public.signed', $confirmation->public_token),

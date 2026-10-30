@@ -1,5 +1,5 @@
 @php
-    $metaDescription = 'Een orderbevestiging opstellen voor jouw opdrachtgever of relatie via het platform van Opdrachtbevestiging.nl.';
+    $metaDescription = 'Een orderbevestiging opstellen voor een bestelling? Bekijk wat erin hoort, van ordernummer tot leverdatum, en verstuur hem direct digitaal.';
 @endphp
 
 @extends('layouts.opstellen')

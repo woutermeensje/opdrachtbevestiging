@@ -1,5 +1,5 @@
 @php
-    $metaDescription = 'Bekijk op deze pagina de mogelijkheden tot het opstellen van een opdrachtbevestiging - plus juridische tips!';
+    $metaDescription = 'Een opdrachtbevestiging opstellen die juridisch klopt? Bekijk wat erin moet staan en verstuur hem in een paar minuten ter akkoord.';
 @endphp
 
 @extends('layouts.opstellen')

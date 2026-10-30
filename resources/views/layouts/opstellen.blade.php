@@ -6,7 +6,7 @@
 --}}
 @php
     $heading = $typeName.' opstellen';
-    $title = $heading.' - Opdrachtbevestiging.nl';
+    $title = $heading.' | Opdrachtbevestiging.nl';
     $canonical = route('opstellen.show', $type);
 @endphp
 

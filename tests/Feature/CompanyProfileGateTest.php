@@ -258,4 +258,25 @@ class CompanyProfileGateTest extends TestCase
 
         Storage::disk('local')->assertExists($user->company_logo_path);
     }
+
+    public function test_large_logo_is_shrunk_on_upload(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->withoutMiddleware(ValidateCsrfToken::class)
+            ->post(route('dashboard.profile.brand.update'), [
+                'company_logo' => UploadedFile::fake()->image('logo.png', 2400, 1200),
+                'primary_color' => '#123abc',
+                'secondary_color' => '#f8fafc',
+            ])
+            ->assertRedirect(route('dashboard.profile.brand'));
+
+        [$width, $height] = getimagesizefromstring(Storage::disk('local')->get($user->refresh()->company_logo_path));
+
+        $this->assertSame([800, 400], [$width, $height]);
+    }
 }

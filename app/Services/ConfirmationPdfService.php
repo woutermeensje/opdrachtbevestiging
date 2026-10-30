@@ -9,9 +9,14 @@ use RuntimeException;
 
 class ConfirmationPdfService
 {
+    public function __construct(
+        private readonly LogoResizer $logoResizer,
+    ) {}
+
     public function generate(Confirmation $confirmation): void
     {
         $confirmation->loadMissing('user');
+        $this->logoResizer->shrinkStored($confirmation->sender_company_logo_path);
 
         $path = 'confirmations/'.$confirmation->id.'/pdf/'.$confirmation->pdfDownloadName();
         $contents = Pdf::loadView('pdf.confirmation', [

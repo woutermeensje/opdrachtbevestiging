@@ -1,5 +1,5 @@
 @php
-    $metaDescription = 'Een engagement letter opstellen voor jouw opdrachtgever of relatie via het platform van Opdrachtbevestiging.nl.';
+    $metaDescription = 'Een engagement letter opstellen als accountant of adviseur? Lees wat erin hoort en laat je klant de opdrachtbrief online akkoord geven.';
 @endphp
 
 @extends('layouts.opstellen')

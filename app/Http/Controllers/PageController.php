@@ -21,11 +21,6 @@ class PageController extends Controller
         return view('pages.create-confirmation');
     }
 
-    public function pricing(): View
-    {
-        return view('pages.pricing');
-    }
-
     public function tariffs(): View
     {
         return view('pages.tariffs');

@@ -1,6 +1,6 @@
 @extends('layouts.page', [
     'title' => 'Hoe het werkt',
-    'seoTitle' => 'Hoe Werkt Opdrachtbevestiging.nl? | Opdrachtbevestiging maken en versturen',
+    'seoTitle' => 'Hoe werkt Opdrachtbevestiging.nl? | Maken en versturen',
     'eyebrow' => 'Werkwijze',
     'heading' => 'Hoe het werkt',
     'intro' => 'Opdrachtbevestiging.nl helpt je om afspraken gestructureerd vast te leggen en per e-mail naar je opdrachtgever te versturen.',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Confirmation;
+use App\Services\LogoResizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -153,7 +154,7 @@ class DashboardController extends Controller
             ->with('status', 'Je basis afspraken zijn opgeslagen.');
     }
 
-    public function updateBrandProfile(Request $request): RedirectResponse
+    public function updateBrandProfile(Request $request, LogoResizer $logoResizer): RedirectResponse
     {
         $validated = $request->validate([
             'company_logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg', 'max:4096'],
@@ -164,6 +165,8 @@ class DashboardController extends Controller
         $uploadedFiles = array_filter([
             'company_logo' => $this->storeProfileDocument($request->file('company_logo'), $request, 'logo', 'company_logo'),
         ]);
+
+        $logoResizer->shrinkStored($uploadedFiles['company_logo']['company_logo_path'] ?? null);
 
         $request->user()
             ->forceFill(array_merge([

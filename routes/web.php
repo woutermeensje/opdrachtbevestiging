@@ -28,7 +28,6 @@ Route::get('/robots.txt', function (): Response {
         'Allow: /',
         'Disallow: /dashboard',
         'Disallow: /inloggen',
-        'Disallow: /registreren',
         'Disallow: /opdrachtbevestiging/',
         '',
         'Sitemap: '.url('/sitemap.xml'),
@@ -43,8 +42,9 @@ Route::get('/sitemap.xml', function (): Response {
         ['loc' => route('pages.how-it-works'), 'priority' => '0.8'],
         ['loc' => route('pages.what-is-confirmation'), 'priority' => '0.8'],
         ['loc' => route('pages.create-confirmation'), 'priority' => '0.8'],
-        ['loc' => route('pages.pricing'), 'priority' => '0.7'],
+        ['loc' => route('pages.tariffs'), 'priority' => '0.7'],
         ['loc' => route('pages.contact'), 'priority' => '0.6'],
+        ['loc' => route('register'), 'priority' => '0.6'],
     ])->concat(collect(array_keys(config('opstellen.types')))->map(fn (string $type): array => [
         'loc' => route('opstellen.show', $type),
         'priority' => '0.8',
@@ -63,7 +63,7 @@ Route::get('/opstellen/{type}', [OpstellenController::class, 'show'])
 Route::get('/hoe-het-werkt', [PageController::class, 'howItWorks'])->name('pages.how-it-works');
 Route::get('/wat-is-een-opdrachtbevestiging', [PageController::class, 'whatIsConfirmation'])->name('pages.what-is-confirmation');
 Route::get('/opdrachtbevestiging-opstellen', [PageController::class, 'createConfirmation'])->name('pages.create-confirmation');
-Route::get('/prijzen', [PageController::class, 'pricing'])->name('pages.pricing');
+Route::permanentRedirect('/prijzen', '/tarieven');
 Route::get('/tarieven', [PageController::class, 'tariffs'])->name('pages.tariffs');
 Route::get('/contact', [PageController::class, 'contact'])->name('pages.contact');
 Route::get('/opdrachtbevestiging/{token}', [PublicConfirmationController::class, 'show'])->name('confirmations.public.show');
