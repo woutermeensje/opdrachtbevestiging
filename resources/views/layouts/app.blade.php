@@ -23,6 +23,7 @@
     @isset($structuredData)
         <script type="application/ld+json">{!! $structuredData !!}</script>
     @endisset
+    @include('partials.analytics')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="{{ $bodyClass ?? '' }}">

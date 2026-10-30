@@ -8,6 +8,7 @@
     <meta name="robots" content="noindex,nofollow,noarchive">
     <title>{{ $title ?? config('app.name') }}</title>
     @include('partials.favicon')
+    @include('partials.analytics')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="dashboard-body">
