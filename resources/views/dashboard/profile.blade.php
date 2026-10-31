@@ -72,4 +72,26 @@
             <button type="submit" class="btn btn-secondary">Wachtwoord wijzigen</button>
         </div>
     </form>
+
+    <form
+        method="POST"
+        action="{{ route('dashboard.profile.account.destroy') }}"
+        class="dashboard-form dashboard-profile-form"
+        onsubmit="return confirm('Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');"
+    >
+        @csrf
+        @method('DELETE')
+
+        <section class="dashboard-panel dashboard-panel-wide">
+            <h2>Account verwijderen</h2>
+            <p>Hiermee verwijder je je account definitief, inclusief al je opdrachtbevestigingen, offertes, opdrachtgevers en geüploade bestanden. Een lopend abonnement wordt automatisch opgezegd.</p>
+
+            <label for="delete_password">Bevestig met je wachtwoord</label>
+            <input id="delete_password" name="delete_password" type="password" autocomplete="current-password" required>
+        </section>
+
+        <div class="actions actions-end">
+            <button type="submit" class="btn btn-danger">Account verwijderen</button>
+        </div>
+    </form>
 @endsection

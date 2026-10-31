@@ -138,6 +138,7 @@ Route::middleware(['auth', 'verified', 'billing.active'])->group(function (): vo
     Route::get('/dashboard/mijn-profiel', [DashboardController::class, 'profile'])->name('dashboard.profile');
     Route::post('/dashboard/mijn-profiel/account', [DashboardController::class, 'updateAccountProfile'])->name('dashboard.profile.account.update');
     Route::post('/dashboard/mijn-profiel/wachtwoord', [DashboardController::class, 'updateAccountPassword'])->name('dashboard.profile.password.update');
+    Route::delete('/dashboard/mijn-profiel/account', [DashboardController::class, 'destroyAccount'])->name('dashboard.profile.account.destroy');
     Route::get('/dashboard/mijn-profiel/bedrijfsgegevens', [DashboardController::class, 'companyProfile'])->name('dashboard.profile.company');
     Route::post('/dashboard/mijn-profiel/bedrijfsgegevens', [DashboardController::class, 'updateCompanyProfile'])->name('dashboard.profile.company.update');
     Route::get('/dashboard/mijn-profiel/documenten', [DashboardController::class, 'documentProfile'])->name('dashboard.profile.documents');

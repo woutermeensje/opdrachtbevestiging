@@ -100,6 +100,29 @@ class MollieBillingService
         return $this->syncPayment($user->mollie_pending_payment_id) ?? $user;
     }
 
+    /**
+     * Zegt het terugkerende Mollie-abonnement op, zodat er na het verwijderen
+     * van een account niet meer wordt afgeschreven. Een abonnement dat bij
+     * Mollie al niet meer bestaat (404/410) telt als opgezegd.
+     */
+    public function cancelSubscription(User $user): void
+    {
+        if (! filled($user->mollie_customer_id) || ! filled($user->mollie_subscription_id)) {
+            return;
+        }
+
+        $this->ensureConfigured();
+
+        $response = $this->client()
+            ->delete("/customers/{$user->mollie_customer_id}/subscriptions/{$user->mollie_subscription_id}");
+
+        if (in_array($response->status(), [404, 410], true)) {
+            return;
+        }
+
+        $response->throw();
+    }
+
     private function ensureConfigured(): void
     {
         if (! $this->isConfigured()) {

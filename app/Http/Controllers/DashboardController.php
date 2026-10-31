@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Confirmation;
 use App\Services\LogoResizer;
+use App\Services\MollieBillingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use RuntimeException;
+use Throwable;
 
 class DashboardController extends Controller
 {
@@ -68,6 +72,49 @@ class DashboardController extends Controller
         return redirect()
             ->route('dashboard.profile')
             ->with('status', 'Je wachtwoord is gewijzigd.');
+    }
+
+    public function destroyAccount(Request $request, MollieBillingService $billing): RedirectResponse
+    {
+        $request->validate([
+            'delete_password' => ['required', 'current_password'],
+        ], [
+            'delete_password.current_password' => 'Het wachtwoord is onjuist.',
+        ], [
+            'delete_password' => 'wachtwoord',
+        ]);
+
+        $user = $request->user();
+
+        try {
+            $billing->cancelSubscription($user);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('dashboard.profile')
+                ->withErrors(['delete_password' => 'Je abonnement kon niet worden opgezegd, daarom is je account niet verwijderd. Probeer het later opnieuw of neem contact met ons op.']);
+        }
+
+        $directories = collect(['profiles/'.$user->id])
+            ->merge($user->confirmations()->pluck('id')->map(fn (int $id): string => 'confirmations/'.$id))
+            ->merge($user->quotes()->pluck('id')->map(fn (int $id): string => 'quotes/'.$id));
+
+        // Eerst uitloggen: logout() slaat het remember-token op en zou een al
+        // verwijderde gebruiker anders opnieuw aanmaken.
+        Auth::logout();
+
+        // Opdrachtbevestigingen, offertes en opdrachtgevers verdwijnen via cascadeOnDelete.
+        $user->delete();
+
+        $directories->each(fn (string $directory) => Storage::disk('local')->deleteDirectory($directory));
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()
+            ->route('login')
+            ->with('status', 'Je account en alle bijbehorende gegevens zijn verwijderd.');
     }
 
     public function companyProfile(): View
