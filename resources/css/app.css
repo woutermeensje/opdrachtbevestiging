@@ -1,8 +1,7 @@
 /* ===============================
    FONTS
 ================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,700&display=swap');
 
 /* ===============================
    TAILWIND
@@ -15,67 +14,7 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Aptos', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
-}
-
-/* ===============================
-   APTOS WEBFONT
-   Aptos wordt niet door Google Fonts gehost. De officiële Microsoft-bestanden
-   staan self-hosted in public/fonts/aptos/web/ (WOFF2). src: local() gebruikt
-   eerst een lokaal geïnstalleerde Aptos (Microsoft 365 / Windows 11).
-================================ */
-@font-face {
-  font-family: 'Aptos';
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: local('Aptos Light'),
-       url('/fonts/aptos/web/Aptos-Light.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Aptos';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: local('Aptos'),
-       url('/fonts/aptos/web/Aptos-Regular.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Aptos';
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: local('Aptos Italic'),
-       url('/fonts/aptos/web/Aptos-Italic.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Aptos';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Aptos SemiBold'),
-       url('/fonts/aptos/web/Aptos-SemiBold.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Aptos';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: local('Aptos Bold'),
-       url('/fonts/aptos/web/Aptos-Bold.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Aptos';
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-  src: local('Aptos Bold Italic'),
-       url('/fonts/aptos/web/Aptos-BoldItalic.woff2') format('woff2');
+    --font-sans: 'Work Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ===============================
@@ -148,9 +87,9 @@
   --radius-pill: 999px;
 
   /* Typography */
-  --font-ui: 'Inter', sans-serif;
+  --font-ui: 'Work Sans', sans-serif;
   --font-heading: 'Work Sans', sans-serif;
-  --font-text: 'Aptos', 'Segoe UI', sans-serif;
+  --font-text: 'Work Sans', sans-serif;
 
   /* Spacing */
   --space-1: 0.25rem;

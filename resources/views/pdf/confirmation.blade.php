@@ -19,7 +19,7 @@
         body {
             margin: 0;
             color: #333333;
-            font-family: 'Aptos', 'DejaVu Sans', Arial, sans-serif;
+            font-family: 'Work Sans', 'DejaVu Sans', Arial, sans-serif;
             font-size: 13px;
             line-height: 1.5;
             font-weight: 400;
