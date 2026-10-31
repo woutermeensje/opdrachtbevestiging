@@ -606,17 +606,15 @@
 
 .dashboard-confirmations-table td,
 .dashboard-confirmations-table td strong,
-.dashboard-confirmations-table td a,
+.dashboard-confirmations-table td a {
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 400;
+}
+
 .dashboard-confirmations-table .dashboard-status {
     font-family: var(--font-ui);
     font-weight: 600;
-}
-
-.dashboard-confirmations-table td:nth-child(1),
-.dashboard-confirmations-table td:nth-child(2),
-.dashboard-confirmations-table td:nth-child(2) strong,
-.dashboard-confirmations-table td:nth-child(4) {
-    font-weight: 400;
 }
 
 .dashboard-table th.dashboard-table-actions,
