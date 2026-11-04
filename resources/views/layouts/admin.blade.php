@@ -17,6 +17,11 @@
                 <span class="admin-brand-tag">Admin</span>
             </a>
 
+            <nav class="admin-nav" aria-label="Admin">
+                <a href="{{ route('admin.dashboard') }}" class="admin-topbar-link {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}">Dashboard</a>
+                <a href="{{ route('admin.activity') }}" class="admin-topbar-link {{ request()->routeIs('admin.activity') ? 'is-active' : '' }}">Activiteit</a>
+            </nav>
+
             <div class="admin-topbar-right">
                 <a href="{{ route('dashboard') }}" class="admin-topbar-link">Naar app</a>
                 <form method="POST" action="{{ route('logout') }}">

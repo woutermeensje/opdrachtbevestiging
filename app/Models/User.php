@@ -90,6 +90,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return (bool) $this->is_admin;
     }
 
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
     public function confirmations(): HasMany
     {
         return $this->hasMany(Confirmation::class);

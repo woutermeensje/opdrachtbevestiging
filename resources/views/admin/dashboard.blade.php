@@ -26,7 +26,29 @@
             <span class="admin-metric-label">Offertes</span>
             <strong>{{ $metrics['quotes'] }}</strong>
         </div>
+        <div class="admin-metric-card">
+            <span class="admin-metric-label">Ingelogd vandaag</span>
+            <strong>{{ $metrics['logins_today'] }}</strong>
+        </div>
     </div>
+
+    <section class="admin-section" aria-labelledby="admin-recent-activity-title">
+        <div class="admin-section-header">
+            <div>
+                <p class="admin-eyebrow">Logboek</p>
+                <h2 id="admin-recent-activity-title">Recente activiteit</h2>
+            </div>
+            <a href="{{ route('admin.activity') }}" class="admin-section-count">Alle activiteit →</a>
+        </div>
+
+        @if ($recentActivities->isEmpty())
+            <div class="admin-empty-state">
+                <p>Nog geen activiteit vastgelegd.</p>
+            </div>
+        @else
+            @include('admin.activity._table', ['activities' => $recentActivities])
+        @endif
+    </section>
 
     <section class="admin-section" aria-labelledby="admin-users-title">
         <div class="admin-section-header">
@@ -52,6 +74,7 @@
                             <th scope="col">Accountstatus</th>
                             <th scope="col">Abonnement</th>
                             <th scope="col">Aangemeld op</th>
+                            <th scope="col">Laatst ingelogd</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,6 +108,13 @@
                                     </span>
                                 </td>
                                 <td>{{ $user->created_at?->format('d-m-Y H:i') ?? '-' }}</td>
+                                <td>
+                                    @if ($user->last_login_at)
+                                        <a href="{{ route('admin.activity', ['user' => $user->id]) }}" class="admin-activity-user">{{ \Illuminate\Support\Carbon::parse($user->last_login_at)->format('d-m-Y H:i') }}</a>
+                                    @else
+                                        Nog niet
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\LogUserActivity::class,
+        ]);
+
         $middleware->alias([
             'company.profile' => \App\Http\Middleware\EnsureCompanyProfileIsComplete::class,
             'billing.active' => \App\Http\Middleware\EnsureBillingAccessIsActive::class,

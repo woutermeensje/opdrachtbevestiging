@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\AiAssistController;
 use App\Http\Controllers\AuthController;
@@ -105,12 +106,12 @@ Route::middleware('auth')->group(function (): void {
 |--------------------------------------------------------------------------
 | Admin
 |--------------------------------------------------------------------------
-| Alleen bereikbaar voor gebruikers met is_admin = true. Voor nu bevat de
-| omgeving enkel /admin/dashboard; de rest volgt later.
+| Alleen bereikbaar voor gebruikers met is_admin = true.
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
     Route::redirect('/', '/admin/dashboard');
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/activiteit', [AdminActivityController::class, 'index'])->name('activity');
 });
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
